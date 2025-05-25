@@ -1,0 +1,79 @@
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 20px;
+    height: 56px;
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .icon-button {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .icon-button:hover {
+    background-color: #f1f3f4;
+  }
+  
+  .docs-title {
+    font-size: 20px;
+    font-weight: 500;
+    color: #202124;
+  }
+  
+  .navbar-search {
+    display: flex;
+    align-items: center;
+    background-color: #f1f3f4;
+    padding: 6px 12px;
+    border-radius: 24px;
+    width: 50%;
+    max-width: 600px;
+  }
+  
+  .search-icon {
+    color: #5f6368;
+    margin-right: 8px;
+  }
+  
+  .search-input {
+    border: none;
+    background: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    color: #202124;
+  }
+  
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .profile-circle {
+    background-color: #5f6368;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  

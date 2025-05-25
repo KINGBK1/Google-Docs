@@ -1,0 +1,38 @@
+.template-wrapper {
+    padding: 20px 40px;
+    background: #f8f9fa;
+  }
+  
+  .template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .template-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #202124;
+  }
+  
+  .template-gallery-btn {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    gap: 4px;
+    color: #5f6368;
+  }
+  
+  .template-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  
