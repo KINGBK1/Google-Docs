@@ -7,7 +7,7 @@
 body {
   height: 100vh ; 
   width: 100vw;
-  background-image: linear-gradient(to right, #9eacd1 0%, #ffffff 100%);
+  /* background-image: linear-gradient(to right, #9eacd1 0%, #ffffff 100%); */
   display: flex;
   justify-content: center;
   align-items: center;

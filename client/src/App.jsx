@@ -1,13 +1,55 @@
-// import LoginPage from "./components/Auth/Auth";
-import TemplateContainer from "./components/Dashboard/Templates/TemplateContainer";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { useState, useEffect } from "react";
+import LoginPage from "./components/Auth/Auth";
 import Dashboard from "./components/Dashboard/Dashboard";
-const App = () =>{
-  return (
-    <>
-      {/* <LoginPage/> */}
-      <Dashboard/>
-    </>
-  ) ; 
-}
 
-export default App ; 
+const ProtectedRoute = ({ isAuthenticated, children }) => {
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // YOUR JWT token from backend
+    if (token) {
+      // Optional: add token expiry check here
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
+  return (
+    <GoogleOAuthProvider clientId="35252208750-bg9s2h22ke7nc1v3v3n5jkdcsa1siulv.apps.googleusercontent.com">
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <LoginPage setAuth={setIsAuthenticated} />
+              )
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </GoogleOAuthProvider>
+  );
+};
+
+export default App;

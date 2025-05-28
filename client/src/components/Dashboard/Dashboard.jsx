@@ -3,13 +3,13 @@ import TemplateContainer from "./Templates/TemplateContainer";
 import RecentDocs from "./Recent-Docs/RecentDocs";
 
 const Dashboard = () => {
-    return(
-        <div>
-            <Navbar />
-            <TemplateContainer />
-            <RecentDocs/>
-        </div>
-    );
-}
+  return (
+    <div>
+      <Navbar />
+      <TemplateContainer />
+      <RecentDocs />
+    </div>
+  );
+};
 
 export default Dashboard;
