@@ -15,13 +15,19 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token"); // YOUR JWT token from backend
-    if (token) {
-      // Optional: add token expiry check here
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
+    const checkToken = () => {
+      const token = localStorage.getItem("token");
+      setIsAuthenticated(!!token);
+    };
+
+    checkToken(); // initial check
+
+    // Optional: listen for token changes (e.g., login/logout in other tabs)
+    window.addEventListener("storage", checkToken);
+
+    return () => {
+      window.removeEventListener("storage", checkToken);
+    };
   }, []);
 
   return (
@@ -39,7 +45,7 @@ const App = () => {
             }
           />
           <Route
-            path="/dashboard"
+            path="/dashboard/*"
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Dashboard />
