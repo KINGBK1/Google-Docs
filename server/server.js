@@ -1,3 +1,4 @@
+// server/server.js
 import express from "express";
 import cors from "cors";
 import { OAuth2Client } from "google-auth-library";
@@ -6,6 +7,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import http from "http";
 import { Server } from "socket.io";
+import { v4 as uuidv4 } from 'uuid'; // Import for generating unique IDs
 
 dotenv.config();
 
@@ -33,11 +35,11 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model("User", userSchema);
 
-// Document model
+// ✅ Updated content field to store Quill delta format and added name
 const documentSchema = new mongoose.Schema({
   _id: String,
-  name: { type: String, required: true },
-  content: String,
+  name: { type: String, required: true, default: 'Untitled Document' }, // Default name
+  content: { type: Object, default: {} }, // 👈 delta format
   updatedAt: { type: Date, default: Date.now },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
@@ -87,7 +89,7 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Create document
+// Create document (you might still use this from a dashboard)
 app.post("/api/documents", authMiddleware, async (req, res) => {
   const { documentId, name } = req.body;
   if (!documentId || !name) return res.status(400).json({ message: "documentId and name are required" });
@@ -95,8 +97,8 @@ app.post("/api/documents", authMiddleware, async (req, res) => {
   try {
     const newDoc = await Document.create({
       _id: documentId,
-      name,
-      content: "",
+      name: name, // Include the name here
+      content: {}, // initial empty delta
       owner: req.user.id,
     });
     res.status(201).json(newDoc);
@@ -142,27 +144,52 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on("get-document", async (documentId) => {
-    let document = await Document.findById(documentId);
-    if (!document) return;
-
-    socket.join(documentId);
-    socket.emit("load-document", document.content);
-
-    socket.on("send-changes", (delta) => {
-      socket.to(documentId).emit("receive-changes", delta);
-    });
-
-    socket.on("save-document", async (data) => {
-      await Document.findByIdAndUpdate(documentId, {
-        content: data,
-        updatedAt: Date.now(),
-      });
-    });
-  });
-
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
+  });
+
+  socket.on("get-document", async (documentId) => {
+    console.log("get-document received:", documentId);
+    try {
+      let document = await Document.findById(documentId);
+
+      if (!document) {
+        // If the document doesn't exist, create a new one
+        const newDocument = new Document({ _id: documentId, owner: socket.user ? socket.user.id : null }); // Associate with user if authenticated
+        await newDocument.save();
+        document = newDocument;
+        console.log("Created new document:", documentId);
+      }
+
+      socket.join(documentId);
+      socket.emit("load-document", { content: document.content, name: document.name }); // Send both content and name
+    } catch (error) {
+      console.error("Error fetching or creating document:", error);
+    }
+  });
+
+  socket.on("send-changes", (delta) => {
+    socket.to(socket.rooms).emit("receive-changes", delta); // Broadcast to everyone in the room except the sender
+    console.log("send-changes received:", delta, "broadcasting to room:", socket.rooms);
+  });
+
+  socket.on("save-document", async (data) => {
+    const documentId = Object.keys(socket.rooms)[1]; // Get the document ID from the room
+    console.log("save-document received for:", documentId, data);
+    try {
+      const updatedDocument = await Document.findByIdAndUpdate(
+        documentId,
+        { content: data.content, name: data.name, updatedAt: Date.now() },
+        { new: true, upsert: true } // Use upsert to create if it doesn't exist (though we handle creation in get-document now)
+      );
+      if (updatedDocument) {
+        console.log("Document updated:", documentId);
+      } else {
+        console.log("Document not found for update:", documentId);
+      }
+    } catch (error) {
+      console.error("Error saving document:", error);
+    }
   });
 });
 

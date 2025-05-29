@@ -1,6 +1,6 @@
-// src/components/Text Editor/TextEditor.jsx
+// src/components/Text Editor/TextEditor.js
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom"; // <— import this
+import { useParams, useNavigate } from "react-router-dom";
 import Quill from "quill";
 import { io } from "socket.io-client";
 import "quill/dist/quill.snow.css";
@@ -20,9 +20,11 @@ const TOOLBAR_OPTIONS = [
 ];
 
 const TextEditor = () => {
-  const { documentId } = useParams(); // <— get doc ID from URL
+  const { documentId } = useParams();
   const [quill, setQuill] = useState(null);
   const socketRef = useRef(null);
+  const [docName, setDocName] = useState("");
+  const navigate = useNavigate();
 
   const WrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
@@ -41,34 +43,39 @@ const TextEditor = () => {
   useEffect(() => {
     if (!quill || !documentId) return;
 
-    // 1) Connect to Socket.IO
     socketRef.current = io("http://localhost:5000");
-
     const socket = socketRef.current;
-    // 2) Ask server to load (or create) this particular document
-    socket.emit("get-document", documentId);
 
-    // 3) When server sends back the document content, set it in Quill
-    socket.on("load-document", (document) => {
-      quill.setContents(quill.clipboard.convert(document));
+    console.log("Connecting to socket...");
+
+    socket.emit("get-document", documentId);
+    console.log("Emitting get-document:", documentId);
+
+    socket.on("load-document", (documentData) => {
+      console.log("Received load-document:", documentData);
+      quill.setContents(documentData.content);
+      setDocName(documentData.name); // Set the document name
       quill.enable();
     });
 
-    // 4) When someone else makes edits, apply their delta
     socket.on("receive-changes", (delta) => {
+      console.log("Received receive-changes:", delta);
       quill.updateContents(delta);
     });
 
-    // 5) When *you* edit, emit “send-changes”
     const handleTextChange = (delta, oldDelta, source) => {
       if (source !== "user") return;
       socket.emit("send-changes", delta);
+      console.log("Emitting send-changes:", delta);
     };
     quill.on("text-change", handleTextChange);
 
-    // 6) Periodically save to Mongo
     const saveInterval = setInterval(() => {
-      socket.emit("save-document", quill.root.innerHTML);
+      if (quill) {
+        const saveData = { content: quill.getContents(), name: docName };
+        socket.emit("save-document", saveData);
+        console.log("Emitting save-document:", saveData);
+      }
     }, SAVE_INTERVAL_MS);
 
     return () => {
@@ -76,9 +83,32 @@ const TextEditor = () => {
       socket.disconnect();
       quill.off("text-change", handleTextChange);
     };
-  }, [quill, documentId]);
+  }, [quill, documentId, docName]); // Added docName to dependency array
 
-  return <div className="container" ref={WrapperRef}></div>;
+  const handleNameChange = (e) => {
+    setDocName(e.target.value);
+  };
+
+  const handleBlur = () => {
+    if (socketRef.current) {
+      socketRef.current.emit("save-document", { content: quill?.getContents(), name: docName });
+      console.log("Emitting save-document on blur:", { content: quill?.getContents(), name: docName });
+    }
+  };
+
+  return (
+    <div className="container">
+      <input
+        type="text"
+        className="document-name-input"
+        placeholder="Document Name"
+        value={docName}
+        onChange={handleNameChange}
+        onBlur={handleBlur}
+      />
+      <div className="text-editor-wrapper" ref={WrapperRef}></div>
+    </div>
+  );
 };
 
 export default TextEditor;
