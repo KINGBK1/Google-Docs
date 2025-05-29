@@ -149,43 +149,36 @@ io.on("connection", (socket) => {
   });
 
   socket.on("get-document", async (documentId) => {
-    console.log("get-document received:", documentId);
     try {
       let document = await Document.findById(documentId);
 
       if (!document) {
-        // If the document doesn't exist, create a new one
-        const newDocument = new Document({ _id: documentId, owner: socket.user ? socket.user.id : null }); // Associate with user if authenticated
+        const newDocument = new Document({ _id: documentId, owner: socket.user ? socket.user.id : null });
         await newDocument.save();
         document = newDocument;
-        console.log("Created new document:", documentId);
       }
 
       socket.join(documentId);
-      socket.emit("load-document", { content: document.content, name: document.name }); // Send both content and name
+      socket.emit("load-document", { content: document.content, name: document.name });
     } catch (error) {
       console.error("Error fetching or creating document:", error);
     }
   });
 
   socket.on("send-changes", (delta) => {
-    socket.to(socket.rooms).emit("receive-changes", delta); // Broadcast to everyone in the room except the sender
-    console.log("send-changes received:", delta, "broadcasting to room:", socket.rooms);
+    socket.to(socket.rooms).emit("receive-changes", delta);
   });
 
   socket.on("save-document", async (data) => {
-    const documentId = Object.keys(socket.rooms)[1]; // Get the document ID from the room
-    console.log("save-document received for:", documentId, data);
+    const { documentId, content, name } = data;
     try {
       const updatedDocument = await Document.findByIdAndUpdate(
         documentId,
-        { content: data.content, name: data.name, updatedAt: Date.now() },
-        { new: true, upsert: true } // Use upsert to create if it doesn't exist (though we handle creation in get-document now)
+        { content: content, name: name, updatedAt: Date.now() },
+        { new: true, upsert: true }
       );
       if (updatedDocument) {
-        console.log("Document updated:", documentId);
-      } else {
-        console.log("Document not found for update:", documentId);
+        console.log(`Document ${documentId} updated successfully. New name: ${updatedDocument.name}`);
       }
     } catch (error) {
       console.error("Error saving document:", error);

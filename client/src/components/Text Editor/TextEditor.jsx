@@ -23,8 +23,10 @@ const TextEditor = () => {
   const { documentId } = useParams();
   const [quill, setQuill] = useState(null);
   const socketRef = useRef(null);
-  const [docName, setDocName] = useState("");
+  const [docName, setDocName] = useState("Untitled Document");
+  const [hasLoaded, setHasLoaded] = useState(false); // Track initial load
   const navigate = useNavigate();
+  const isSavingName = useRef(false); // Prevent name save loops
 
   const WrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
@@ -54,7 +56,8 @@ const TextEditor = () => {
     socket.on("load-document", (documentData) => {
       console.log("Received load-document:", documentData);
       quill.setContents(documentData.content);
-      setDocName(documentData.name); // Set the document name
+      setDocName(documentData.name);
+      setHasLoaded(true);
       quill.enable();
     });
 
@@ -71,10 +74,10 @@ const TextEditor = () => {
     quill.on("text-change", handleTextChange);
 
     const saveInterval = setInterval(() => {
-      if (quill) {
-        const saveData = { content: quill.getContents(), name: docName };
+      if (quill && hasLoaded) {
+        const saveData = { content: quill.getContents(), name: docName, documentId: documentId };
         socket.emit("save-document", saveData);
-        console.log("Emitting save-document:", saveData);
+        console.log("Emitting save-document (interval):", saveData);
       }
     }, SAVE_INTERVAL_MS);
 
@@ -83,16 +86,17 @@ const TextEditor = () => {
       socket.disconnect();
       quill.off("text-change", handleTextChange);
     };
-  }, [quill, documentId, docName]); // Added docName to dependency array
+  }, [quill, documentId]);
 
   const handleNameChange = (e) => {
     setDocName(e.target.value);
   };
 
   const handleBlur = () => {
-    if (socketRef.current) {
-      socketRef.current.emit("save-document", { content: quill?.getContents(), name: docName });
-      console.log("Emitting save-document on blur:", { content: quill?.getContents(), name: docName });
+    if (socketRef.current && hasLoaded) {
+      const saveData = { content: quill?.getContents(), name: docName, documentId: documentId };
+      socketRef.current.emit("save-document", saveData);
+      console.log("Emitting save-document (blur):", saveData);
     }
   };
 
