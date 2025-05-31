@@ -22,8 +22,7 @@ const App = () => {
     };
 
     checkToken();
-    window.addEventListener("storage", checkToken); // handle logout/login in another tab
-
+    window.addEventListener("storage", checkToken); 
     return () => {
       window.removeEventListener("storage", checkToken);
     };

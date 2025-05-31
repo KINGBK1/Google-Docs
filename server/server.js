@@ -31,7 +31,6 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 
-// HTTP Server and Socket.IO
 const server = http.createServer(app);
 
 const io = new Server(server, {

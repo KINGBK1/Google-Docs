@@ -20,7 +20,6 @@ export const googleLogin = async (req, res) => {
       user = new User({ googleId: sub, email, name, picture });
       await user.save();
     } else if (!user.picture) {
-      // In case user was created before profile pictures were handled
       user.picture = picture;
       await user.save();
     }
