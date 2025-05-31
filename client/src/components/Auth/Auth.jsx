@@ -24,10 +24,9 @@ function LoginPage({ setAuth }) {
   const navigate = useNavigate();
 
   function validate(e) {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault(); 
     let isValid = true;
 
-    // Validate Name
     if (name.trim() === "") {
       setIsErrorName(true);
       setNameErrorMessage("Name is required");
@@ -61,7 +60,6 @@ function LoginPage({ setAuth }) {
       setPasswordColor("green");
     }
 
-    // Validate Confirm Password
     if (confirmPassword.trim() === "") {
       setIsErrorConfirmPassword(true);
       setConfirmPasswordErrorMessage("Confirm Password is required");
@@ -79,9 +77,7 @@ function LoginPage({ setAuth }) {
     }
 
     if (isValid) {
-      // Perform your submit logic here (e.g., API call for regular login)
       console.log("Regular login submitted successfully!", { name, password });
-      // You would typically make an API call here to authenticate the user
     }
   }
 
@@ -92,8 +88,9 @@ function LoginPage({ setAuth }) {
       });
 
       if (res.status === 200) {
-        // Save user to local storage
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user)); // Saving user to local storage
 
         // Update auth state
         setAuth(true);
@@ -107,6 +104,7 @@ function LoginPage({ setAuth }) {
   };
 
   return (
+    <div className="wrapper">
     <div className="signin-container">
       <div className="img-container"></div>
       <div className="form-container">
@@ -158,6 +156,7 @@ function LoginPage({ setAuth }) {
           />
         </div>
       </div>
+    </div>
     </div>
   );
 }

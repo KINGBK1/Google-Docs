@@ -17,13 +17,12 @@ const App = () => {
   useEffect(() => {
     const checkToken = () => {
       const token = localStorage.getItem("token");
-      setIsAuthenticated(!!token);
+      const isValid = !!token;
+      setIsAuthenticated(isValid);
     };
 
-    checkToken(); // initial check
-
-    // Optional: listen for token changes (e.g., login/logout in other tabs)
-    window.addEventListener("storage", checkToken);
+    checkToken();
+    window.addEventListener("storage", checkToken); // handle logout/login in another tab
 
     return () => {
       window.removeEventListener("storage", checkToken);
@@ -34,6 +33,7 @@ const App = () => {
     <GoogleOAuthProvider clientId="35252208750-bg9s2h22ke7nc1v3v3n5jkdcsa1siulv.apps.googleusercontent.com">
       <Router>
         <Routes>
+          {/* Public route */}
           <Route
             path="/"
             element={
@@ -44,6 +44,8 @@ const App = () => {
               )
             }
           />
+
+          {/* Protected route */}
           <Route
             path="/dashboard/*"
             element={

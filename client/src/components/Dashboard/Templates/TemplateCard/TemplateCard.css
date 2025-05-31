@@ -27,3 +27,7 @@
     font-size: 12px;
     color: #5f6368;
   }
+
+  .template-card:hover{
+    border-color: 3px solid blue;
+  }

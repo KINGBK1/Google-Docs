@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar/Navbar";
 import TemplateContainer from "./Templates/TemplateContainer";
 import RecentDocs from "./Recent-Docs/RecentDocs";
-import TextEditor from "../Text Editor/TextEditor"; // make sure this path matches your folder structure
+import TextEditor from "../Text Editor/TextEditor"; 
 
 const Dashboard = () => {
   return (
@@ -12,7 +12,6 @@ const Dashboard = () => {
       <Navbar />
 
       <Routes>
-        {/* 1) When the URL is exactly /dashboard, show templates + recent docs */}
         <Route
           path="/"
           element={
@@ -22,8 +21,6 @@ const Dashboard = () => {
             </>
           }
         />
-
-        {/* 2) When the URL is /dashboard/documents/:documentId, show the TextEditor */}
         <Route path="documents/:documentId" element={<TextEditor />} />
       </Routes>
     </div>

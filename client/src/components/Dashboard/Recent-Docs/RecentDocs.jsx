@@ -6,11 +6,9 @@ import { TiSortAlphabetically } from "react-icons/ti";
 import { FaFolderMinus } from "react-icons/fa";
 
 const RecentDocs = () => {
-  // Dummy data to simulate fetched recent documents
   const [recentDocs, setRecentDocs] = useState([]);
 
   useEffect(() => {
-    // Simulate fetching recent docs from backend or localStorage
     const docs = [
       { id: "doc1", title: "Project Plan", subtitle: "Last edited 2 days ago" },
       { id: "doc2", title: "Meeting Notes", subtitle: "Last edited yesterday" },

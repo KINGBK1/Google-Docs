@@ -1,15 +1,32 @@
-/* Main container */
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to right, rgba(212, 196, 219, 0.5), rgba(70, 78, 179, 0.5));
+
+}
+
 .signin-container {
   display: flex;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   font-family: 'Google Sans', Roboto, sans-serif;
   background-color: #f8f9fa;
+
+  width: 80vw;
+  height: 60vh;
+  max-width: 900px;
+  max-height: 700px;
+  overflow: auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  ;
+  border-radius: 12px;
 }
 
 /* Left image section */
 .img-container {
   flex: 1;
-  background-image: url("../../../public/assets/Gdocs.jpg");
+  background-image: url("/assets/Gdocs.jpg");
   background-size: cover;
   background-position: center;
   border-top-left-radius: 12px;
@@ -24,7 +41,7 @@
   justify-content: center;
   padding: 4rem;
   background-color: white;
-  box-shadow: 0 0 20px rgba(0,0,0,0.08);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Form itself */
@@ -59,12 +76,18 @@ form input:focus {
 .error-message {
   color: #d93025;
   font-size: 0.85rem;
-  margin-top: -0.6rem;
+  margin-top: 0.6rem;
   margin-bottom: 0.5rem;
   position: relative;
 }
 
 /* Submit button */
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .btn button {
   padding: 0.75rem 1rem;
   background-color: #1a73e8;
@@ -88,7 +111,7 @@ form input:focus {
 
 /* Confirm password container fix */
 .confirm-password-container {
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -97,6 +120,10 @@ form input:focus {
 @media (max-width: 768px) {
   .signin-container {
     flex-direction: column;
+    height: 90vh ; 
+    width: 95vw ;  
+    max-height: 1000px;
+    max-width: 500px;
   }
 
   .img-container {
