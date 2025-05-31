@@ -33,7 +33,7 @@ const Navbar = () => {
   const handleSwitchAccount = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.reload(); // Will redirect to login
+    window.location.reload(); // wapis login page 
   };
 
   return (

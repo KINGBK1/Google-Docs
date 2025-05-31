@@ -44,21 +44,20 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Form itself */
+
 form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* Label styling */
+
 form label {
   font-weight: 500;
   margin-bottom: 0.2rem;
   color: #3c4043;
 }
 
-/* Input styling */
 form input {
   padding: 12px 14px;
   border: 2px solid #dadce0;
@@ -72,7 +71,6 @@ form input:focus {
   outline: none;
 }
 
-/* Error message */
 .error-message {
   color: #d93025;
   font-size: 0.85rem;
@@ -81,7 +79,6 @@ form input:focus {
   position: relative;
 }
 
-/* Submit button */
 .btn {
   display: flex;
   justify-content: center;
@@ -103,20 +100,17 @@ form input:focus {
   background-color: #155ab6;
 }
 
-/* Google Login button area */
 .google-login-container {
   margin-top: 2rem;
   text-align: center;
 }
 
-/* Confirm password container fix */
 .confirm-password-container {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .signin-container {
     flex-direction: column;
