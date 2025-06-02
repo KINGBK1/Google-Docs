@@ -44,7 +44,6 @@ const App = () => {
             }
           />
 
-          {/* Protected route */}
           <Route
             path="/dashboard/*"
             element={

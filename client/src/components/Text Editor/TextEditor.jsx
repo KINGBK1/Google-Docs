@@ -24,9 +24,9 @@ const TextEditor = () => {
   const [quill, setQuill] = useState(null);
   const socketRef = useRef(null);
   const [docName, setDocName] = useState("Untitled Document");
-  const [hasLoaded, setHasLoaded] = useState(false); // Track initial load
+  const [hasLoaded, setHasLoaded] = useState(false);
   const navigate = useNavigate();
-  const isSavingName = useRef(false); // Prevent name save loops
+  const isSavingName = useRef(false); 
 
   const WrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
