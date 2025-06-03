@@ -1,12 +1,12 @@
-// src/components/Text Editor/TextEditor.js
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Quill from "quill";
 import { io } from "socket.io-client";
 import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
+import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 
-const SAVE_INTERVAL_MS = 2000;
+const SAVE_INTERVAL_MS = 2000; // Keep periodic auto-save
 const TOOLBAR_OPTIONS = [
   [{ font: [] }, { size: [] }],
   ["bold", "italic", "underline", "strike"],
@@ -16,7 +16,7 @@ const TOOLBAR_OPTIONS = [
   [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
   [{ align: [] }],
   ["link", "image", "blockquote", "code-block"],
-  ["clean"],
+  ["clean"]
 ];
 
 const TextEditor = () => {
@@ -24,91 +24,128 @@ const TextEditor = () => {
   const [quill, setQuill] = useState(null);
   const socketRef = useRef(null);
   const [docName, setDocName] = useState("Untitled Document");
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const navigate = useNavigate();
-  const isSavingName = useRef(false); 
+  
+  // Use a ref to track if the document has been loaded initially
+  // This helps prevent overwriting user's name changes with data from server after initial load
+  const hasInitiallyLoadedRef = useRef(false);
+  const [isQuillReady, setIsQuillReady] = useState(false); // Tracks if Quill is setup and content loaded
 
   const WrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
     wrapper.innerHTML = "";
-
     const editor = document.createElement("div");
     wrapper.appendChild(editor);
-
     const q = new Quill(editor, {
       theme: "snow",
       modules: { toolbar: TOOLBAR_OPTIONS },
     });
+    q.disable(); // Disable initially until content is loaded
     setQuill(q);
   }, []);
 
+  // Effect for socket connection, document loading, and real-time changes
   useEffect(() => {
     if (!quill || !documentId) return;
 
-    socketRef.current = io("http://localhost:5000");
-    const socket = socketRef.current;
+    const s = io("http://localhost:5000");
+    socketRef.current = s;
 
-    console.log("Connecting to socket...");
+    // Request document only if it hasn't been initially loaded
+    if (!hasInitiallyLoadedRef.current) {
+        s.emit("get-document", documentId);
+    }
 
-    socket.emit("get-document", documentId);
-    console.log("Emitting get-document:", documentId);
-
-    socket.on("load-document", (documentData) => {
-      console.log("Received load-document:", documentData);
-      quill.setContents(documentData.content);
-      setDocName(documentData.name);
-      setHasLoaded(true);
-      quill.enable();
-    });
-
-    socket.on("receive-changes", (delta) => {
-      console.log("Received receive-changes:", delta);
-      quill.updateContents(delta);
-    });
-
-    const handleTextChange = (delta, oldDelta, source) => {
-      if (source !== "user") return;
-      socket.emit("send-changes", delta);
-      console.log("Emitting send-changes:", delta);
-    };
-    quill.on("text-change", handleTextChange);
-
-    const saveInterval = setInterval(() => {
-      if (quill && hasLoaded) {
-        const saveData = { content: quill.getContents(), name: docName, documentId: documentId };
-        socket.emit("save-document", saveData);
-        console.log("Emitting save-document (interval):", saveData);
+    s.on("load-document", (documentData) => {
+      if (quill) {
+        quill.setContents(documentData.content);
+        // Only set docName from server on the very first load for this documentId
+        if (!hasInitiallyLoadedRef.current) {
+          setDocName(documentData.name || "Untitled Document");
+          hasInitiallyLoadedRef.current = true; // Mark as initially loaded
+        }
+        setIsQuillReady(true); // Mark Quill as ready with content
+        quill.enable();
       }
-    }, SAVE_INTERVAL_MS);
+    });
+
+    s.on("receive-changes", (delta) => {
+      if (quill) quill.updateContents(delta);
+    });
+
+    const textChangeHandler = (delta, oldDelta, source) => {
+      if (source !== "user" || !s) return;
+      s.emit("send-changes", delta);
+    };
+    quill.on("text-change", textChangeHandler);
 
     return () => {
-      clearInterval(saveInterval);
-      socket.disconnect();
-      quill.off("text-change", handleTextChange);
+      s.disconnect();
+      if (quill) {
+        quill.off("text-change", textChangeHandler);
+      }
+      // Don't reset hasInitiallyLoadedRef here unless component unmounts for a *new* documentId
+      // If documentId changes, TextEditor will re-mount or this effect will re-run with new documentId,
+      // and hasInitiallyLoadedRef being false for the new ID is implicitly handled by its nature.
+      // Or, if documentId in params changes, reset it:
+      // hasInitiallyLoadedRef.current = false; // Reset if documentId itself changes
+      setIsQuillReady(false);
     };
-  }, [quill, documentId]);
+  }, [quill, documentId]); // Runs when quill instance or documentId changes
 
-  const handleNameChange = (e) => {
-    setDocName(e.target.value);
+  // Handler to update docName from TextEditorNavbar
+  const handleDocNameChange = (newName) => {
+    setDocName(newName);
   };
 
-  const handleBlur = () => {
-    if (socketRef.current && hasLoaded) {
-      const saveData = { content: quill?.getContents(), name: docName, documentId: documentId };
+  // Centralized save function
+  const saveDocument = useCallback(() => {
+    if (quill && socketRef.current && isQuillReady && documentId) {
+      const saveData = {
+        content: quill.getContents(),
+        name: docName, // Uses the current docName state
+        documentId: documentId,
+      };
       socketRef.current.emit("save-document", saveData);
-      console.log("Emitting save-document (blur):", saveData);
+      console.log(`Saving document: ID=${documentId}, Name=${docName}`);
+      // You could add a visual "Saved!" indicator here
+    } else {
+      console.warn("Could not save: Document or editor not ready.");
     }
+  }, [quill, docName, documentId, socketRef, isQuillReady]);
+
+
+  // Effect for periodic auto-saving
+  useEffect(() => {
+    if (!isQuillReady) return; // Don't auto-save if not ready
+
+    const interval = setInterval(() => {
+      saveDocument();
+    }, SAVE_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [saveDocument, isQuillReady]); // Re-runs if saveDocument or isQuillReady changes
+
+
+  // Handler for manual save button click
+  const handleManualSave = () => {
+    console.log("Manual save triggered.");
+    saveDocument();
   };
+  
+  // Reset initial load flag if documentId changes, ensuring new doc loads fresh
+  useEffect(() => {
+    hasInitiallyLoadedRef.current = false;
+    setIsQuillReady(false);
+    setDocName("Untitled Document"); // Reset doc name for new document
+  }, [documentId]);
+
 
   return (
     <div className="container">
-      <input
-        type="text"
-        className="document-name-input"
-        placeholder="Document Name"
-        value={docName}
-        onChange={handleNameChange}
-        onBlur={handleBlur}
+      <TextEditorNavbar
+        docName={docName}
+        onDocNameChange={handleDocNameChange}
+        onSaveDocument={handleManualSave} // Pass manual save handler
       />
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
     </div>

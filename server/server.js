@@ -24,7 +24,7 @@ app.use(express.json());
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
+  .then(() => console.log("MongoDB connected")) // Crucial: Make sure this log appears
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
@@ -48,39 +48,84 @@ io.on("connection", (socket) => {
   });
 
   socket.on("get-document", async (documentId) => {
+    console.log(`[Server] Received 'get-document' for ID: ${documentId}`);
     try {
       let document = await DocumentModel.findById(documentId);
 
       if (!document) {
-        const newDocument = new DocumentModel({ _id: documentId });
+        console.log(`[Server] Document not found for ID: ${documentId}. Creating new one.`);
+        const newDocument = new DocumentModel({ _id: documentId }); // Name will use schema default
         await newDocument.save();
         document = newDocument;
+        console.log(`[Server] New document ${documentId} created with name: ${document.name}`);
+      } else {
+        console.log(`[Server] Found document ${documentId} with name: ${document.name}`);
       }
 
       socket.join(documentId);
       socket.emit("load-document", { content: document.content, name: document.name });
     } catch (error) {
-      console.error("Error fetching or creating document:", error);
+      console.error(`[Server] Error in 'get-document' for ID ${documentId}:`, error);
     }
   });
 
   socket.on("send-changes", (delta) => {
+    // For debugging, you might want to know which room it's going to.
+    // socket.rooms is a Set, the first element is often the socket.id, the second (if joined) is the documentId.
+    // const targetRoom = Array.from(socket.rooms)[1];
+    // console.log(`[Server] Relaying 'send-changes' to room: ${targetRoom}`);
     socket.to(socket.rooms).emit("receive-changes", delta);
   });
 
   socket.on("save-document", async (data) => {
+    // 1. Log the raw data received from the client
+    console.log("[Server] Received 'save-document' event with data:", JSON.stringify(data));
+
     const { documentId, content, name } = data;
+
+    // 2. Validate essential data
+    if (!documentId) {
+      console.error("[Server] ERROR: 'documentId' is missing in 'save-document' event data. Aborting save.");
+      return;
+    }
+    if (name === undefined || name === null) {
+        console.warn(`[Server] WARNING: 'name' is missing or null in 'save-document' for ID ${documentId}. Saving with current name or default.`);
+        // Allow saving without name if you wish, or handle as an error
+    }
+    if (content === undefined) {
+        console.warn(`[Server] WARNING: 'content' is missing in 'save-document' for ID ${documentId}. Saving with empty content or current content.`);
+    }
+
     try {
+      console.log(`[Server] Attempting to save document. ID: ${documentId}, Name: "${name}"`);
+      
+      const updatePayload = {
+        name: name, // Ensure name is explicitly included
+        content: content,
+        updatedAt: Date.now()
+      };
+
+      // 3. Log the exact payload being sent to MongoDB
+      console.log("[Server] Update payload for MongoDB:", JSON.stringify(updatePayload));
+
       const updatedDocument = await DocumentModel.findByIdAndUpdate(
         documentId,
-        { content: content, name: name, updatedAt: Date.now() },
-        { new: true, upsert: true }
+        updatePayload,
+        { new: true, upsert: true, runValidators: true } // Added runValidators
       );
+
+      // 4. Check the result of the MongoDB operation
       if (updatedDocument) {
-        console.log(`Document ${documentId} updated successfully. New name: ${updatedDocument.name}`);
+        console.log(`[Server] SUCCESS: Document ${documentId} processed. DB Name: "${updatedDocument.name}", DB ID: ${updatedDocument._id}, UpdatedAt: ${updatedDocument.updatedAt}`);
+      } else {
+        // This case should be rare with upsert:true and new:true, as it should either update or insert.
+        // If it occurs, it means the operation didn't result in a document, which is problematic.
+        console.error(`[Server] CRITICAL ERROR: Document ${documentId} - findByIdAndUpdate returned null/undefined even with upsert:true. Document NOT saved/created.`);
       }
     } catch (error) {
-      console.error("Error saving document:", error);
+      // 5. Log any errors from the MongoDB operation
+      console.error(`[Server] ERROR saving document ${documentId} to MongoDB:`, error);
+      console.error(`[Server] Error Name: ${error.name}, Message: ${error.message}, Code: ${error.code}`);
     }
   });
 });

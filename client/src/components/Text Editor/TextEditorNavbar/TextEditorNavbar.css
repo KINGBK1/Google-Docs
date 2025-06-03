@@ -1,0 +1,128 @@
+.navbar-wrapper {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+  padding: 6px 16px;
+  font-family: "Google Sans", "Roboto", sans-serif;
+}
+
+.nav-first-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+}
+
+.left-items {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.document-name-input {
+  font-size: 16px;
+  font-weight: 500;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  outline: none;
+  width: 200px;
+  color: #202124;
+  transition: background-color 0.2s;
+}
+
+.document-name-input:focus {
+  background-color: #e8f0fe;
+}
+
+.left-items button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #5f6368;
+  padding: 4px;
+  transition: background-color 0.2s, color 0.2s;
+  border-radius: 4px;
+}
+
+.left-items button:hover {
+  background-color: #e8eaed;
+  color: #202124;
+}
+
+.right-items {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.right-items button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #5f6368;
+  padding: 4px;
+  transition: background-color 0.2s, color 0.2s;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.right-items button:hover {
+  background-color: #e8eaed;
+  color: #202124;
+}
+
+.right-items .profile-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #4285f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profile-circle {
+  width: 28px;
+  height: 28px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.right-items .share-button {
+  display: flex;
+  align-items: center;
+  background-color: #1a73e8;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 24px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.right-items .share-button:hover {
+  background-color: #1558d6;
+}
+
+.right-items .share-button svg {
+  margin: 0 4px;
+  height: 16px;
+  width: 16px;
+}
+
+.nav-second-row {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
