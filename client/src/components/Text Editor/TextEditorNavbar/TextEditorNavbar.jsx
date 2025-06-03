@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './TextEditorNavbar.css';
 
 import { MdDriveFileMoveOutline } from "react-icons/md";
-import { IoCloudDoneOutline } from "react-icons/io5"; // This will be our save button
+import { IoCloudDoneOutline } from "react-icons/io5"; 
 import { MdOutlineTimer } from "react-icons/md";
 import { LiaCommentSolid } from "react-icons/lia";
 import { BsCameraVideo } from "react-icons/bs";
@@ -18,7 +18,6 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument }) => {
         onDocNameChange(e.target.value);
     };
 
-    // No specific onBlur logic needed for saving here as TextEditor handles it
     const handleBlur = () => {};
 
     return (
