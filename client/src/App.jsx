@@ -3,6 +3,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useState, useEffect } from "react";
 import LoginPage from "./components/Auth/Auth";
 import Dashboard from "./components/Dashboard/Dashboard";
+import Error from "./components/ErrorPage/Error";
 
 const ProtectedRoute = ({ isAuthenticated, children }) => {
   if (!isAuthenticated) {
@@ -52,6 +53,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          <Route path = '*' element = {<Error/>}/>
         </Routes>
       </Router>
     </GoogleOAuthProvider>
