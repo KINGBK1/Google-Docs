@@ -30,8 +30,27 @@ export const getDocumentById = async (req, res) => {
 
 export const getMyDocuments = async (req, res) => {
   try {
-    const docs = await DocumentModel.find({ owner: req.user.id }).sort({ updatedAt: -1 });
+    // 1. Find the logged-in user using the ID from the token
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // 2. Get the array of document IDs from the user object
+    const documentIds = user.documents;
+
+    // Handle case where the user has no documents
+    if (!documentIds || documentIds.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // 3. Find all documents whose '_id' is in the user's documentIds array
+    const docs = await DocumentModel.find({
+      '_id': { $in: documentIds }
+    }).sort({ updatedAt: -1 }); // Sort by most recently updated
+
     res.status(200).json(docs);
+
   } catch (err) {
     console.error("Failed to get docs:", err);
     res.status(500).json({ message: "Server error fetching documents" });

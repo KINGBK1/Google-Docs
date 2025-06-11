@@ -5,8 +5,10 @@ const userSchema = new mongoose.Schema({
   email: String,
   name: String,
   picture: { type: String },
+  documents: [{ type: String }]
+
 });
 
-const User = mongoose.model("User" , userSchema) ; 
+const User = mongoose.model("User", userSchema);
 
-export default User ; 
+export default User; 

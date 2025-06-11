@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 
 // Models
 import DocumentModel from "./models/DocumentSchema.js";
+import User from "./models/UserSchema.js"; 
 
 // Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -46,51 +47,60 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on("get-document", async (documentId) => {
+  socket.on("get-document", async ({ documentId, userId }) => {
     try {
+      if (!documentId) return; // didn't get the id 
+
       let document = await DocumentModel.findById(documentId);
+
       if (!document) {
-        const newDocument = new DocumentModel({
+        document = await DocumentModel.create({
           _id: documentId,
-          name: 'Untitled Document',
+          name: "Untitled Document",
           content: {},
         });
-        await newDocument.save();
-        document = newDocument;
       }
+
+      if (userId) { // if user id exists then i will be finding this user id in my mongo db User collection and storing it in the 'user' variable as we can se in the next line 
+        const user = await User.findById(userId);
+        if (user && !user.documents.includes(documentId)) { // if user user exists in the collection and the document array does not contains the document id that we just emitted from our backend we created in the User model then we will insert this new document id in the array 
+          user.documents.push(documentId);
+          await user.save(); // save it to the collection 
+        }
+      }
+
       socket.join(documentId);
-      socket.emit("load-document", { content: document.content, name: document.name });
+      socket.emit("load-document", {
+        content: document.content,
+        name: document.name,
+      }); // sending this document to the frontend
     } catch (error) {
       console.error(`[Server] Error in 'get-document' for ID ${documentId}:`, error);
     }
   });
 
   socket.on("send-changes", (delta) => {
-    socket.to(socket.rooms).emit("receive-changes", delta);
+    socket.to(documentId).emit("receive-changes", delta);
   });
 
   socket.on("save-document", async (data) => {
     const { documentId, content, name } = data;
     if (!documentId) {
-      console.error("[Server] ERROR: 'documentId' is missing in 'save-document' event data. Aborting save.");
+      console.error("[Server] ERROR: 'documentId' is missing. Aborting save.");
       return;
     }
     try {
-      const updatePayload = {
-        name: name || 'Untitled Document',
-        content: content || {},
-        updatedAt: Date.now()
-      };
-      const updatedDocument = await DocumentModel.findByIdAndUpdate(
+      await DocumentModel.findByIdAndUpdate(
         documentId,
-        updatePayload,
+        {
+          name: name || "Untitled Document",
+          content: content || {},
+          updatedAt: Date.now(),
+        },
         { new: true, upsert: true, runValidators: true }
       );
-      if (!updatedDocument) {
-        console.error(`[Server] CRITICAL ERROR: Document ${documentId} - findByIdAndUpdate returned null/undefined even with upsert:true. Document NOT saved/created.`);
-      }
     } catch (error) {
-      console.error(`[Server] ERROR saving document ${documentId} to MongoDB:`, error);
+      console.error(`[Server] ERROR saving document ${documentId}:`, error);
     }
   });
 

@@ -9,7 +9,8 @@ import {
 const router = express.Router();
 
 router.post("/", authMiddleware, createDocument);
-router.get("/:id", authMiddleware, getDocumentById);
 router.get("/my-docs", authMiddleware, getMyDocuments);
+router.get("/:id", authMiddleware, getDocumentById);
+
 
 export default router;
