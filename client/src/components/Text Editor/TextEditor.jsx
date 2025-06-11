@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Quill from "quill";
 import { io } from "socket.io-client";
+import { jwtDecode } from "jwt-decode";
 import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
@@ -16,19 +17,24 @@ const TOOLBAR_OPTIONS = [
   [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
   [{ align: [] }],
   ["link", "image", "blockquote", "code-block"],
-  ["clean"]
+  ["clean"],
 ];
 
 const TextEditor = () => {
   const { documentId } = useParams();
   const [quill, setQuill] = useState(null);
-  const socketRef = useRef(null);
+
+  const socketRef = useRef(null); // socketRef = {current:null} 
+
   const [docName, setDocName] = useState("Untitled Document");
-  const hasInitiallyLoadedRef = useRef(false);
-  const [isQuillReady, setIsQuillReady] = useState(false);
+
+  const hasLoaded = useRef(false); // creating a hasLoaded object like -> hasLoaded = {current: true}
+
+
+  const [isReady, setIsReady] = useState(false);
 
   const WrapperRef = useCallback((wrapper) => {
-    if (wrapper == null) return;
+    if (!wrapper) return;
     wrapper.innerHTML = "";
     const editor = document.createElement("div");
     wrapper.appendChild(editor);
@@ -43,79 +49,96 @@ const TextEditor = () => {
   useEffect(() => {
     if (!quill || !documentId) return;
 
-    const s = io("http://localhost:5000");
+    const s = io("http://localhost:5000"); // creating an instance of the io(<url of the backend server>)
     socketRef.current = s;
 
-    if (!hasInitiallyLoadedRef.current) {
-      s.emit("get-document", documentId);
+    if (!hasLoaded.current) {
+      let userId = null;
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token); // extarcting the username from the jwt-token i created during login
+          // console.log('decoded : ',decoded) ; 
+
+          // decoded :  
+          // {id: '684684d4fe04f2ce7bc8419b', email: 'bishalkunwar140405@gmail.com', iat: 1749451988, exp: 1749455588}
+          // email
+          // : 
+          // "bishalkunwar140405@gmail.com"
+          // exp
+          // : 
+          // 1749455588
+          // iat
+          // : 
+          // 1749451988
+          // id
+          // : 
+          // "684684d4fe04f2ce7bc8419b"
+
+
+          userId = decoded.id;
+        } catch (err) {
+          console.error("Failed to decode JWT:", err);
+        }
+      }
+
+      s.emit("get-document", { documentId, userId }); // sending the document id and the user id to the backend 
     }
 
-    s.on("load-document", (documentData) => {
-      if (quill) {
-        quill.setContents(documentData.content);
-        if (!hasInitiallyLoadedRef.current) {
-          setDocName(documentData.name || "Untitled Document");
-          hasInitiallyLoadedRef.current = true;
-        }
-        setIsQuillReady(true);
-        quill.enable();
+    s.on("load-document", ({ content, name }) => {
+      quill.setContents(content); // setting the content to the content that is stored in my DB
+      quill.enable();  // enabling typing in the editor 
+      if (!hasLoaded.current) {
+        setDocName(name || "Untitled Document"); // if name is not given then keep the default name as Untitled Document
+        hasLoaded.current = true; 
       }
+      setIsReady(true);
     });
 
     s.on("receive-changes", (delta) => {
       if (quill) quill.updateContents(delta);
     });
 
-    const textChangeHandler = (delta, oldDelta, source) => {
-      if (source !== "user" || !s) return;
+    const handleTextChange = (delta, _, source) => {
+      if (source !== "user") return;
       s.emit("send-changes", delta);
     };
-    quill.on("text-change", textChangeHandler);
+
+    quill.on("text-change", handleTextChange);
 
     return () => {
       s.disconnect();
-      if (quill) {
-        quill.off("text-change", textChangeHandler);
-      }
-      setIsQuillReady(false);
+      quill.off("text-change", handleTextChange);
+      setIsReady(false);
     };
   }, [quill, documentId]);
 
-  const handleDocNameChange = (newName) => {
-    setDocName(newName);
-  };
-
   const saveDocument = useCallback(() => {
-    if (quill && socketRef.current && isQuillReady && documentId) {
-      const saveData = {
-        content: quill.getContents(),
-        name: docName,
-        documentId: documentId,
-      };
-      socketRef.current.emit("save-document", saveData);
-    } else {
-      console.warn("Could not save: Document or editor not ready.");
-    }
-  }, [quill, docName, documentId, socketRef, isQuillReady]);
+    if (!isReady) return;
+    const payload = {
+      documentId,
+      name: docName,
+      content: quill.getContents(),
+    };
+    socketRef.current.emit("save-document", payload);
+  }, [quill, docName, documentId, isReady]);
 
   useEffect(() => {
-    if (!isQuillReady) return;
-
-    const interval = setInterval(() => {
-      saveDocument();
-    }, SAVE_INTERVAL_MS);
-
+    if (!isReady) return;
+    const interval = setInterval(saveDocument, SAVE_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [saveDocument, isQuillReady]);
+  }, [saveDocument, isReady]);
 
-  const handleManualSave = () => {
+  function handleManualSave() {
     console.log("Manual save triggered.");
     saveDocument();
-  };
+  }
+
+  const handleDocNameChange = (newName) => setDocName(newName);
 
   useEffect(() => {
-    hasInitiallyLoadedRef.current = false;
-    setIsQuillReady(false);
+    hasLoaded.current = false;
+    setIsReady(false);
     setDocName("Untitled Document");
   }, [documentId]);
 

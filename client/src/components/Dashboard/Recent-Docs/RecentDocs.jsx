@@ -7,16 +7,48 @@ import { FaFolderMinus } from "react-icons/fa";
 
 const RecentDocs = () => {
   const [recentDocs, setRecentDocs] = useState([]);
+  const [error, setError] = useState(null); // State to handle errors
 
   useEffect(() => {
-    const docs = [
-      { id: "doc1", title: "Project Plan", subtitle: "Last edited 2 days ago" },
-      { id: "doc2", title: "Meeting Notes", subtitle: "Last edited yesterday" },
-      { id: "doc3", title: "Research Paper", subtitle: "Last edited today" },
-      { id: "doc4", title: "Ideas Brainstorm", subtitle: "Last edited 3 days ago" },
-    ];
-    setRecentDocs(docs);
-  }, []);
+    // Function to fetch documents from the backend
+    const fetchRecentDocs = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get the auth token
+        if (!token) {
+          setError("User is not authenticated.");
+          return;
+        }
+
+        // Fetch documents from your existing endpoint
+        const response = await fetch("http://localhost:5000/api/documents/my-docs", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Include the token for authentication
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch documents");
+        }
+
+        const docs = await response.json();
+        setRecentDocs(docs); // Update state with fetched documents
+      } catch (err) {
+        console.error("Error fetching recent documents:", err);
+        setError(err.message);
+      }
+    };
+
+    fetchRecentDocs();
+  }, []); // The empty dependency array ensures this runs once on component mount
+
+  // Helper function to format the date for the subtitle
+  const formatSubtitle = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return `Last edited on ${new Date(dateString).toLocaleDateString(undefined, options)}`;
+  };
 
   return (
     <div className="recent-doc-wrapper">
@@ -24,6 +56,7 @@ const RecentDocs = () => {
         <div className="heading">
           <label>Recent documents</label>
         </div>
+        {/* Your existing option buttons are preserved */}
         <div className="option-btns">
           <div className="list">
             <select name="owned-by" id="owned-by">
@@ -32,7 +65,6 @@ const RecentDocs = () => {
               <option value="not-owned-by-me">Not Owned By Me</option>
             </select>
           </div>
-
           <div className="btns">
             <button>
               <FaTableList />
@@ -47,14 +79,19 @@ const RecentDocs = () => {
         </div>
       </div>
       <div className="recent-doc-list">
-        {recentDocs.map((doc) => (
-          <RecentDocCard
-            key={doc.id}
-            id={doc.id}
-            title={doc.title}
-            subtitle={doc.subtitle}
-          />
-        ))}
+        {error && <p className="error-message">Error: {error}</p>}
+        {recentDocs.length > 0 ? (
+          recentDocs.map((doc) => (
+            <RecentDocCard
+              key={doc._id}
+              id={doc._id}
+              title={doc.name}
+              subtitle={formatSubtitle(doc.updatedAt)} // Format the date for display
+            />
+          ))
+        ) : (
+          !error && <p>No recent documents found.</p> // Show a message if there are no docs
+        )}
       </div>
     </div>
   );
