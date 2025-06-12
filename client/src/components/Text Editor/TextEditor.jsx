@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
+// import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 
 const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
@@ -32,6 +33,9 @@ const TextEditor = () => {
 
 
   const [isReady, setIsReady] = useState(false);
+
+  // dialog box var
+  const [isOpen, setisOpen] = useState(true);
 
   const WrapperRef = useCallback((wrapper) => {
     if (!wrapper) return;
@@ -90,7 +94,7 @@ const TextEditor = () => {
       quill.enable();  // enabling typing in the editor 
       if (!hasLoaded.current) {
         setDocName(name || "Untitled Document"); // if name is not given then keep the default name as Untitled Document
-        hasLoaded.current = true; 
+        hasLoaded.current = true;
       }
       setIsReady(true);
     });
@@ -150,8 +154,11 @@ const TextEditor = () => {
         onSaveDocument={handleManualSave}
       />
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
+      {/* { isOPen && <ShareDialogBox/>} */}
     </div>
+    
   );
+
 };
 
 export default TextEditor;

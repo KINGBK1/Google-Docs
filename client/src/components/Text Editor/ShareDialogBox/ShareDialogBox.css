@@ -1,0 +1,183 @@
+body{
+  display:flex ; 
+  justify-content:center ; 
+  align-items: center;
+  height:100vh ; 
+}
+
+/* Dialog Container */
+.dialog-container {
+  width: 500px;  
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 20px 24px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Section */
+.head-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.container-heading {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.head-button button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 10px;
+  color: #5f6368;
+}
+
+.head-button button:hover {
+  color: #202124;
+}
+
+/* Input */
+.dialog-container input[type="text"] {
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+.dialog-container input[type="text"]:focus {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
+}
+
+/* People with Access */
+.people-access-container {
+  margin-top: 24px;
+}
+
+.people-access-container h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* User Row */
+.user-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.user-row:hover {
+  background-color: #f1f3f4;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-img-icon {
+  width: 36px;
+  height: 36px;
+  background-color: #5f6368;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.email-info .name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.email-info .email {
+  font-size: 13px;
+  color: #5f6368;
+}
+
+/* General Access */
+.general-access-conatiner {
+  margin-top: 24px;
+}
+
+.general-access-conatiner h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.access-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.lock-icon {
+  margin-right: 12px;
+}
+
+.current-status {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+  background-color: white;
+}
+
+.status-info {
+  font-size: 13px;
+  color: #5f6368;
+  margin-top: 4px;
+}
+
+/* Footer Buttons */
+.footer-button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.copy-link,
+.done {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.copy-link {
+  background-color: #e8f0fe;
+  color: #1967d2;
+}
+
+.copy-link:hover {
+  background-color: #d2e3fc;
+}
+
+.done {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.done:hover {
+  background-color: #185abc;
+}

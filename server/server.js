@@ -46,11 +46,12 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
-
+  let currentDocumentId = null;
   socket.on("get-document", async ({ documentId, userId }) => {
     try {
       if (!documentId) return; // didn't get the id 
-
+      
+      currentDocumentId = documentId;
       let document = await DocumentModel.findById(documentId);
 
       if (!document) {
@@ -80,7 +81,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-changes", (delta) => {
-    socket.to(documentId).emit("receive-changes", delta);
+    if (!currentDocumentId) {
+      console.warn("[Server] No documentId stored for socket. Cannot emit changes.");
+      return;
+    }
+    socket.to(currentDocumentId).emit("receive-changes", delta);
   });
 
   socket.on("save-document", async (data) => {

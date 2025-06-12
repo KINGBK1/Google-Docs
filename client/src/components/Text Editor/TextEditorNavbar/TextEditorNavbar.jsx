@@ -9,6 +9,7 @@ import { BsCameraVideo } from "react-icons/bs";
 // import { BiSolidDownArrow } from "react-icons/bi";
 import { RiGeminiFill } from "react-icons/ri";
 import { PiLockKeyLight } from "react-icons/pi";
+// import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
 const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument }) => {
