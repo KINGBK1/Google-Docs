@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './TextEditorNavbar.css';
 
 import { MdDriveFileMoveOutline } from "react-icons/md";
-import { IoCloudDoneOutline } from "react-icons/io5"; 
+import { IoCloudDoneOutline } from "react-icons/io5";
 import { MdOutlineTimer } from "react-icons/md";
 import { LiaCommentSolid } from "react-icons/lia";
 import { BsCameraVideo } from "react-icons/bs";
@@ -12,14 +12,14 @@ import { PiLockKeyLight } from "react-icons/pi";
 // import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument }) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen }) => {
     const [isFilled, setIsFilled] = useState(false);
 
     const handleNameInputChange = (e) => {
         onDocNameChange(e.target.value);
     };
 
-    const handleBlur = () => {};
+    const handleBlur = () => { };
 
     return (
         <div className="navbar-wrapper">
@@ -48,10 +48,11 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument }) => {
                     <button title="Comments"><LiaCommentSolid /></button>
                     <button title="Video call (Placeholder)"><BsCameraVideo /></button>
 
-                    <button className="share-button">
+                    <button className="share-button" onClick={() => setisOpen(true)}>
                         <PiLockKeyLight className="w-4 h-4 mr-2" />
                         <span>Share</span>
                     </button>
+
 
                     <button title="Gemini (Placeholder)"><RiGeminiFill /></button>
                     <div className="profile-wrapper">

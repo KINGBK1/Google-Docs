@@ -5,6 +5,17 @@ import { CiSettings } from "react-icons/ci";
 
 
 const ShareDialogBox = ({isOpen , setisOpen}) => {
+    const handleCopyEvent = ()=> {
+        const currentUrl = window.location.href ; 
+        navigator.clipboard.writeText(currentUrl).then(
+            ()=> {
+                alert("doc link copied to clipboard")
+            }
+        ).catch(err=>{
+            console.log(`ERROR COPYING LINK` , err); 
+        })
+        
+    }
     return (
         <div className="dialog-container">
             <div className="head-container">
@@ -45,7 +56,7 @@ const ShareDialogBox = ({isOpen , setisOpen}) => {
                 </div>
             </div>
             <div className="footer-button-container">
-                <button className="copy-link">Copy Link</button>
+                <button className="copy-link" onClick={handleCopyEvent}>Copy Link</button>
                 <button onClick = {()=> (setisOpen(!isOpen))}className="done">Done</button>
             </div>
         </div>

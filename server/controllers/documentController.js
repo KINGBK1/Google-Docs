@@ -11,7 +11,7 @@ export const createDocument = async (req, res) => {
       content: {},
       owner: req.user.id,
     });
-    res.status(201).json(newDoc);
+    res.status(201).json(newDoc); 
   } catch (err) {
     console.error("Document creation failed:", err);
     res.status(500).json({ message: "Server error creating document" });

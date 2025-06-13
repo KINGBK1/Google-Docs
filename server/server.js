@@ -12,6 +12,7 @@ import User from "./models/UserSchema.js";
 // Routes
 import authRoutes from "./routes/authRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js"
 
 // Config
 dotenv.config();
@@ -34,6 +35,7 @@ mongoose
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
+app.use("/api" , uploadRoutes)
 
 const server = http.createServer(app);
 
@@ -49,7 +51,7 @@ io.on("connection", (socket) => {
   let currentDocumentId = null;
   socket.on("get-document", async ({ documentId, userId }) => {
     try {
-      if (!documentId) return; // didn't get the id 
+      if (!documentId) return; // didn't get the id  
       
       currentDocumentId = documentId;
       let document = await DocumentModel.findById(documentId);
