@@ -12,5 +12,4 @@ router.post("/", authMiddleware, createDocument);
 router.get("/my-docs", authMiddleware, getMyDocuments);
 router.get("/:id", authMiddleware, getDocumentById);
 
-
 export default router;

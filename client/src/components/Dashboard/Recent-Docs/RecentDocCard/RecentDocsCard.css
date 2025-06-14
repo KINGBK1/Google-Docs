@@ -22,6 +22,8 @@
   
   .recent-doc-caption {
     display: flex;
+    /* justify-content: center;
+    align-items: center; */
     flex-direction: column;
     gap: 6px;
   }
@@ -36,4 +38,18 @@
     font-size: 14px;
     color: #5f6368;
   }
+
+  .btn-cont{
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .delete-btn{
+  border-radius: 20px;
+  background-color: white;
+  border:none ; 
+  box-shadow: 0px 0px 5px rgb(48, 46, 46) ;
+  width: 5vw ; 
+}
   

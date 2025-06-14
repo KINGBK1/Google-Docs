@@ -25,6 +25,14 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ];
 
+const PageBreak = Quill.import("blots/block/embed");
+class CustomPageBreak extends PageBreak {
+  static blotName = "pageBreak";
+  static tagName = "hr";
+  static className = "page-break";
+}
+Quill.register(CustomPageBreak);
+
 const TextEditor = () => {
   const { documentId } = useParams();
   const [quill, setQuill] = useState(null);
@@ -59,16 +67,14 @@ const TextEditor = () => {
       },
     });
 
-    // Prevent paste/drop base64 or blob images
     q.clipboard.addMatcher("IMG", function (node, delta) {
       const src = node.getAttribute("src") || "";
       if (src.startsWith("data:") || src.startsWith("blob:")) {
-        return new Delta(); // remove the image
+        return new Delta();
       }
       return delta;
     });
 
-    // Override image handler to suppress default blob insert
     const toolbar = q.getModule("toolbar");
     toolbar.addHandler("image", () => {
       const input = document.createElement("input");
@@ -95,10 +101,20 @@ const TextEditor = () => {
       };
     });
 
+    const customButton = document.createElement("button");
+    customButton.innerHTML = "PB";
+    customButton.onclick = () => {
+      const range = q.getSelection();
+      if (range) {
+        q.insertEmbed(range.index, "pageBreak", true);
+        q.setSelection(range.index + 1, Quill.sources.SILENT);
+      }
+    };
+    toolbar.container.appendChild(customButton);
+
     q.disable();
     setQuill(q);
   }, []);
-
 
   useEffect(() => {
     if (!quill || !documentId) return;

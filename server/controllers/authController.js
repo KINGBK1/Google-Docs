@@ -1,7 +1,6 @@
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import User from "../models/UserSchema.js";
-// import uid from "../server.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -12,7 +11,6 @@ export const googleLogin = async (req, res) => {
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-
     const payload = ticket.getPayload();
     const { sub, email, name, picture } = payload;
 
@@ -41,7 +39,7 @@ export const googleLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error verifying token:", error);
-    res.status(401).json({ message: "Invalid token" });
+    console.error("Error verifying Google token:", error);
+    res.status(401).json({ message: "Invalid Google token" });
   }
 };
