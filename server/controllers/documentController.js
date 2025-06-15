@@ -55,3 +55,25 @@ export const getMyDocuments = async (req, res) => {
     res.status(500).json({ message: "Server error fetching documents" });
   }
 };
+
+export const deleteMyDoc =  async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Remove document from Document collection
+    const deletedDoc = await DocumentModel.findByIdAndDelete(id);
+    if (!deletedDoc) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    // Also remove document reference from user's document list
+    await User.findByIdAndUpdate(req.user.id, {
+      $pull: { documents: id }
+    });
+
+    res.status(200).json({ message: "Document deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting document:", err);
+    res.status(500).json({ message: "Server error deleting document" });
+  }
+}
