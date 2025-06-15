@@ -6,6 +6,9 @@ import LoginPage from "./components/Auth/Auth";
 import Dashboard from "./components/Dashboard/Dashboard";
 import TextEditor from "./components/Text Editor/TextEditor";
 import Error from "./components/ErrorPage/Error";
+// import dotenv from 'dotenv'
+
+// dotenv.config() ; 
 
 const ProtectedRoute = ({ isAuthenticated, children, isLoading }) => {
   if (isLoading) return null; // wait before checking
@@ -16,6 +19,7 @@ const ProtectedRoute = ({ isAuthenticated, children, isLoading }) => {
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
     const checkToken = () => {
@@ -43,8 +47,9 @@ const App = () => {
     checkToken();
   }, []);
 
+
   return (
-    <GoogleOAuthProvider clientId="35252208750-bg9s2h22ke7nc1v3v3n5jkdcsa1siulv.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={client_id}>
       <Router>
         <Routes>
           <Route

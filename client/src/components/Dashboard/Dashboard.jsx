@@ -6,7 +6,7 @@ import TemplateContainer from "./Templates/TemplateContainer";
 import RecentDocs from "./Recent-Docs/RecentDocs";
 import TextEditor from "../Text Editor/TextEditor"; 
 
-const Dashboard = () => {
+const Dashboard = ({isLoading}) => {
   return (
     <div>
       <Navbar />
@@ -17,7 +17,7 @@ const Dashboard = () => {
           element={
             <>
               <TemplateContainer />
-              <RecentDocs />
+              <RecentDocs isLoading={isLoading}/>
             </>
           }
         />
