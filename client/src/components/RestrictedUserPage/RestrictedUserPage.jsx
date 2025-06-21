@@ -1,7 +1,35 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import './RestrictedUserPage.css';
 
 const RestrictedUserPage = () => {
+const {documentId} = useParams() ; 
+
+const handleRequestAccess = async () => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const email = user?.email;
+  const message = document.querySelector(".message-textarea").value;
+
+  try {
+    const response = await fetch(`http://localhost:5000/api/documents/${documentId}/request-access?email=${email}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message);
+
+    alert("Access request sent to the owner.");
+  } catch (err) {
+    alert("Failed to request access: " + err.message);
+  }
+};
+
     return (
         <div className="restricted-page-container">
             <div className="restricted-page-card">
@@ -36,7 +64,7 @@ const RestrictedUserPage = () => {
                         placeholder="Message (optional)"
                     ></textarea>
 
-                    <button className="request-access-button">
+                    <button onClick={handleRequestAccess}  className="request-access-button">
                         Request access
                     </button>
 
@@ -63,7 +91,7 @@ const RestrictedUserPage = () => {
 
                 <div className="illustration-section">
                     <img
-                        src="assets/undraw_invite-only_373f.svg"
+                        src="/assets/undraw_invite-only_373f.svg"
                         alt="Illustration of person accessing documents"
                         className="illustration-image"
                     />

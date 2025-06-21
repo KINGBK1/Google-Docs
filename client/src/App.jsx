@@ -81,7 +81,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-<Route path = "/restricted" element={<RestrictedUserPage />}/>
+          <Route path="/restricted/:documentId" element={<RestrictedUserPage />} />
           <Route path="*" element={<Error />} />
 
         </Routes>

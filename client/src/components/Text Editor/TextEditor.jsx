@@ -141,7 +141,7 @@ const TextEditor = () => {
 s.on("load-document", ({ content, name, isRestricted, isAllowed }) => {
   if (isRestricted && !isAllowed) {
     // User is not allowed — redirect to restricted page
-    return navigate("/restricted");
+    return navigate(`/restricted/${documentId}`);
   }
 
   quill.setContents(content);

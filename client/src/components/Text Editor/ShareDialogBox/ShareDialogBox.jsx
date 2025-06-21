@@ -7,8 +7,11 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
   const [email, setEmail] = useState('');
   const [isRestricted, setIsRestricted] = useState(true);
   const [accessList, setAccessList] = useState([]);
+  const [isOwner, setIsOwner] = useState(false);
+  const [documentOwnerId, setDocumentOwnerId] = useState(null);
 
   const token = localStorage.getItem("token");
+  const currentUserId = JSON.parse(atob(token.split('.')[1])).id;
 
   const handleCopyEvent = () => {
     const currentUrl = window.location.href;
@@ -34,9 +37,29 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
       if (!res.ok) throw new Error(data.message);
       alert("User added successfully");
       setEmail('');
-      fetchAccessList(); // refresh list
+      fetchAccessList();
     } catch (err) {
       alert(`Failed to add user: ${err.message}`);
+    }
+  };
+
+  const handleRemoveAccess = async (userId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/documents/${documentId}/revoke`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ userId })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      alert("Access revoked successfully");
+      fetchAccessList();
+    } catch (err) {
+      alert(`Failed to revoke access: ${err.message}`);
     }
   };
 
@@ -48,6 +71,10 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
       const data = await res.json();
       setIsRestricted(data.isRestricted);
       setAccessList(data.allowedUsers || []);
+
+      const ownerId = typeof data.owner === "string" ? data.owner : data.owner?._id;
+      setDocumentOwnerId(ownerId);
+      setIsOwner(ownerId === currentUserId);
     } catch (err) {
       console.error("Error fetching document access:", err);
     }
@@ -72,8 +99,10 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
   };
 
   useEffect(() => {
-    fetchAccessList();
-  }, []);
+    if (isOpen) {
+      fetchAccessList();
+    }
+  }, [isOpen]);
 
   return (
     <div className="dialog-container">
@@ -95,19 +124,33 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
 
       <div className="people-access-container">
         <h3>People With Access</h3>
-        {accessList.map((user, i) => (
-          <div key={i} className="user-row">
-            <div className="user-info">
-              <div className="profile-img-icon">
-                <img src={user.picture || "/default-profile.png"} alt="Profile" className="profile-img" />
+        {accessList.map((user, i) => {
+          const isSelf = user._id === currentUserId;
+          const isUserOwner = user._id === documentOwnerId;
+          return (
+            <div key={i} className="user-row">
+              <div className="user-info">
+                <div className="profile-img-icon">
+                  <img src={user.picture || "/default-profile.png"} alt="Profile" className="profile-img" />
+                </div>
+                <div className="email-info">
+                  <h3 className="name">{user.name || "Unnamed User"}</h3>
+                  <p className="email">
+                    {user.email} {isUserOwner && <span className="owner-tag">(Owner)</span>}
+                  </p>
+                </div>
               </div>
-              <div className="email-info">
-                <h3 className="name">{user.name || "Unnamed User"}</h3>
-                <p className="email">{user.email}</p>
-              </div>
+              {isOwner && !isSelf && (
+                <button
+                  className="remove-access-btn"
+                  onClick={() => handleRemoveAccess(user._id)}
+                >
+                  Remove
+                </button>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="general-access-conatiner">
@@ -120,7 +163,10 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
             <select
               className="current-status"
               value={isRestricted ? "restricted" : "anyone-with-the-link"}
-              onChange={(e) => handleAccessChange(e.target.value)}
+              onChange={(e) => {
+                if (isOwner) handleAccessChange(e.target.value);
+              }}
+              disabled={!isOwner}
             >
               <option value="restricted">Restricted</option>
               <option value="anyone-with-the-link">Anyone With The Link</option>
