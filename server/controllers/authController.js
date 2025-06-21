@@ -5,7 +5,7 @@ import User from "../models/UserSchema.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const googleLogin = async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.body; // destructuring the token var that is once the token is found in the body 
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -29,9 +29,16 @@ export const googleLogin = async (req, res) => {
       { expiresIn: "1h" }
     );
 
+      res.cookie("token", jwtToken, {
+      httpOnly: false,      
+      secure: false,         
+      sameSite: "Lax",    
+      maxAge: 60 * 60 * 1000 
+    });
+
     res.status(200).json({
       message: "Login successful",
-      token: jwtToken,
+      // token: jwtToken,
       user: {
         name: user.name,
         email: user.email,

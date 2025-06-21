@@ -2,19 +2,23 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+
 import LoginPage from "./components/Auth/Auth";
 import Dashboard from "./components/Dashboard/Dashboard";
 import TextEditor from "./components/Text Editor/TextEditor";
 import Error from "./components/ErrorPage/Error";
 import RestrictedUserPage from "./components/RestrictedUserPage/RestrictedUserPage";
-// import dotenv from 'dotenv'
 
-// dotenv.config() ; 
+const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
+  if (isLoading) return <div>Loading...</div>;
+  return isAuthenticated ? children : <Navigate to="/" replace />;
+};
 
-const ProtectedRoute = ({ isAuthenticated, children, isLoading }) => {
-  if (isLoading) return null; // wait before checking
-  if (!isAuthenticated) return <Navigate to="/" replace />;
-  return children;
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
 };
 
 const App = () => {
@@ -23,18 +27,13 @@ const App = () => {
   const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
-    const checkToken = () => {
-      const token = localStorage.getItem("token"); // getting the token from the localstorage
+    const checkCookieToken = () => {
+      const token = getCookie("token");
       if (token) {
         try {
-          const decoded = jwtDecode(token); // extracring the expiry time fron the token 
+          const decoded = jwtDecode(token);
           const isExpired = decoded.exp * 1000 < Date.now();
-          if (!isExpired) {
-            setIsAuthenticated(true);
-          } else {
-            localStorage.removeItem("token"); // if tocken is expired remove it from the local storage 
-            setIsAuthenticated(false);
-          }
+          setIsAuthenticated(!isExpired);
         } catch (err) {
           console.error("Invalid token", err);
           setIsAuthenticated(false);
@@ -42,12 +41,11 @@ const App = () => {
       } else {
         setIsAuthenticated(false);
       }
-      setIsLoading(false); // checking is done now we can move furteher 
+      setIsLoading(false);
     };
 
-    checkToken();
+    checkCookieToken();
   }, []);
-
 
   return (
     <GoogleOAuthProvider clientId={client_id}>
@@ -73,17 +71,10 @@ const App = () => {
             }
           />
 
-          <Route
-            path="/documents/:documentId"
-            element={
-              <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-                <TextEditor />
-              </ProtectedRoute>
-            }
-          />
+          {/* Anyone can access document routes, TextEditor handles restrictions internally */}
+          <Route path="/documents/:documentId" element={<TextEditor />} />
           <Route path="/restricted/:documentId" element={<RestrictedUserPage />} />
           <Route path="*" element={<Error />} />
-
         </Routes>
       </Router>
     </GoogleOAuthProvider>

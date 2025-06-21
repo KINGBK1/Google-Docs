@@ -6,7 +6,7 @@ const RestrictedUserPage = () => {
 const {documentId} = useParams() ; 
 
 const handleRequestAccess = async () => {
-  const token = localStorage.getItem("token");
+//   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
   const email = user?.email;
   const message = document.querySelector(".message-textarea").value;
@@ -16,9 +16,10 @@ const handleRequestAccess = async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        // Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ message }),
+      credentials:"include",
     });
 
     const data = await response.json();

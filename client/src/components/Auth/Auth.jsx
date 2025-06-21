@@ -85,12 +85,14 @@ function LoginPage({ setAuth }) {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/google", {
         token: credentialResponse.credential,
-      });
+      } , { 
+          withCredentials:true,
+       });
 
       if (res.status === 200) {
         
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user)); // Saving user to local storage
+        // localStorage.setItem("token", res.data.token);
+        // localStorage.setItem("user", JSON.stringify(res.data.user)); // Saving user to local storage
 
         // Update auth state
         setAuth(true);

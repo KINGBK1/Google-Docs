@@ -9,9 +9,24 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
   const [accessList, setAccessList] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const [documentOwnerId, setDocumentOwnerId] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const currentUserId = JSON.parse(atob(token.split('.')[1])).id;
+  // Fetching current user & return ID
+  const fetchCurrentUser = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/status", {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Not authenticated");
+      const data = await res.json();
+      setCurrentUserId(data.user.id);
+      return data.user.id;
+    } catch (err) {
+      console.error("Error fetching current user:", err);
+      alert("Session expired. Please log in again.");
+      return null;
+    }
+  };
 
   const handleCopyEvent = () => {
     const currentUrl = window.location.href;
@@ -26,18 +41,16 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
     try {
       const res = await fetch(`http://localhost:5000/api/documents/${documentId}/share`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ email })
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       alert("User added successfully");
       setEmail('');
-      fetchAccessList();
+      fetchAccessList(currentUserId); // Refreshing access list
     } catch (err) {
       alert(`Failed to add user: ${err.message}`);
     }
@@ -47,34 +60,33 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
     try {
       const res = await fetch(`http://localhost:5000/api/documents/${documentId}/revoke`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ userId })
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ userId }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       alert("Access revoked successfully");
-      fetchAccessList();
+      fetchAccessList(currentUserId);
     } catch (err) {
       alert(`Failed to revoke access: ${err.message}`);
     }
   };
 
-  const fetchAccessList = async () => {
+  const fetchAccessList = async (userIdParam) => {
     try {
       const res = await fetch(`http://localhost:5000/api/documents/${documentId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: "include",
       });
       const data = await res.json();
+
       setIsRestricted(data.isRestricted);
       setAccessList(data.allowedUsers || []);
 
       const ownerId = typeof data.owner === "string" ? data.owner : data.owner?._id;
       setDocumentOwnerId(ownerId);
-      setIsOwner(ownerId === currentUserId);
+      setIsOwner(ownerId === userIdParam);
     } catch (err) {
       console.error("Error fetching document access:", err);
     }
@@ -84,11 +96,9 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
     try {
       const res = await fetch(`http://localhost:5000/api/documents/${documentId}/access`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ isRestricted: value === "restricted" })
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ isRestricted: value === "restricted" }),
       });
 
       if (!res.ok) throw new Error("Failed to update access");
@@ -100,7 +110,13 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
 
   useEffect(() => {
     if (isOpen) {
-      fetchAccessList();
+      const init = async () => {
+        const id = await fetchCurrentUser();
+        if (id) {
+          await fetchAccessList(id);
+        }
+      };
+      init();
     }
   }, [isOpen]);
 
@@ -182,7 +198,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
 
       <div className="footer-button-container">
         <button className="copy-link" onClick={handleCopyEvent}>Copy Link</button>
-        <button onClick={() => setisOpen(!isOpen)} className="done">Done</button>
+        <button onClick={() => setisOpen(false)} className="done">Done</button>
       </div>
     </div>
   );

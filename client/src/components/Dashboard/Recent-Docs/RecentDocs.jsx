@@ -12,16 +12,17 @@ const RecentDocs = () => {
   const [loading, setLoading] = useState(true);
 
   const handleDelete = async (docId) => {
-    const token = localStorage.getItem("token");
-    if (!token) return alert("Please login again");
+    // const token = localStorage.getItem("token");
+    // if (!token) return alert("Please login again");
 
     try {
       if (!window.confirm("Are you sure you want to delete this document?")) return;
       const response = await fetch(`http://localhost:5000/api/documents/${docId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${token}`,
         },
+        credentials:"include",
       });
 
       if (!response.ok) {
@@ -41,18 +42,19 @@ const RecentDocs = () => {
   useEffect(() => {
     const fetchRecentDocs = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("Authentication token not found. Please log in again.");
-          return;
-        }
+        // const token = localStorage.getItem("token");
+        // if (!token) {
+        //   setError("Authentication token not found. Please log in again.");
+        //   return;
+        // }
 
         const response = await fetch("http://localhost:5000/api/documents/my-docs", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            // "Authorization": `Bearer ${token}`,
           },
+          credentials:"include",
         });
 
         if (!response.ok) {

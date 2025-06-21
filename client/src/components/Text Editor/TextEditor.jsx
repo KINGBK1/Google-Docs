@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useParams , useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Quill from "quill";
 import { io } from "socket.io-client";
-import { jwtDecode } from "jwt-decode";
 import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
 import ImageUploader from "quill-image-uploader";
+import Delta from "quill-delta";
+
 Quill.register("modules/imageUploader", ImageUploader);
 
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
@@ -42,7 +43,23 @@ const TextEditor = () => {
   const [isReady, setIsReady] = useState(false);
   const [isOpen, setisOpen] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
-  const navigate = useNavigate() ; 
+  const navigate = useNavigate();
+
+  const fetchUserId = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/status", {
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("User not authenticated");
+
+      const data = await res.json();
+      return data.user.id;
+    } catch (err) {
+      console.error("Error fetching user ID:", err);
+      return null;
+    }
+  };
 
   const WrapperRef = useCallback((wrapper) => {
     if (!wrapper) return;
@@ -121,38 +138,34 @@ const TextEditor = () => {
   useEffect(() => {
     if (!quill || !documentId) return;
 
-    const s = io("http://localhost:5000");
+    hasLoaded.current = false;
+
+    const s = io("http://localhost:5000", {
+      withCredentials: true,
+    });
     socketRef.current = s;
 
-    if (!hasLoaded.current) {
-      let userId = null;
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          userId = decoded.id;
-        } catch (err) {
-          console.error("Failed to decode JWT:", err);
-        }
-      }
+    fetchUserId().then((userId) => {
       s.emit("get-document", { documentId, userId });
-    }
+    });
 
-s.on("load-document", ({ content, name, isRestricted, isAllowed }) => {
-  if (isRestricted && !isAllowed) {
-    // User is not allowed — redirect to restricted page
-    return navigate(`/restricted/${documentId}`);
-  }
+    s.on("load-document", (payload) => {
+      const { content, name, isRestricted: restricted, isAllowed } = payload;
+      setIsRestricted(restricted);
+      if (restricted && !isAllowed) {
+        return navigate(`/restricted/${documentId}`);
+      }
 
-  quill.setContents(content);
-  quill.enable();
-  if (!hasLoaded.current) {
-    setDocName(name || "Untitled Document");
-    hasLoaded.current = true;
-  }
-  setIsReady(true);
-});
+      quill.setContents(content);
+      quill.enable();
 
+      if (!hasLoaded.current) {
+        setDocName(name || "Untitled Document");
+        hasLoaded.current = true;
+      }
+
+      setIsReady(true);
+    });
 
     s.on("receive-changes", (delta) => {
       if (quill) quill.updateContents(delta);
@@ -217,9 +230,13 @@ s.on("load-document", ({ content, name, isRestricted, isAllowed }) => {
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
       {isOpen && (
         <div className="dialog-backdrop">
-          <ShareDialogBox isOpen={isOpen} setisOpen={setisOpen} documentId={documentId}
+          <ShareDialogBox
+            isOpen={isOpen}
+            setisOpen={setisOpen}
+            documentId={documentId}
             isRestricted={isRestricted}
-            setIsRestricted={setIsRestricted} />
+            setIsRestricted={setIsRestricted}
+          />
         </div>
       )}
     </div>
