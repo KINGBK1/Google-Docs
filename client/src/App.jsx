@@ -6,6 +6,7 @@ import LoginPage from "./components/Auth/Auth";
 import Dashboard from "./components/Dashboard/Dashboard";
 import TextEditor from "./components/Text Editor/TextEditor";
 import Error from "./components/ErrorPage/Error";
+import RestrictedUserPage from "./components/RestrictedUserPage/RestrictedUserPage";
 // import dotenv from 'dotenv'
 
 // dotenv.config() ; 
@@ -80,8 +81,9 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
+<Route path = "/restricted" element={<RestrictedUserPage />}/>
           <Route path="*" element={<Error />} />
+
         </Routes>
       </Router>
     </GoogleOAuthProvider>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams , useNavigate } from "react-router-dom";
 import Quill from "quill";
 import { io } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
@@ -41,6 +41,8 @@ const TextEditor = () => {
   const hasLoaded = useRef(false);
   const [isReady, setIsReady] = useState(false);
   const [isOpen, setisOpen] = useState(false);
+  const [isRestricted, setIsRestricted] = useState(false);
+  const navigate = useNavigate() ; 
 
   const WrapperRef = useCallback((wrapper) => {
     if (!wrapper) return;
@@ -136,15 +138,21 @@ const TextEditor = () => {
       s.emit("get-document", { documentId, userId });
     }
 
-    s.on("load-document", ({ content, name }) => {
-      quill.setContents(content);
-      quill.enable();
-      if (!hasLoaded.current) {
-        setDocName(name || "Untitled Document");
-        hasLoaded.current = true;
-      }
-      setIsReady(true);
-    });
+s.on("load-document", ({ content, name, isRestricted, isAllowed }) => {
+  if (isRestricted && !isAllowed) {
+    // User is not allowed — redirect to restricted page
+    return navigate("/restricted");
+  }
+
+  quill.setContents(content);
+  quill.enable();
+  if (!hasLoaded.current) {
+    setDocName(name || "Untitled Document");
+    hasLoaded.current = true;
+  }
+  setIsReady(true);
+});
+
 
     s.on("receive-changes", (delta) => {
       if (quill) quill.updateContents(delta);
@@ -209,7 +217,9 @@ const TextEditor = () => {
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
       {isOpen && (
         <div className="dialog-backdrop">
-          <ShareDialogBox isOpen={isOpen} setisOpen={setisOpen} />
+          <ShareDialogBox isOpen={isOpen} setisOpen={setisOpen} documentId={documentId}
+            isRestricted={isRestricted}
+            setIsRestricted={setIsRestricted} />
         </div>
       )}
     </div>

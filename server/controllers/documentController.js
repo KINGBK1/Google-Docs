@@ -2,10 +2,7 @@ import DocumentModel from "../models/DocumentSchema.js";
 import User from "../models/UserSchema.js";
 
 export const createDocument = async (req, res) => {
-  const { documentId, name } = req.body;
-  if (!documentId || !name) {
-    return res.status(400).json({ message: "documentId and name are required" });
-  }
+  const { documentId, name, isRestricted = false, allowedUsers = [] } = req.body;
 
   try {
     const newDoc = await DocumentModel.create({
@@ -13,6 +10,8 @@ export const createDocument = async (req, res) => {
       name,
       content: {},
       owner: req.user.id,
+      isRestricted,
+      allowedUsers: isRestricted ? [req.user.id, ...allowedUsers] : [],
     });
     res.status(201).json(newDoc);
   } catch (err) {
@@ -21,16 +20,26 @@ export const createDocument = async (req, res) => {
   }
 };
 
+
 export const getDocumentById = async (req, res) => {
   try {
-    const doc = await DocumentModel.findById(req.params.id);
-    if (!doc) return res.status(404).json({ message: "Not found" });
+    const doc = await DocumentModel.findById(req.params.id).populate("allowedUsers");
+    if (!doc) return res.status(404).json({ message: "Document not found" });
+
+    const isOwner = doc.owner && doc.owner.equals(req.user.id);
+    const isAllowed = doc.allowedUsers.some(user => user._id.equals(req.user.id));
+
+    if (doc.isRestricted && !isOwner && !isAllowed) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
     res.status(200).json(doc);
   } catch (err) {
     console.error("Error getting document by ID:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const getMyDocuments = async (req, res) => {
   try {
@@ -56,7 +65,7 @@ export const getMyDocuments = async (req, res) => {
   }
 };
 
-export const deleteMyDoc =  async (req, res) => {
+export const deleteMyDoc = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -77,3 +86,21 @@ export const deleteMyDoc =  async (req, res) => {
     res.status(500).json({ message: "Server error deleting document" });
   }
 }
+
+export const toggleAccess = async (req, res) => {
+  const { id } = req.params;
+  const { isRestricted } = req.body;
+
+  const doc = await DocumentModel.findById(id);
+  if (!doc) return res.status(404).json({ message: "Doc not found" });
+
+  if (!doc.owner.equals(req.user.id)) {
+    return res.status(403).json({ message: "Only owner can change access" });
+  }
+
+  doc.isRestricted = isRestricted;
+  await doc.save();
+
+  res.status(200).json({ message: "Access mode updated" });
+};
+

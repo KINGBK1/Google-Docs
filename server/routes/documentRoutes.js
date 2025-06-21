@@ -4,11 +4,12 @@ import {
   createDocument,
   getDocumentById,
   getMyDocuments,
-  deleteMyDoc
+  deleteMyDoc,
+  toggleAccess
 } from "../controllers/documentController.js";
 
-import DocumentModel from "../models/DocumentSchema.js";
-import User from "../models/UserSchema.js";              
+// import DocumentModel from "../models/DocumentSchema.js";
+// import User from "../models/UserSchema.js";              
 
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.post("/", authMiddleware, createDocument);
 router.get("/my-docs", authMiddleware, getMyDocuments);
 router.get("/:id", authMiddleware, getDocumentById);
 router.delete("/:id", authMiddleware, deleteMyDoc);
+router.patch("/:id/access", authMiddleware, toggleAccess);
 
 export default router;

@@ -5,25 +5,21 @@ import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
 
-// Models
 import DocumentModel from "./models/DocumentSchema.js";
-import User from "./models/UserSchema.js"; 
+import User from "./models/UserSchema.js";
 
-// Routes
 import authRoutes from "./routes/authRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
-import uploadRoutes from "./routes/uploadRoutes.js"
+import uploadRoutes from "./routes/uploadRoutes.js";
 
-// Config
 dotenv.config();
-
 const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection
+// MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected successfully"))
@@ -32,13 +28,13 @@ mongoose
     process.exit(1);
   });
 
-// Routes
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
-app.use("/api" , uploadRoutes)
+app.use("/api", uploadRoutes);
 
+// Create HTTP + Socket.IO Server
 const server = http.createServer(app);
-
 const io = new Server(server, {
   cors: {
     origin: ["http://localhost:3000", "http://localhost:5173"],
@@ -46,56 +42,72 @@ const io = new Server(server, {
   },
 });
 
+// Socket.IO Connection Handler
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
   let currentDocumentId = null;
+
   socket.on("get-document", async ({ documentId, userId }) => {
     try {
-      if (!documentId) return; // didn't get the id  
-      
-      currentDocumentId = documentId;
-      let document = await DocumentModel.findById(documentId);
+      let document = await DocumentModel.findById(documentId).populate("allowedUsers");
 
       if (!document) {
+        // If doc doesn't exist, create it with default values
         document = await DocumentModel.create({
           _id: documentId,
           name: "Untitled Document",
           content: {},
+          owner: userId,
+          isRestricted: false,
+          allowedUsers: [userId],
         });
       }
 
-      if (userId) { // if user id exists then i will be finding this user id in my mongo db User collection and storing it in the 'user' variable as we can se in the next line 
-        const user = await User.findById(userId);
-        if (user && !user.documents.includes(documentId)) { // if user user exists in the collection and the document array does not contains the document id that we just emitted from our backend we created in the User model then we will insert this new document id in the array 
-          user.documents.push(documentId);
-          await user.save(); // save it to the collection 
-        }
+      const isOwner = document.owner && document.owner.equals(userId);
+      const isAllowed = document.allowedUsers.some(user => user._id.equals(userId));
+
+      if (document.isRestricted && !isOwner && !isAllowed) {
+        // New: Emit access restriction in load-document
+        return socket.emit("load-document", {
+          isRestricted: true,
+          isAllowed: false,
+        });
       }
 
+      // Allow access: join room, load content
+      currentDocumentId = documentId;
       socket.join(documentId);
+
       socket.emit("load-document", {
         content: document.content,
         name: document.name,
-      }); // sending this document to the frontend
-    } catch (error) {
-      console.error(`[Server] Error in 'get-document' for ID ${documentId}:`, error);
+        isRestricted: document.isRestricted,
+        isAllowed: true,
+      });
+
+      // Save document to user's history if not already added
+      if (userId) {
+        const user = await User.findById(userId);
+        if (user && !user.documents.includes(documentId)) {
+          user.documents.push(documentId);
+          await user.save();
+        }
+      }
+    } catch (err) {
+      console.error("[Socket] Error in get-document:", err);
+      socket.emit("error", { message: "Internal server error" });
     }
   });
 
   socket.on("send-changes", (delta) => {
-    if (!currentDocumentId) {
-      console.warn("[Server] No documentId stored for socket. Cannot emit changes.");
-      return;
-    }
+    if (!currentDocumentId) return;
     socket.to(currentDocumentId).emit("receive-changes", delta);
   });
 
   socket.on("save-document", async (data) => {
     const { documentId, content, name } = data;
-    if (!documentId) {
-      console.error("[Server] ERROR: 'documentId' is missing. Aborting save.");
-      return;
-    }
+    if (!documentId) return;
+
     try {
       await DocumentModel.findByIdAndUpdate(
         documentId,
