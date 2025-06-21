@@ -5,7 +5,10 @@ import {
   getDocumentById,
   getMyDocuments,
   deleteMyDoc,
-  toggleAccess
+  toggleAccess,
+  requestAccess,
+  grantAccessViaLink,
+  revokeAccess
 } from "../controllers/documentController.js";
 
 // import DocumentModel from "../models/DocumentSchema.js";
@@ -19,5 +22,10 @@ router.get("/my-docs", authMiddleware, getMyDocuments);
 router.get("/:id", authMiddleware, getDocumentById);
 router.delete("/:id", authMiddleware, deleteMyDoc);
 router.patch("/:id/access", authMiddleware, toggleAccess);
+router.post("/:id/request-access", authMiddleware, requestAccess);
+router.get("/:id/grant-access", grantAccessViaLink);
+router.patch("/:id/revoke", authMiddleware, revokeAccess);
+
+
 
 export default router;

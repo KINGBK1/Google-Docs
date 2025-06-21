@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Access Granted</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #fff;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .logo img {
+            width: 60px;
+            margin: 0 auto 15px;
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #4285f4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+
+        .success-check {
+            display: none;
+            margin: 20px auto;
+            width: 48px;
+            height: 48px;
+        }
+
+        .message {
+            color: #4caf50;
+            font-weight: 600;
+            font-size: 20px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px 15px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="logo">
+            <img src="/images/Google_Docs_Logo.svg" alt="Brand Logo" />
+        </div>
+
+        <div class="spinner" id="spinner"></div>
+
+        <div class="success-check" id="successIcon">
+            <svg viewBox="0 0 24 24" fill="#4caf50" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M9 16.17l-3.88-3.88a1.003 1.003 0 00-1.42 1.42l4.59 4.59a1.003 1.003 0 001.42 0l10-10a1.003 1.003 0 00-1.42-1.42L9 16.17z" />
+            </svg>
+        </div>
+
+        <div class="message" id="successMsg">Access Granted!</div>
+        <!-- <a href="https://localhost:5173" class="dashboard-btn">Go to Dashboard</a> -->
+         <p>you can now close this tab</p>
+
+    </div>
+
+    <script>
+        setTimeout(() => {
+            document.getElementById("spinner").style.display = "none";
+            document.getElementById("successIcon").style.display = "block";
+            document.getElementById("successMsg").style.display = "block";
+        }, 1500);
+    </script>
+</body>
+
+</html>
