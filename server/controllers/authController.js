@@ -24,16 +24,21 @@ export const googleLogin = async (req, res) => {
     }
 
     const jwtToken = jwt.sign(
-      { id: user._id, email: user.email },
+      {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        picture: user.picture, // 👈 Add this
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-      res.cookie("token", jwtToken, {
-      httpOnly: false,      
-      secure: false,         
-      sameSite: "Lax",    
-      maxAge: 60 * 60 * 1000 
+    res.cookie("token", jwtToken, {
+      httpOnly: false,
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 60 * 60 * 1000
     });
 
     res.status(200).json({

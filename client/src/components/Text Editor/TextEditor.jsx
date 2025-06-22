@@ -6,6 +6,7 @@ import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
 import ImageUploader from "quill-image-uploader";
 import Delta from "quill-delta";
+import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
 
 Quill.register("modules/imageUploader", ImageUploader);
 
@@ -43,6 +44,8 @@ const TextEditor = () => {
   const [isReady, setIsReady] = useState(false);
   const [isOpen, setisOpen] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
+  const [isGeminiOpen, setisGeminiOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const fetchUserId = async () => {
@@ -219,6 +222,18 @@ const TextEditor = () => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
+  const insertText = (text) => {
+    if (!quill) return;
+
+    const range = quill.getSelection();
+    if (range) {
+      quill.insertText(range.index, text);
+      quill.setSelection(range.index + text.length);
+    } else {
+      quill.insertText(0, text);
+    }
+  };
+
   return (
     <div className="container">
       <TextEditorNavbar
@@ -226,6 +241,7 @@ const TextEditor = () => {
         onDocNameChange={handleDocNameChange}
         onSaveDocument={handleManualSave}
         setisOpen={setisOpen}
+        setIsGeminiOpen={setisGeminiOpen}
       />
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
       {isOpen && (
@@ -236,6 +252,14 @@ const TextEditor = () => {
             documentId={documentId}
             isRestricted={isRestricted}
             setIsRestricted={setIsRestricted}
+          />
+        </div>
+      )}
+      {isGeminiOpen && (
+        <div className="gemini-sidebar-container">
+          <ChatBotSidebar
+            onClose={() => setisGeminiOpen(false)}
+            onInsertText={insertText}
           />
         </div>
       )}

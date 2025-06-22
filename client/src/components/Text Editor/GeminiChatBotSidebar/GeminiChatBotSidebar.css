@@ -1,0 +1,182 @@
+.gemini-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 320px;
+    background-color: #f8f9fa;
+    font-family: 'Roboto', sans-serif;
+    border-left: 1px solid #e0e0e0;
+    overflow-y: auto;
+}
+
+
+/* Heading section */
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.head-container {
+    display: flex;
+
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.head-container svg {
+    font-size: 24px;
+    color: #5f6368;
+}
+
+/* Chat container */
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 16px;
+}
+
+/* Chat heading */
+.chat-heading-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.chat-head svg {
+    font-size: 18px;
+    color: #5f6368;
+}
+
+.cancel-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.cancel-btn:hover {
+    background-color: #f1f3f4;
+}
+
+.cancel-btn svg {
+    font-size: 16px;
+    color: #5f6368;
+}
+
+/* Chat area */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Prompt box */
+.prompt-box {
+    min-height: 100px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 14px;
+    color: #202124;
+    background-color: #f8f9fa;
+}
+
+/* Gemini reply area */
+.gemini-reply {
+    min-height: 100px;
+    font-size: 14px;
+    color: #202124;
+    padding: 12px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+/* Buttons section */
+.buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.generate,
+.use-it {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.generate {
+    background-color: #1a73e8;
+    color: #fff;
+}
+
+.generate:hover {
+    background-color: #1557b0;
+}
+
+.use-it {
+    background-color: #f1f3f4;
+    color: #202124;
+}
+
+.use-it:hover {
+    background-color: #e8eaed;
+}
+
+/* Smooth hover effects */
+.generate:active,
+.use-it:active {
+    transform: scale(0.98);
+}
+
+/* Scrollbar styling */
+.wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.wrapper::-webkit-scrollbar-track {
+    background: #f1f3f4;
+}
+
+.wrapper::-webkit-scrollbar-thumb {
+    background: #dadce0;
+    border-radius: 4px;
+}
+
+.wrapper::-webkit-scrollbar-thumb:hover {
+    background: #bdc1c6;
+}

@@ -133,7 +133,7 @@ export const requestAccess = async (req, res) => {
         Sent via BK-Google-Docs Share • <a href="${process.env.FRONTEND_URL}" style="color: #999; text-decoration: none;">Open Dashboard</a>
       </p>
     </div>
-  </div>`, 
+  </div>`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -155,6 +155,7 @@ export const grantAccessViaLink = async (req, res) => {
 
     if (!document || !userToGrant) return res.status(404).send("Document or user not found");
 
+    // Grant document access if not already
     if (!document.allowedUsers.includes(userToGrant._id)) {
       document.allowedUsers.push(userToGrant._id);
       await document.save();
@@ -165,12 +166,36 @@ export const grantAccessViaLink = async (req, res) => {
       await userToGrant.save();
     }
 
+    // Send Access Granted Mail
+    const mailOptions = {
+      from: `"BK-Google-Docs" <${process.env.EMAIL_USER}>`,
+      to: userToGrant.email,
+      subject: `You've been granted access to "${document.name}"`,
+      html: `
+        <div style="font-family: Arial; padding: 20px;">
+          <h2 style="color: #1a73e8;">Access Granted</h2>
+          <p>Hello ${userToGrant.name || userToGrant.email},</p>
+          <p>You have been granted access to the document: <strong>${document.name}</strong></p>
+          <a href="${process.env.FRONTEND_URL}/documents/${document._id}" 
+             style="background: #1a73e8; color: white; padding: 10px 16px; 
+             text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
+             Open Document
+          </a>
+          <p style="margin-top: 30px; font-size: 12px; color: #888;">If this wasn’t you, ignore this message.</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    // console.log("Access mail sent to:", userToGrant.email);
+
     return res.sendFile("access-granted.html", { root: "public" });
   } catch (err) {
     console.error("Grant access error:", err);
     res.status(500).send("Something went wrong.");
   }
 };
+
 
 export const revokeAccess = async (req, res) => {
   const { id: docId } = req.params;
@@ -198,3 +223,66 @@ export const revokeAccess = async (req, res) => {
   }
 };
 
+export const addUserToDocument = async (req, res) => {
+  const { documentId } = req.params;
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const userToAdd = await User.findOne({ email });
+    if (!userToAdd) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const document = await DocumentModel.findById(documentId).populate("owner");
+    if (!document) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    const alreadyAdded = document.allowedUsers.includes(userToAdd._id);
+    if (alreadyAdded) {
+      return res.status(400).json({ message: "User already has access" });
+    }
+
+    // Add user to allowedUsers
+    document.allowedUsers.push(userToAdd._id);
+    await document.save();
+
+    // Add document to user’s list
+    if (!userToAdd.documents.includes(documentId)) {
+      userToAdd.documents.push(documentId);
+      await userToAdd.save();
+    }
+
+    // Send email notification
+    const mailOptions = {
+      from: `"BK-Google-Docs" <${process.env.EMAIL_USER}>`,
+      to: userToAdd.email,
+      subject: `You've been granted access to "${document.name}"`,
+      html: `
+        <div style="font-family: Arial; padding: 20px;">
+          <h2 style="color: #1a73e8;">Access Granted</h2>
+          <p>Hello ${userToAdd.name || userToAdd.email},</p>
+          <p>You have been granted access to the document: <strong>${document.name}</strong></p>
+          <a href="${process.env.FRONTEND_URL}/documents/${document._id}" 
+             style="background: #1a73e8; color: white; padding: 10px 16px; 
+             text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
+             Open Document
+          </a>
+          <p style="margin-top: 30px; font-size: 12px; color: #888;">If this wasn’t you, ignore this message.</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("Access email sent to:", userToAdd.email);
+
+    res.status(200).json({ message: "User added and notified successfully" });
+  } catch (err) {
+    console.error("Error sharing document:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

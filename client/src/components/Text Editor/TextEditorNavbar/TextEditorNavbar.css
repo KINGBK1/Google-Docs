@@ -7,6 +7,13 @@
   font-family: "Google Sans", "Roboto", sans-serif;
 }
 
+/* .tool-rows{
+  display: flex;
+  flex-direction: column;
+  border: 2px solid black;
+  font-family: "Google Sans", "Roboto", sans-serif;
+} */
+
 .nav-first-row {
   display: flex;
   justify-content: space-between;
@@ -122,7 +129,132 @@
 .nav-second-row {
   height: 40px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
   padding-top: 4px;
 }
+
+.left-buttons-container{
+  display: flex;
+  align-items: center;
+}
+
+/* .left-buttons-container button{
+    border: none;
+    background-color: #f8f9fa;
+    gap:2px ; 
+    transition: background-color 0.1s ease-in-out ;
+}
+
+.left-buttons-container button:hover{
+  background-color: #e8eaed;
+} */
+
+.right-mode-container{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right-mode-container select{
+  padding: 7px 10px;
+  border:none;
+  background-color: #dfe0e3;
+  border-radius: 20px;
+}
+
+/* dropdown menus */
+.left-buttons-container {
+  background-color: #f8f9fa;
+  padding: 8px 16px;
+}
+
+.menu-bar {
+  list-style: none;
+  display: flex;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-bar > li {
+  position: relative;
+  padding: 5px 7px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.menu-bar > li:hover {
+  background-color: #e0e0e0;
+}
+
+.file-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 160px;
+}
+
+.menu-bar > li:hover .file-dropdown {
+  display: block;
+}
+
+.file-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-dropdown ul li {
+  padding: 10px 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.file-dropdown ul li:hover {
+  background-color: #f5f5f5;
+}
+
+/* edit dropdown */
+
+.edit-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 160px;
+}
+
+.menu-bar > li:hover .edit-dropdown {
+  display: block;
+}
+
+.edit-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.edit-dropdown ul li {
+  padding: 5px 7px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-dropdown ul li:hover {
+  background-color: #f5f5f5;
+}
+

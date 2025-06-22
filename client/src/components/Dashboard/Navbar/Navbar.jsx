@@ -9,9 +9,22 @@ const Navbar = () => {
   const dropdownRef = useRef();
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    console.log("Loaded user:", userData);
-    setUser(userData);
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/status", {
+          credentials: "include",
+        });
+
+        if (!res.ok) throw new Error("Not authenticated");
+
+        const data = await res.json();
+        setUser(data.user);
+      } catch (err) {
+        console.error("Failed to fetch user from cookie session:", err);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   useEffect(() => {
@@ -24,16 +37,21 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      window.location.href = "/";
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   const handleSwitchAccount = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.reload(); // wapis login page 
+    // Same as logout for cookie-based auth
+    handleLogout();
   };
 
   return (
@@ -59,7 +77,6 @@ const Navbar = () => {
           <FaTh />
         </div>
 
-        {/* Profile */}
         {user && (
           <div className="profile-wrapper" ref={dropdownRef}>
             {user.picture ? (

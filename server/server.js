@@ -12,14 +12,13 @@ import User from "./models/UserSchema.js";
 import authRoutes from "./routes/authRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import geminiRoute from "./routes/geminiRoute.js"
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Enable CORS with credentials (must be first, before routes)
 app.use(cors({
   origin: ["http://localhost:3000", "http://localhost:5173"],
   credentials: true,
@@ -28,7 +27,7 @@ app.use(cors({
 // Static folder for serving frontend assets or confirmation pages
 app.use(express.static('public'));
 
-// Parse cookies and JSON
+// Parsing cookies and JSON
 app.use(cookieParser());
 app.use(express.json());
 
@@ -40,12 +39,13 @@ mongoose.connect(process.env.MONGO_URI)
     process.exit(1);
   });
 
-// Mount API routes
+// api routes
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api", uploadRoutes);
+app.use("/api/gemini" , geminiRoute)
 
-// Create server and initialize Socket.IO
+// Creating server and initialize Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {

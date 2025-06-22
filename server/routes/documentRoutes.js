@@ -8,7 +8,8 @@ import {
   toggleAccess,
   requestAccess,
   grantAccessViaLink,
-  revokeAccess
+  revokeAccess,
+  addUserToDocument
 } from "../controllers/documentController.js";
 
 // import DocumentModel from "../models/DocumentSchema.js";
@@ -25,6 +26,7 @@ router.patch("/:id/access", authMiddleware, toggleAccess);
 router.post("/:id/request-access", authMiddleware, requestAccess);
 router.get("/:id/grant-access", grantAccessViaLink);
 router.patch("/:id/revoke", authMiddleware, revokeAccess);
+router.post('/:documentId/share',authMiddleware,addUserToDocument) ; 
 
 
 
