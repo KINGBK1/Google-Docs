@@ -20,7 +20,11 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:5173","https://google-docs-99d3.onrender.com"],
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://google-docs-99d3.onrender.com",
+    "https://google-docs-7mav-nommqs1a9-kingbk1s-projects.vercel.app"],
   credentials: true,
 }));
 
@@ -43,7 +47,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api", uploadRoutes);
-app.use("/api/gemini" , geminiRoute)
+app.use("/api/gemini", geminiRoute)
 
 // Creating server and initialize Socket.IO
 const server = http.createServer(app);
