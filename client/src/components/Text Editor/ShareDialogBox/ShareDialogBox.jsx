@@ -14,7 +14,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
   // Fetching current user & return ID
   const fetchCurrentUser = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/status", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/status`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Not authenticated");
@@ -39,7 +39,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
     if (!email) return alert("Enter an email");
 
     try {
-      const res = await fetch(`http://localhost:5000/api/documents/${documentId}/share`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/${documentId}/share`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
