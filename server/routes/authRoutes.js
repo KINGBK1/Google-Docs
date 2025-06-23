@@ -19,13 +19,13 @@ router.get("/status", (req, res) => {
   }
 });
 
+
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
-    httpOnly: false,
-    secure: false,
-    sameSite: "Lax",
-  });
-  res.status(200).json({ message: "Logged out successfully" });
+    httpOnly: true,      // ✅ Correct
+    secure: true,        // ✅ Correct
+    sameSite: "None",    // ✅ Correct
+  }).status(200).json({ message: "Logged out successfully" });
 });
 
 
