@@ -18,7 +18,7 @@ const ChatBotSidebar = ({ onClose, onInsertText }) => {
         if (!prompt) return;
         setLoading(true);
         try {
-            const res = await axios.post("http://localhost:5000/api/gemini/generate", { prompt, });
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/gemini/generate`, { prompt, });
             setReply(res.data.reply);
 
         } catch (err) {

@@ -12,7 +12,7 @@ const handleRequestAccess = async () => {
   const message = document.querySelector(".message-textarea").value;
 
   try {
-    const response = await fetch(`http://localhost:5000/api/documents/${documentId}/request-access?email=${email}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/request-access?email=${email}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

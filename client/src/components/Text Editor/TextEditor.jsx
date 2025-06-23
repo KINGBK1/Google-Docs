@@ -50,7 +50,7 @@ const TextEditor = () => {
 
   const fetchUserId = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/status", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/status`, {
         credentials: "include",
       });
 
@@ -78,7 +78,7 @@ const TextEditor = () => {
           upload: async (file) => {
             const formData = new FormData();
             formData.append("image", file);
-            const response = await fetch("http://localhost:5000/api/upload-image", {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
               method: "POST",
               body: formData,
             });
@@ -109,7 +109,7 @@ const TextEditor = () => {
           const formData = new FormData();
           formData.append("image", file);
           try {
-            const res = await fetch("http://localhost:5000/api/upload-image", {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
               method: "POST",
               body: formData,
             });
@@ -143,7 +143,7 @@ const TextEditor = () => {
 
     hasLoaded.current = false;
 
-    const s = io("http://localhost:5000", {
+    const s = io(`${import.meta.env.VITE_API_BASE_URL}`, {
       withCredentials: true,
     });
     socketRef.current = s;

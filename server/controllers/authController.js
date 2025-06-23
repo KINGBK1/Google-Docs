@@ -28,7 +28,7 @@ export const googleLogin = async (req, res) => {
         id: user._id,
         email: user.email,
         name: user.name,
-        picture: user.picture, // 👈 Add this
+        picture: user.picture,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -36,22 +36,23 @@ export const googleLogin = async (req, res) => {
 
     res.cookie("token", jwtToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",  // only true on deploy
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: true,            
+      sameSite: "None",          
       maxAge: 60 * 60 * 1000,
     });
 
-  res.status(200).json({
-    message: "Login successful",
-    // token: jwtToken,
-    user: {
-      name: user.name,
-      email: user.email,
-      picture: user.picture,
-    },
-  });
-} catch (error) {
-  console.error("Error verifying Google token:", error);
-  res.status(401).json({ message: "Invalid Google token" });
-}
+
+    res.status(200).json({
+      message: "Login successful",
+      // token: jwtToken,
+      user: {
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+      },
+    });
+  } catch (error) {
+    console.error("Error verifying Google token:", error);
+    res.status(401).json({ message: "Invalid Google token" });
+  }
 };

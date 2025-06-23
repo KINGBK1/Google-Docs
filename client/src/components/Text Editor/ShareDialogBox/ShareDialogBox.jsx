@@ -58,7 +58,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
 
   const handleRemoveAccess = async (userId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/documents/${documentId}/revoke`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/revoke`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -76,7 +76,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
 
   const fetchAccessList = async (userIdParam) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/documents/${documentId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -94,7 +94,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
 
   const handleAccessChange = async (value) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/documents/${documentId}/access`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/access`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
