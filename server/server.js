@@ -20,7 +20,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:5173"],
+  origin: ["http://localhost:3000", "http://localhost:5173","https://google-docs-99d3.onrender.com"],
   credentials: true,
 }));
 

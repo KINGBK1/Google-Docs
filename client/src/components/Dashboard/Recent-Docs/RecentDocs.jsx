@@ -17,7 +17,7 @@ const RecentDocs = () => {
 
     try {
       if (!window.confirm("Are you sure you want to delete this document?")) return;
-      const response = await fetch(`http://localhost:5000/api/documents/${docId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${docId}`, {
         method: "DELETE",
         headers: {
           // Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ const RecentDocs = () => {
         //   return;
         // }
 
-        const response = await fetch("http://localhost:5000/api/documents/my-docs", {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/my-docs`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
