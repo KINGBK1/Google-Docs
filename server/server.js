@@ -12,63 +12,72 @@ import User from "./models/UserSchema.js";
 import authRoutes from "./routes/authRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
-import geminiRoute from "./routes/geminiRoute.js"
+import geminiRoute from "./routes/geminiRoute.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+// ✅ CORS Configuration — moved to top
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://google-docs-99d3.onrender.com",
+  "https://google-docs-7mav-nommqs1a9-kingbk1s-projects.vercel.app",
+  "https://google-docs-7mav-git-main-kingbk1s-projects.vercel.app",
+  "https://google-docs-7mav-gv4sbinvh-kingbk1s-projects.vercel.app",
+  "https://google-docs-7mav.vercel.app",
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "https://google-docs-99d3.onrender.com",
-    "https://google-docs-7mav-nommqs1a9-kingbk1s-projects.vercel.app"],
+  origin: allowedOrigins,
   credentials: true,
 }));
 
-// Static folder for serving frontend assets or confirmation pages
-app.use(express.static('public'));
+app.options("*", cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
-// Parsing cookies and JSON
+// ✅ Middleware
+app.use(express.static("public"));
 app.use(cookieParser());
 app.use(express.json());
 
-// Connect to MongoDB
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected successfully"))
+  .then(() => console.log("✅ MongoDB connected successfully"))
   .catch((err) => {
-    console.error("MongoDB connection error:", err);
+    console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   });
 
-// api routes
+// ✅ API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api", uploadRoutes);
-app.use("/api/gemini", geminiRoute)
+app.use("/api/gemini", geminiRoute);
 
-// Creating server and initialize Socket.IO
+// ✅ HTTP & Socket.IO server
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-// Handle Socket.IO connections
+// ✅ Socket.IO logic
 io.on("connection", (socket) => {
-  console.log(" Socket connected:", socket.id);
+  console.log("🔌 Socket connected:", socket.id);
   let currentDocumentId = null;
 
   socket.on("get-document", async ({ documentId, userId }) => {
     try {
       let document = await DocumentModel.findById(documentId).populate("allowedUsers");
 
-      // Create document if it doesn't exist
       if (!document) {
         document = await DocumentModel.create({
           _id: documentId,
@@ -100,7 +109,6 @@ io.on("connection", (socket) => {
         isAllowed: true,
       });
 
-      // Save document ID to user's history if not already saved
       if (userId) {
         const user = await User.findById(userId);
         if (user && !user.documents.includes(documentId)) {
@@ -139,11 +147,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Socket disconnected:", socket.id);
+    console.log("❌ Socket disconnected:", socket.id);
   });
 });
 
-// Start the server
+// ✅ Start server
 server.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`🚀 Server running at http://localhost:${port}`);
 });
