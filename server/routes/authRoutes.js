@@ -4,7 +4,7 @@ import authMiddleware from "../middlewares/AuthMiddleware.js";
 import jwt from 'jsonwebtoken'
 const router = express.Router();
 
-router.post("/google", googleLogin);
+router.post("/google-login", googleLogin);
 router.get("/status", (req, res) => {
   try {
      console.log("[Auth Status] Cookies:", req.cookies);
@@ -22,9 +22,9 @@ router.get("/status", (req, res) => {
 
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
-    httpOnly: true,      // ✅ Correct
-    secure: true,        // ✅ Correct
-    sameSite: "None",    // ✅ Correct
+    httpOnly: true,      
+    secure: true,        
+    sameSite: "None",    
   }).status(200).json({ message: "Logged out successfully" });
 });
 

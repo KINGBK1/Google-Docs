@@ -23,7 +23,6 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://google-docs-7mav.vercel.app',
-  // Add other Vercel URLs if needed
 ];
 
 app.use(cors({
@@ -32,7 +31,7 @@ app.use(cors({
       'http://localhost:3000',
       'http://localhost:5173',
       'https://google-docs-7mav.vercel.app',
-      // Add other Vercel URLs if needed
+  
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -44,7 +43,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.options('*', cors()); 
+// app.options('*', cors()); 
 
 // Middleware
 app.use(express.static('public'));
