@@ -4,16 +4,20 @@ import Quill from "quill";
 import { io } from "socket.io-client";
 import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
-import ImageUploader from "quill-image-uploader";
 import Delta from "quill-delta";
-import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
-
-Quill.register("modules/imageUploader", ImageUploader);
 
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
+import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
 
-const SAVE_INTERVAL_MS = 2000;
+// Register Page Break blot
+const PageBreak = Quill.import("blots/block/embed");
+class CustomPageBreak extends PageBreak {
+  static blotName = "pageBreak";
+  static tagName = "hr";
+  static className = "page-break";
+}
+Quill.register(CustomPageBreak);
 
 const TOOLBAR_OPTIONS = [
   [{ font: [] }, { size: [] }],
@@ -27,25 +31,18 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ];
 
-const PageBreak = Quill.import("blots/block/embed");
-class CustomPageBreak extends PageBreak {
-  static blotName = "pageBreak";
-  static tagName = "hr";
-  static className = "page-break";
-}
-Quill.register(CustomPageBreak);
+const SAVE_INTERVAL_MS = 2000;
 
 const TextEditor = () => {
   const { documentId } = useParams();
   const [quill, setQuill] = useState(null);
-  const socketRef = useRef(null);
   const [docName, setDocName] = useState("Untitled Document");
-  const hasLoaded = useRef(false);
-  const [isReady, setIsReady] = useState(false);
   const [isOpen, setisOpen] = useState(false);
-  const [isRestricted, setIsRestricted] = useState(false);
   const [isGeminiOpen, setisGeminiOpen] = useState(false);
-
+  const [isRestricted, setIsRestricted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const hasLoaded = useRef(false);
+  const socketRef = useRef(null);
   const navigate = useNavigate();
 
   const fetchUserId = async () => {
@@ -53,9 +50,7 @@ const TextEditor = () => {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/status`, {
         credentials: "include",
       });
-
       if (!res.ok) throw new Error("User not authenticated");
-
       const data = await res.json();
       return data.user.id;
     } catch (err) {
@@ -74,65 +69,54 @@ const TextEditor = () => {
       theme: "snow",
       modules: {
         toolbar: TOOLBAR_OPTIONS,
-        imageUploader: {
-          upload: async (file) => {
-            const formData = new FormData();
-            formData.append("image", file);
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
-              method: "POST",
-              body: formData,
-            });
-            const data = await response.json();
-            return data.url;
-          },
-        },
       },
     });
 
-    q.clipboard.addMatcher("IMG", function (node, delta) {
+    // Filter pasted base64/Blob images
+    q.clipboard.addMatcher("IMG", (node, delta) => {
       const src = node.getAttribute("src") || "";
-      if (src.startsWith("data:") || src.startsWith("blob:")) {
-        return new Delta();
-      }
+      if (src.startsWith("data:") || src.startsWith("blob:")) return new Delta();
       return delta;
     });
 
+    // Handle custom image uploads
     const toolbar = q.getModule("toolbar");
     toolbar.addHandler("image", () => {
       const input = document.createElement("input");
-      input.setAttribute("type", "file");
-      input.setAttribute("accept", "image/*");
+      input.type = "file";
+      input.accept = "image/*";
       input.click();
+
       input.onchange = async () => {
         const file = input.files[0];
-        if (file) {
-          const formData = new FormData();
-          formData.append("image", file);
-          try {
-            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
-              method: "POST",
-              body: formData,
-            });
-            const data = await res.json();
-            const range = q.getSelection();
-            q.insertEmbed(range.index, "image", data.url);
-          } catch (err) {
-            console.error("Image upload failed:", err);
-          }
+        if (!file) return;
+        const formData = new FormData();
+        formData.append("image", file);
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          const range = q.getSelection();
+          q.insertEmbed(range.index, "image", data.url);
+        } catch (err) {
+          console.error("Image upload failed:", err);
         }
       };
     });
 
-    const customButton = document.createElement("button");
-    customButton.innerHTML = "PB";
-    customButton.onclick = () => {
+    // Add Page Break button
+    const pageBreakBtn = document.createElement("button");
+    pageBreakBtn.innerText = "PB";
+    pageBreakBtn.onclick = () => {
       const range = q.getSelection();
       if (range) {
         q.insertEmbed(range.index, "pageBreak", true);
         q.setSelection(range.index + 1, Quill.sources.SILENT);
       }
     };
-    toolbar.container.appendChild(customButton);
+    toolbar.container.appendChild(pageBreakBtn);
 
     q.disable();
     setQuill(q);
@@ -142,7 +126,6 @@ const TextEditor = () => {
     if (!quill || !documentId) return;
 
     hasLoaded.current = false;
-
     const s = io(`${import.meta.env.VITE_API_BASE_URL}`, {
       withCredentials: true,
     });
@@ -152,12 +135,9 @@ const TextEditor = () => {
       s.emit("get-document", { documentId, userId });
     });
 
-    s.on("load-document", (payload) => {
-      const { content, name, isRestricted: restricted, isAllowed } = payload;
+    s.on("load-document", ({ content, name, isRestricted: restricted, isAllowed }) => {
       setIsRestricted(restricted);
-      if (restricted && !isAllowed) {
-        return navigate(`/restricted/${documentId}`);
-      }
+      if (restricted && !isAllowed) return navigate(`/restricted/${documentId}`);
 
       quill.setContents(content);
       quill.enable();
@@ -171,12 +151,13 @@ const TextEditor = () => {
     });
 
     s.on("receive-changes", (delta) => {
-      if (quill) quill.updateContents(delta);
+      quill.updateContents(delta);
     });
 
     const handleTextChange = (delta, _, source) => {
-      if (source !== "user") return;
-      s.emit("send-changes", delta);
+      if (source === "user") {
+        s.emit("send-changes", delta);
+      }
     };
 
     quill.on("text-change", handleTextChange);
@@ -190,14 +171,11 @@ const TextEditor = () => {
 
   const saveDocument = useCallback(() => {
     if (!isReady || !quill) return;
-    const payload = {
+    socketRef.current?.emit("save-document", {
       documentId,
       name: docName,
       content: quill.getContents(),
-    };
-    if (socketRef.current) {
-      socketRef.current.emit("save-document", payload);
-    }
+    });
   }, [quill, docName, documentId, isReady]);
 
   useEffect(() => {
@@ -206,10 +184,7 @@ const TextEditor = () => {
     return () => clearInterval(interval);
   }, [saveDocument, isReady]);
 
-  const handleManualSave = () => {
-    saveDocument();
-  };
-
+  const handleManualSave = () => saveDocument();
   const handleDocNameChange = (newName) => setDocName(newName);
 
   useEffect(() => {
@@ -224,7 +199,6 @@ const TextEditor = () => {
 
   const insertText = (text) => {
     if (!quill) return;
-
     const range = quill.getSelection();
     if (range) {
       quill.insertText(range.index, text);
@@ -243,7 +217,9 @@ const TextEditor = () => {
         setisOpen={setisOpen}
         setIsGeminiOpen={setisGeminiOpen}
       />
+
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
+
       {isOpen && (
         <div className="dialog-backdrop">
           <ShareDialogBox
@@ -255,6 +231,7 @@ const TextEditor = () => {
           />
         </div>
       )}
+
       {isGeminiOpen && (
         <div className="gemini-sidebar-container">
           <ChatBotSidebar
