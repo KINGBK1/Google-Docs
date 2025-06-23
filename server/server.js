@@ -21,12 +21,19 @@ const app = express();
 const port = process.env.PORT || 5000;
 app.set('trust proxy', 1);
 
+// Middleware for request logging
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.url, "Origin:", req.get('Origin'));
+  next();
+});
+
 // CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://google-docs-7mav.vercel.app',
-  'https://*.vercel.app', // For preview deployments
+  'https://*.vercel.app',
+  'https://google-docs-99d3.onrender.com',
 ];
 
 app.use(cors({
@@ -92,7 +99,7 @@ io.use(async (socket, next) => {
 
 // Socket.IO Events
 io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
+  console.log('🔌 Socket connected:', socket.id);
   let currentDocumentId = null;
 
   socket.on('get-document', async ({ documentId, userId }) => {
@@ -152,11 +159,7 @@ io.on('connection', (socket) => {
     try {
       await DocumentModel.findByIdAndUpdate(
         documentId,
-        {
-          name: name || 'Untitled Document',
-          content: content || {},
-          updatedAt: Date.now(),
-        },
+        { name: name || 'Untitled Document', content: content || {}, updatedAt: Date.now() },
         { new: true, upsert: true, runValidators: true }
       );
     } catch (err) {
@@ -165,7 +168,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(' Socket disconnected:', socket.id);
+    console.log('❌ Socket disconnected:', socket.id);
   });
 });
 
