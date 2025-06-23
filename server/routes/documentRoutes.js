@@ -22,6 +22,6 @@ router.patch("/:id/access", authMiddleware, toggleAccess);
 router.post("/:id/request-access", authMiddleware, requestAccess);
 router.get("/:id/grant-access", grantAccessViaLink);
 router.patch("/:id/revoke", authMiddleware, revokeAccess);
-router.post("/:id/share", authMiddleware, addUserToDocument); // ✅ fixed path
+router.post("/:id/share", authMiddleware, addUserToDocument);
 
 export default router;

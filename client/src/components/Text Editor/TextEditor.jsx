@@ -50,11 +50,16 @@ const TextEditor = () => {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/status`, {
         credentials: "include",
       });
-      if (!res.ok) throw new Error("User not authenticated");
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
       const data = await res.json();
+      if (!data.user?.id) {
+        throw new Error("User ID not found in response");
+      }
       return data.user.id;
     } catch (err) {
-      console.error("Error fetching user ID:", err);
+      console.error("Error fetching user ID:", err.message);
       return null;
     }
   };
@@ -96,13 +101,18 @@ const TextEditor = () => {
           const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
             method: "POST",
             body: formData,
-            credentials:"include",
+            credentials: "include",
           });
+          if (!res.ok) {
+            throw new Error(`Image upload failed: ${res.status}`);
+          }
           const data = await res.json();
           const range = q.getSelection();
-          q.insertEmbed(range.index, "image", data.url);
+          if (range) {
+            q.insertEmbed(range.index, "image", data.url);
+          }
         } catch (err) {
-          console.error("Image upload failed:", err);
+          console.error("Image upload failed:", err.message);
         }
       };
     });
@@ -129,16 +139,46 @@ const TextEditor = () => {
     hasLoaded.current = false;
     const s = io(`${import.meta.env.VITE_API_BASE_URL}`, {
       withCredentials: true,
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
     socketRef.current = s;
 
-    fetchUserId().then((userId) => {
-      s.emit("get-document", { documentId, userId });
+    // Enable Socket.IO debugging
+    localStorage.debug = 'socket.io-client:socket';
+
+    s.on('connect', () => {
+      console.log('Socket.IO connected:', s.id);
     });
 
-    s.on("load-document", ({ content, name, isRestricted: restricted, isAllowed }) => {
-      setIsRestricted(restricted);
-      if (restricted && !isAllowed) return navigate(`/restricted/${documentId}`);
+    s.on('connect_error', (err) => {
+      console.error('Socket.IO connection error:', err.message);
+    });
+
+    s.on('error', (err) => {
+      console.error('Socket.IO server error:', err.message);
+      if (err.message === 'Authentication error' || err.message === 'Invalid token') {
+        navigate('/login');
+      }
+    });
+
+    fetchUserId().then((userId) => {
+      if (userId) {
+        s.emit("get-document", { documentId, userId });
+      } else {
+        console.error('No user ID, cannot load document');
+        navigate('/login');
+      }
+    });
+
+    s.on("load-document", ({ content, name, isRestricted, isAllowed }) => {
+      setIsRestricted(isRestricted);
+      if (isRestricted && !isAllowed) {
+        navigate(`/restricted/${documentId}`);
+        return;
+      }
 
       quill.setContents(content);
       quill.enable();
@@ -168,7 +208,7 @@ const TextEditor = () => {
       quill.off("text-change", handleTextChange);
       setIsReady(false);
     };
-  }, [quill, documentId]);
+  }, [quill, documentId, navigate]);
 
   const saveDocument = useCallback(() => {
     if (!isReady || !quill) return;
@@ -218,9 +258,7 @@ const TextEditor = () => {
         setisOpen={setisOpen}
         setIsGeminiOpen={setisGeminiOpen}
       />
-
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
-
       {isOpen && (
         <div className="dialog-backdrop">
           <ShareDialogBox
@@ -232,7 +270,6 @@ const TextEditor = () => {
           />
         </div>
       )}
-
       {isGeminiOpen && (
         <div className="gemini-sidebar-container">
           <ChatBotSidebar
