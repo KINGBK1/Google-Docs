@@ -12,10 +12,6 @@ import {
   addUserToDocument
 } from "../controllers/documentController.js";
 
-// import DocumentModel from "../models/DocumentSchema.js";
-// import User from "../models/UserSchema.js";              
-
-
 const router = express.Router();
 
 router.post("/", authMiddleware, createDocument);
@@ -26,8 +22,6 @@ router.patch("/:id/access", authMiddleware, toggleAccess);
 router.post("/:id/request-access", authMiddleware, requestAccess);
 router.get("/:id/grant-access", grantAccessViaLink);
 router.patch("/:id/revoke", authMiddleware, revokeAccess);
-router.post('/:documentId/share',authMiddleware,addUserToDocument) ; 
-
-
+router.post("/:id/share", authMiddleware, addUserToDocument); // ✅ fixed path
 
 export default router;

@@ -1,3 +1,5 @@
+// server.js
+
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -19,7 +21,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// ✅ CORS Configuration — moved to top
+// ✅ CORS Configuration (dynamic & safe)
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
@@ -35,17 +37,12 @@ app.use(cors({
   credentials: true,
 }));
 
-app.options("*", cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
-
 // ✅ Middleware
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use(express.json());
 
-// ✅ Connect to MongoDB
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected successfully"))
   .catch((err) => {
@@ -53,13 +50,13 @@ mongoose.connect(process.env.MONGO_URI)
     process.exit(1);
   });
 
-// ✅ API routes
+// ✅ API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/gemini", geminiRoute);
 
-// ✅ HTTP & Socket.IO server
+// ✅ HTTP & Socket.IO setup
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -69,7 +66,7 @@ const io = new Server(server, {
   },
 });
 
-// ✅ Socket.IO logic
+// ✅ Socket.IO Events
 io.on("connection", (socket) => {
   console.log("🔌 Socket connected:", socket.id);
   let currentDocumentId = null;
@@ -127,8 +124,7 @@ io.on("connection", (socket) => {
     socket.to(currentDocumentId).emit("receive-changes", delta);
   });
 
-  socket.on("save-document", async (data) => {
-    const { documentId, content, name } = data;
+  socket.on("save-document", async ({ documentId, content, name }) => {
     if (!documentId) return;
 
     try {
@@ -151,7 +147,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// ✅ Start server
+// ✅ Start Server
 server.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
 });
