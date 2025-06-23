@@ -83,6 +83,7 @@ function LoginPage({ setAuth }) {
 
   const handleSuccess = async (credentialResponse) => {
     try {
+      console.log("Sending token:", idToken);
       const res = await axios.post(
   `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-login`,
   { token: credentialResponse.credential },

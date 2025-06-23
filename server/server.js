@@ -1,3 +1,4 @@
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -5,6 +6,8 @@ import dotenv from 'dotenv';
 import http from 'http';
 import { Server } from 'socket.io';
 import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+
 import DocumentModel from './models/DocumentSchema.js';
 import User from './models/UserSchema.js';
 import authRoutes from './routes/authRoutes.js';
@@ -23,16 +26,12 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://google-docs-7mav.vercel.app',
+  'https://*.vercel.app', // For preview deployments
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'https://google-docs-7mav.vercel.app',
-  
-    ];
+    console.log("CORS request origin:", origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -43,7 +42,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-// app.options('*', cors()); 
 
 // Middleware
 app.use(express.static('public'));
@@ -59,10 +57,10 @@ mongoose.connect(process.env.MONGO_URI)
   });
 
 // API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/documents', documentRoutes);
-app.use('/api', uploadRoutes);
-app.use('/api/gemini', geminiRoute);
+app.use("/api/auth", authRoutes);
+app.use("/api/documents", documentRoutes);
+app.use("/api", uploadRoutes);
+app.use("/api/gemini", geminiRoute);
 
 // HTTP & Socket.IO setup
 const server = http.createServer(app);
@@ -80,19 +78,21 @@ io.use(async (socket, next) => {
     ?.split('; ')
     .find(row => row.startsWith('token='))
     ?.split('=')[1];
+  console.log("Socket handshake cookies:", socket.handshake.headers.cookie);
   if (!token) return next(new Error('Authentication error'));
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     socket.user = decoded;
     next();
   } catch (err) {
+    console.error("Socket token verification error:", err);
     next(new Error('Invalid token'));
   }
 });
 
 // Socket.IO Events
 io.on('connection', (socket) => {
-  console.log('🔌 Socket connected:', socket.id);
+  console.log('Socket connected:', socket.id);
   let currentDocumentId = null;
 
   socket.on('get-document', async ({ documentId, userId }) => {
@@ -165,7 +165,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Socket disconnected:', socket.id);
+    console.log(' Socket disconnected:', socket.id);
   });
 });
 
