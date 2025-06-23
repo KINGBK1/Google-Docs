@@ -22,7 +22,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 app.set('trust proxy', 1);
 
-// ✅ CORS Configuration (dynamic & safe)
+// CORS Configuration 
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
@@ -31,12 +31,15 @@ const allowedOrigins = [
   "https://google-docs-7mav-git-main-kingbk1s-projects.vercel.app",
   "https://google-docs-7mav-gv4sbinvh-kingbk1s-projects.vercel.app",
   "https://google-docs-7mav.vercel.app",
-  "https://google-docs-7mav-mijcz9mml-kingbk1s-projects.vercel.app"
+  "https://google-docs-7mav-mijcz9mml-kingbk1s-projects.vercel.app "
 ];
 
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['set-cookie']
 }));
 
 // ✅ Middleware
@@ -46,9 +49,9 @@ app.use(express.json());
 
 // ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected successfully"))
+  .then(() => console.log(" MongoDB connected successfully"))
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
+    console.error(" MongoDB connection error:", err);
     process.exit(1);
   });
 
