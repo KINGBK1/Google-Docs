@@ -96,6 +96,7 @@ const TextEditor = () => {
           const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
             method: "POST",
             body: formData,
+            credentials:"include",
           });
           const data = await res.json();
           const range = q.getSelection();

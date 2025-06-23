@@ -7,6 +7,7 @@ const router = express.Router();
 router.post("/google", googleLogin);
 router.get("/status", (req, res) => {
   try {
+     console.log("[Auth Status] Cookies:", req.cookies);
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ message: "No token" });
 
