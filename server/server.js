@@ -31,6 +31,7 @@ const allowedOrigins = [
   "https://google-docs-7mav-git-main-kingbk1s-projects.vercel.app",
   "https://google-docs-7mav-gv4sbinvh-kingbk1s-projects.vercel.app",
   "https://google-docs-7mav.vercel.app",
+  "https://google-docs-7mav-mijcz9mml-kingbk1s-projects.vercel.app"
 ];
 
 app.use(cors({
