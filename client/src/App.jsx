@@ -1,4 +1,3 @@
-// App.jsx (or wherever your Router is)
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
@@ -70,7 +69,7 @@ export default function App() {
           }
         />
 
-        <Route path="*" element={<Error />} />
+        <Route path="*" element={<Error />} /> 
       </Routes>
     </BrowserRouter>
   );
