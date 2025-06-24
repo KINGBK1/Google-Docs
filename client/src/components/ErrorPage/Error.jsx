@@ -1,19 +1,22 @@
 import React from 'react'
 import "./Error.css"
-import { useNavigate, useRouteError} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Error = () => {
-    // const error = useRouteError() ; 
-    const navigate = useNavigate() ; 
-  return (
-    <div className='error-page'>
-        <h1>404 | Page Not Found</h1>
-        <br />
-        {/* <p>{error.message}</p> */}
-        <br />
-        <button onClick={()=> navigate('/')}>Go To Home</button>
-    </div>
-  )
+    const navigate = useNavigate();
+
+    return (
+        <div className='error-page'>
+            <div className="animated-bg"></div>
+
+            <div className="error-content">
+                <img src="assets/Google_Docs_Logo.svg" alt="" className="comp-logo" />
+                <h1>404 | Page Not Found</h1>
+                <h3>You Must Login First to Continue</h3>
+                <button onClick={() => navigate('/')}>Login</button>
+            </div>
+        </div>
+    )
 }
 
-export default Error ; 
+export default Error;

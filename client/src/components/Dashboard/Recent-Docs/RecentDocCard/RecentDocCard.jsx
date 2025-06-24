@@ -14,6 +14,7 @@ const RecentDocCard = ({ id, title, subtitle, onDelete }) => {
     onDelete(id); // call delete handler passed from parent
   };
 
+
   return (
     <div
       className="recent-doc-card"

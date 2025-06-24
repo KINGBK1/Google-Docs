@@ -1,84 +1,77 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+// App.jsx (or wherever your Router is)
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import jwtDecode from 'jwt-decode';
 
-import LoginPage from "./components/Auth/Auth";
-import Dashboard from "./components/Dashboard/Dashboard";
-import TextEditor from "./components/Text Editor/TextEditor";
-import Error from "./components/ErrorPage/Error";
-import RestrictedUserPage from "./components/RestrictedUserPage/RestrictedUserPage";
+import LoginPage from './components/Auth/Auth';
+import Dashboard from './components/Dashboard/Dashboard';
+import TextEditor from './components/Text Editor/TextEditor';
+import Error from './components/ErrorPage/Error';
 
-const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
-  if (isLoading) return <div>Loading...</div>;
-  return isAuthenticated ? children : <Navigate to="/" replace />;
-};
-
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
-  return null;
-};
-
-const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
+// Checks cookie & expiration
+function useAuthCheck() {
+  const [status, setStatus] = useState({ loading: true, auth: false });
   useEffect(() => {
-    const checkCookieToken = () => {
-      const token = getCookie("token");
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          const isExpired = decoded.exp * 1000 < Date.now();
-          setIsAuthenticated(!isExpired);
-        } catch (err) {
-          console.error("Invalid token", err);
-          setIsAuthenticated(false);
-        }
-      } else {
-        setIsAuthenticated(false);
-      }
-      setIsLoading(false);
-    };
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
 
-    checkCookieToken();
+    if (token) {
+      try {
+        const { exp } = jwtDecode(token);
+        if (exp * 1000 > Date.now()) {
+          return setStatus({ loading: false, auth: true });
+        }
+      } catch {}
+    }
+    setStatus({ loading: false, auth: false });
   }, []);
+  return status;
+}
+
+function ProtectedRoute({ auth, loading, children }) {
+  if (loading) return <div>Loading…</div>;
+  return auth ? children : <Navigate to="/" replace />;
+}
+
+export default function App() {
+  const { loading, auth } = useAuthCheck();
 
   return (
-    <GoogleOAuthProvider clientId={client_id}>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isLoading ? null : isAuthenticated ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
-                <LoginPage setAuth={setIsAuthenticated} />
-              )
-            }
-          />
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            loading
+              ? null
+              : auth
+              ? <Navigate to="/dashboard" replace />
+              : <LoginPage />
+          }
+        />
 
-          <Route
-            path="/dashboard/*"
-            element={
-              <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/dashboard/*"
+          element={
+            <ProtectedRoute auth={auth} loading={loading}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
 
-          {/* Anyone can access document routes, TextEditor handles restrictions internally */}
-          <Route path="/documents/:documentId" element={<TextEditor />} />
-          <Route path="/restricted/:documentId" element={<RestrictedUserPage />} />
-          <Route path="*" element={<Error />} />
-        </Routes>
-      </Router>
-    </GoogleOAuthProvider>
+        <Route
+          path="/documents/:documentId"
+          element={
+            <ProtectedRoute auth={auth} loading={loading}>
+              <TextEditor />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Error />} />
+      </Routes>
+    </BrowserRouter>
   );
-};
-
-export default App;
+}

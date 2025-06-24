@@ -18,7 +18,7 @@ const TemplateContainer = () => {
                 <TemplateCard title="Resume" subtitle="Serif" />
                 <TemplateCard title="Resume" subtitle="Coral" />
                 <TemplateCard title="Letter" subtitle="Spearmint" />
-                <TemplateCard title="Project proposal" subtitle="Tropic" />
+                <TemplateCard title="Project" subtitle="Tropic" />
                 <TemplateCard title="Brochure" subtitle="Geometric" />
                 <TemplateCard title="Report" subtitle="Luxe" />
             </div>

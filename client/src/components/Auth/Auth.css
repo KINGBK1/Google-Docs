@@ -1,132 +1,120 @@
-.wrapper {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+.light-wrapper {
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to right, #e8f0fe, #ffffff);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: linear-gradient(to right, rgba(212, 196, 219, 0.5), rgba(70, 78, 179, 0.5));
-
+  font-family: 'Inter', sans-serif;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-.signin-container {
+.signin-card {
   display: flex;
-  /* min-height: 100vh; */
-  font-family: 'Google Sans', Roboto, sans-serif;
-  background-color: #f8f9fa;
-
-  width: 80vw;
-  height: 60vh;
-  max-width: 900px;
-  max-height: 700px;
-  overflow: auto;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  ;
-  border-radius: 12px;
+  width: 90%;
+  max-width: 1000px;
+  height: 600px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  border: 1px solid #ddd;
 }
 
-/* Left image section */
-.img-container {
+/* Left side image */
+.image-pane {
   flex: 1;
-  background-image: url("/assets/Gdocs.jpg");
+  background-image: url("/assets/Gdocs.jpg"); /* Make sure this image exists */
   background-size: cover;
   background-position: center;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
 }
 
-/* Right form section */
-.form-container {
+/* Right side login */
+.login-pane {
   flex: 1;
+  padding: 3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 4rem;
-  background-color: white;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-}
-
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-
-form label {
-  font-weight: 500;
-  margin-bottom: 0.2rem;
-  color: #3c4043;
-}
-
-form input {
-  padding: 12px 14px;
-  border: 2px solid #dadce0;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-}
-
-form input:focus {
-  border-color: #4285f4;
-  outline: none;
-}
-
-.error-message {
-  color: #d93025;
-  font-size: 0.85rem;
-  margin-top: 0.6rem;
-  margin-bottom: 0.5rem;
-  position: relative;
-}
-
-.btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.btn button {
-  padding: 0.75rem 1rem;
-  background-color: #1a73e8;
-  color: white;
-  font-weight: 500;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.btn button:hover {
-  background-color: #155ab6;
-}
-
-.google-login-container {
-  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
   text-align: center;
 }
 
-.confirm-password-container {
-  margin-bottom: 1.5rem;
+.login-pane h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #202124;
+  margin-bottom: 1rem;
+}
+
+.login-pane p {
+  font-size: 1rem;
+  color: #5f6368;
+  margin-bottom: 2rem;
+}
+
+.google-login-container {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-  .signin-container {
+  .signin-card {
     flex-direction: column;
-    height: 90vh ; 
-    width: 95vw ;  
-    max-height: 1000px;
-    max-width: 500px;
+    height: auto;
   }
 
-  .img-container {
-    height: 250px;
-    border-radius: 12px 12px 0 0;
+  .image-pane {
+    height: 200px;
+    width: 100%;
   }
 
-  .form-container {
-    padding: 2rem;
-    border-radius: 0 0 12px 12px;
+  .login-pane {
+    padding: 2rem 1.5rem;
+  }
+
+  .login-pane h1 {
+    font-size: 1.5rem;
+  }
+
+  .login-pane p {
+    font-size: 0.9rem;
   }
 }
+
+@media (max-width: 480px) {
+  .login-pane {
+    padding: 1.5rem 1rem;
+  }
+
+  .signin-card {
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.fade-wrapper {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+

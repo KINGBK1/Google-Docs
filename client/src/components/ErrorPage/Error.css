@@ -1,34 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
 .error-page {
+    position: relative;
     height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Orbitron', sans-serif;
+    color: #ffffff;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa;
-    color: #333;
+}
+
+.animated-bg {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: linear-gradient(45deg, #ff005d, #5a00ff, #00e5ff, #ff005d);
+    background-size: 600% 600%;
+    animation: rotateGradient 20s ease infinite;
+    filter: blur(80px);
+    z-index: 1;
+}
+
+.error-content {
+    position: relative;
+    z-index: 2;
     text-align: center;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 40px;
+    background: rgba(18, 0, 10, 0.7);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(255, 0, 93, 0.6);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 1.5s ease-in-out;
 }
 
-.error-page h1 {
+.error-content h1 {
     font-size: 3rem;
-    color: #dc3545;
     margin-bottom: 10px;
+    color: #ff005d;
     animation: popIn 0.5s ease-out;
+    text-shadow: 0 0 15px #ff005d;
 }
 
-.error-page button {
-    padding: 10px 20px;
-    background-color: #f8f9fa;
+.error-content h3 {
+    font-size: 1.2rem;
+    color: #ffffffd5;
+    margin-bottom: 20px;
+}
+
+.error-content button {
+    padding: 12px 26px;
+    font-size: 1rem;
+    background-color: #ff005d;
+    color: white;
     border: none;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: background-color ease-in-out 0.25s;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 12px #ff005d;
+    transition: all 0.3s ease-in-out;
 }
 
-button:hover{
-    background-color: aqua;
+.error-content button:hover {
+    background-color: #ffffff;
+    color: #ff005d;
+    box-shadow: 0 0 18px #ff005d;
+    transform: scale(1.05);
 }
 
 @keyframes popIn {
@@ -36,9 +75,31 @@ button:hover{
         transform: scale(0.8);
         opacity: 0;
     }
-
     100% {
         transform: scale(1);
         opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rotateGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
     }
 }

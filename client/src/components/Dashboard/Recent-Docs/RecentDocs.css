@@ -82,3 +82,124 @@
   padding: 20px;
 }
 
+/* at the bottom of src/components/Recent-Docs/RecentDocs.css */
+
+/* mobile: remove grid, use flat list */
+@media (max-width: 689px) {
+  .recent-doc-list.grid-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .recent-doc-card {
+    flex-direction: row !important;
+    align-items: center;
+    padding: 0.75rem !important;
+    gap: 1rem !important;
+  }
+  .recent-doc-thumbnail {
+    flex: 0 0 48px;
+    height: 48px;
+    border-radius: 4px;
+  }
+  .recent-doc-caption {
+    flex: 1;
+    gap: 4px !important;
+  }
+  .delete-btn {
+    width: auto !important;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Tight mobile layout down to 400px */
+@media (max-width: 550px) {
+  .recent-doc-wrapper {
+    padding: 12px 16px;
+  }
+
+  .recent-doc-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .option-btns {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+}
+
+/* Ultra-compact under 400px */
+@media (max-width: 400px) {
+  .recent-doc-wrapper {
+    padding: 8px 12px;
+  }
+
+  .recent-doc-header {
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .heading label {
+    font-size: 16px;
+    margin-left: 0;
+  }
+
+  .option-btns {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .option-btns .list select {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+
+  .btns button {
+    font-size: 18px;
+    margin-top: 4px;
+  }
+
+  .recent-doc-list.grid-layout {
+    padding: 8px;
+    gap: 12px;
+  }
+
+  .recent-doc-card {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .recent-doc-thumbnail {
+    height: 60px !important;
+    flex: 0 0 60px !important;
+  }
+
+  .recent-doc-title {
+    font-size: 14px;
+  }
+
+  .recent-doc-subtitle {
+    font-size: 12px;
+  }
+
+  .delete-btn {
+    padding: 2px 6px;
+    font-size: 0.7rem;
+  }
+}
+
+.no-results {
+  text-align: center;
+  width: 100%;
+  color: #5f6368;
+  padding: 2rem;
+  font-style: italic;
+}
