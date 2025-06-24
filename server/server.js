@@ -20,6 +20,12 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 app.set('trust proxy', 1);
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  console.log("Incoming request:", req.method, req.url, "Origin:", req.get('Origin'));
+  next();
+});
 
 // Middleware for request logging
 app.use((req, res, next) => {
@@ -31,23 +37,22 @@ app.use((req, res, next) => {
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://google-docs-7mav.vercel.app',
-  'https://*.vercel.app',
-  'https://google-docs-99d3.onrender.com',
+  'https://google-docs-7mav.vercel.app',     // your Vercel client
+  'https://google-docs-99d3.onrender.com',  // your Render backend domain
+  // add any other exact URLs here (e.g. preview URLs)
 ];
-
 app.use(cors({
   origin: (origin, callback) => {
     console.log("CORS request origin:", origin);
+    // allow server-side tools (no origin) and exact matches
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+      return callback(null, true);
     }
+    return callback(new Error('Not allowed by CORS'));
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,  // enables Access-Control-Allow-Credentials
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
 }));
 
 // Middleware
