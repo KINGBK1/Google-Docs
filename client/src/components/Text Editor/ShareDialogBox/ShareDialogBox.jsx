@@ -39,7 +39,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
     if (!email) return alert("Enter an email");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/${documentId}/share`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/share`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
