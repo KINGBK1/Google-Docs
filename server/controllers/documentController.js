@@ -224,7 +224,7 @@ export const revokeAccess = async (req, res) => {
 };
 
 export const addUserToDocument = async (req, res) => {
-  const { documentId } = req.params;
+  const documentId  = req.params;
   const { email } = req.body;
 
   if (!email) {
