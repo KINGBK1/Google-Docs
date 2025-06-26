@@ -344,3 +344,31 @@
     margin-top: 16px;
   }
 }
+
+.access{
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.access button{
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  color:white ; 
+  background-color: #1a73e8 ; 
+  width: 40% ;  
+  height: 35px;
+  margin-top: 15px;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  font-weight: bold;
+}
+
+.access button:hover {
+  background-color: #155ab6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

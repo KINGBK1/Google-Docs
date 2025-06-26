@@ -129,15 +129,18 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
           <button className="setting"><CiSettings /></button>
         </div>
       </div>
+      <div className="access">
+        <input
+          type="text"
+          placeholder="Add email to share"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAddUser()}
+        />
 
-      <input
-        type="text"
-        placeholder="Add email to share"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleAddUser()}
-      />
 
+        <button className="add-access" onClick={handleAddUser}>Give Access</button>
+      </div>
       <div className="people-access-container">
         <h3>People With Access</h3>
         {accessList.map((user, i) => {

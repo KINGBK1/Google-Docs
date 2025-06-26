@@ -311,6 +311,7 @@ const TextEditor = () => {
 
   return (
     <div className="container">
+      <div className="navbar-wrapper">
       <TextEditorNavbar
         docName={docName}
         onDocNameChange={handleDocNameChange}
@@ -321,6 +322,7 @@ const TextEditor = () => {
         onModeChange={handleModeChange}
         mode={mode}
       />
+      </div>
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
       {isOpen && (
         <div className="dialog-backdrop">

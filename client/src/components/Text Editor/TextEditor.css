@@ -41,9 +41,11 @@ body {
 
 @media print {
   body {
-    background: none;
+    background: none !important;
   }
-
+  .navbar-wrapper{
+    display: none !important;
+  }
   .container .ql-editor {
     width: 6.5in;
     height: 9in;

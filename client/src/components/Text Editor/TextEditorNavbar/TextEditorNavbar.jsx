@@ -25,14 +25,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
         onDocNameChange(e.target.value);
     };
 
-    const handleLogout = async () => {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    setUser(null);
-    navigate("/");
-  };
+
 
     const handleBlur = () => { };
 
@@ -64,6 +57,15 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+        const handleLogout = async () => {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    setUser(null);
+    navigate("/");
+  };
 
 
     return (
