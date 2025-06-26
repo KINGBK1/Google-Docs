@@ -10,6 +10,7 @@ const Navbar = ({ isMobile, searchTerm, setSearchTerm }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  
   const dropdownRef = useRef();
   const sidebarRef = useRef();
   const inputRef = useRef();

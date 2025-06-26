@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef , useEffect } from 'react';
 import './TextEditorNavbar.css';
 
 import { MdDriveFileMoveOutline } from "react-icons/md";
@@ -13,14 +13,58 @@ import { PiLockKeyLight } from "react-icons/pi";
 import SaveStatusButton from '../loading-button/loading-button';
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange}) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange }) => {
     const [isFilled, setIsFilled] = useState(false);
+    const [user, setUser] = useState(null);
+
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
 
     const handleNameInputChange = (e) => {
         onDocNameChange(e.target.value);
     };
 
+    const handleLogout = async () => {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    setUser(null);
+    navigate("/");
+  };
+
     const handleBlur = () => { };
+
+    // fetch user 
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const res = await fetch(
+                    `${import.meta.env.VITE_API_BASE_URL}/api/auth/status`,
+                    { credentials: "include" }
+                );
+                if (!res.ok) throw new Error("Not authenticated");
+                const { user } = await res.json();
+                setUser(user);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        fetchUser();
+    }, []);
+
+    // handling outside clicks
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
 
     return (
         <div className="navbar-wrapper">
@@ -58,9 +102,46 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
 
 
                     <button title="Gemini (Placeholder)" onClick={() => (setIsGeminiOpen(prev => !prev))}><RiGeminiFill /></button>
-                    <div className="profile-wrapper">
-                        <div className="profile-circle"></div> {/* Placeholder for profile icon */}
+                    <div className="profile-wrapper" ref={dropdownRef}>
+                        {user?.picture ? (
+                            <img
+                                src={user.picture}
+                                alt="Profile"
+                                className="profile-circle-img"
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                            />
+                        ) : (
+                            <div
+                                className="profile-circle"
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                            >
+                                {user?.name?.[0] || "U"}
+                            </div>
+                        )}
+
+                        {dropdownOpen && (
+                            <div className="dropdown-menu">
+                                <div className="dropdown-avatar">
+                                    {user.picture ? (
+                                        <img src={user.picture} alt="Profile" />
+                                    ) : (
+                                        <div className="dropdown-avatar-fallback">
+                                            {user.name?.[0] || "U"}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="dropdown-info">
+                                    <p className="dropdown-name">{user.name}</p>
+                                    <p className="dropdown-email">{user.email}</p>
+                                </div>
+                                <div className="dropdown-actions">
+                                    <button onClick={() => {handleLogout }}>Switch Account</button>
+                                    <button onClick={() => {handleLogout}}>Log Out</button>
+                                </div>
+                            </div>
+                        )}
                     </div>
+
                 </div>
             </div>
 
@@ -96,7 +177,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                 <div className="right-mode-container">
                     <select name="" id="" className="mode-list"
                         value={mode}
-                        onChange={(e)=>onModeChange(e.target.value)}
+                        onChange={(e) => onModeChange(e.target.value)}
                     >
                         <option value="editing">Editing</option>
                         <option value="suggesting">Suggesting</option>
