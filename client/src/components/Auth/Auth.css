@@ -118,3 +118,23 @@
   }
 }
 
+
+.custom-google-btn {
+  background-color: black;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  border-radius: 20px;
+}
+
+.custom-google-btn:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

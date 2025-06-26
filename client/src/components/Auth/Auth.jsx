@@ -17,14 +17,12 @@ function LoginPage({ setAuth }) {
   }, [isLoading]);
 
   const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
+    onSuccess: async (codeResponse) => {
       try {
         setIsLoading(true);
-        const { access_token, id_token } = tokenResponse;
-
         const res = await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-login`,
-          { token: id_token, access_token },
+          { code: codeResponse.code },
           { withCredentials: true }
         );
 
@@ -42,7 +40,7 @@ function LoginPage({ setAuth }) {
       console.error("Google Login Failed");
       setIsLoading(false);
     },
-    flow: 'implicit', // ensures both tokens are received
+    flow: "auth-code",
   });
 
   return (
@@ -74,3 +72,4 @@ function LoginPage({ setAuth }) {
 }
 
 export default LoginPage;
+

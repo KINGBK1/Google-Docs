@@ -77,4 +77,4 @@ const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Docume
     );
 };
 
-export default DriveMoveDialog;
+export default DriveUploadDialogBox;
