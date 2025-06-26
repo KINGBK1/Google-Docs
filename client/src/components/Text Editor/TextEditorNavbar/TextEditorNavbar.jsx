@@ -15,7 +15,7 @@ import axios from 'axios';
 
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , }) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick}) => {
     const [isFilled, setIsFilled] = useState(false);
     const [user, setUser] = useState(null);
 
@@ -97,7 +97,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                     <button onClick={() => setIsFilled(!isFilled)} title={isFilled ? 'Unstar document' : 'Star document'}>
                         {isFilled ? '★' : '☆'}
                     </button>
-                    <button title="Move document"><MdDriveFileMoveOutline /></button>
+                    <button title="Move document" onClick={onDriveClick}><MdDriveFileMoveOutline /></button>
                     {/* Save Button */}
                     <SaveStatusButton status={saveStatus} onClick={onSaveDocument} />
 
@@ -148,8 +148,8 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                                     <p className="dropdown-email">{user.email}</p>
                                 </div>
                                 <div className="dropdown-actions">
-                                    <button onClick={() => {handleLogout }}>Switch Account</button>
-                                    <button onClick={() => {handleLogout}}>Log Out</button>
+                                    <button onClick={{handleLogout }}>Switch Account</button>
+                                    <button onClick={{handleLogout}}>Log Out</button>
                                 </div>
                             </div>
                         )}
