@@ -258,9 +258,6 @@
   background-color: #f5f5f5;
 }
 
-/* ─────────────────────────────────────
-   RESPONSIVE: TextEditorNavbar ≤ 600px
-───────────────────────────────────── */
 @media (max-width: 600px) {
   .navbar-wrapper {
     padding: 4px 12px;
@@ -314,9 +311,6 @@
   }
 }
 
-/* ─────────────────────────────────────
-   ULTRA COMPACT: TextEditorNavbar ≤ 400px
-───────────────────────────────────── */
 @media (max-width: 400px) {
   .navbar-wrapper {
     padding: 2px 8px;
@@ -351,4 +345,22 @@
     padding: 6px 8px;
     font-size: 13px;
   }
+}
+
+.auto-save-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  background-color: #1a73e8;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width:20px ;
+  height: 20px;
 }

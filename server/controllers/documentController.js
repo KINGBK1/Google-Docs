@@ -55,7 +55,7 @@ export const getMyDocuments = async (req, res) => {
 
 export const deleteMyDoc = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params;
     const deletedDoc = await DocumentModel.findByIdAndDelete(id);
     if (!deletedDoc) return res.status(404).json({ message: "Document not found" });
 
@@ -286,3 +286,29 @@ export const addUserToDocument = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateDocument = async (req,res) =>{
+  const {id} = req.params ; 
+  const updates = req.body ;
+  try{ 
+    const document = await DocumentModel.findById(id) ; 
+
+    if(!document) return res.status(404).json({message:"document not found"}) ;
+
+    // only owners can change the mode of the documebnt 
+    if(!document.owner.equals(req.user.id)){
+      return res.status(403).json({message:"only owner can update the document"}) ; 
+    }
+
+        // Apply updates
+    Object.entries(updates).forEach(([key, value]) => {
+      document[key] = value;
+    });
+
+    await document.save();
+    res.status(200).json({ message: "Document updated successfully", document });
+   } catch (err){
+     console.error("Error updating document:", err);
+     res.status(500).json({ message: "Server error" });
+  }
+}

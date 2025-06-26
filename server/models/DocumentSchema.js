@@ -8,6 +8,12 @@ const documentSchema = new mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   isRestricted: { type: Boolean, default: false },
   allowedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  mode: {
+  type: String,
+  enum: ["editing", "viewing", "suggesting"],
+  default: "editing",
+},
+
 });
 
 const DocumentModel = mongoose.model("Document", documentSchema);

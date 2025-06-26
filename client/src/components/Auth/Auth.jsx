@@ -12,7 +12,7 @@ function LoginPage({ setAuth }) {
   
   useEffect(() => {
     if (isLoading) {
-      const timeout = setTimeout(() => setIsLoading(false), 10000); // 
+      const timeout = setTimeout(() => setIsLoading(false), 20000); // 
       return () => clearTimeout(timeout);
     }
   }, [isLoading]);

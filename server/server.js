@@ -139,6 +139,7 @@ io.on('connection', (socket) => {
         name: document.name,
         isRestricted: document.isRestricted,
         isAllowed: true,
+        mode: document.mode,
       });
 
       if (userId) {

@@ -1,0 +1,16 @@
+.save-status-button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 6px 12px;
+  background-color: #f1f3f4;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.saving-text {
+  color: #3197cc;
+  font-weight: bold;
+}

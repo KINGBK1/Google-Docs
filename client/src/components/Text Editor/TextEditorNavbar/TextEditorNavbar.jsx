@@ -10,9 +10,10 @@ import { BsCameraVideo } from "react-icons/bs";
 import { RiGeminiFill } from "react-icons/ri";
 import { PiLockKeyLight } from "react-icons/pi";
 // import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
+import SaveStatusButton from '../loading-button/loading-button';
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen , setIsGeminiOpen}) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange}) => {
     const [isFilled, setIsFilled] = useState(false);
 
     const handleNameInputChange = (e) => {
@@ -41,9 +42,8 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen 
                     </button>
                     <button title="Move document"><MdDriveFileMoveOutline /></button>
                     {/* Save Button */}
-                    <button onClick={onSaveDocument} title="Save Document">
-                        <IoCloudDoneOutline />
-                    </button>
+                    <SaveStatusButton status={saveStatus} onClick={onSaveDocument} />
+
                 </div>
 
                 <div className="right-items">
@@ -57,7 +57,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen 
                     </button>
 
 
-                    <button title="Gemini (Placeholder)" onClick={()=>(setIsGeminiOpen(prev => !prev))}><RiGeminiFill /></button>
+                    <button title="Gemini (Placeholder)" onClick={() => (setIsGeminiOpen(prev => !prev))}><RiGeminiFill /></button>
                     <div className="profile-wrapper">
                         <div className="profile-circle"></div> {/* Placeholder for profile icon */}
                     </div>
@@ -94,7 +94,10 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen 
                     </ul>
                 </div>
                 <div className="right-mode-container">
-                    <select name="" id="" className="mode-list">
+                    <select name="" id="" className="mode-list"
+                        value={mode}
+                        onChange={(e)=>onModeChange(e.target.value)}
+                    >
                         <option value="editing">Editing</option>
                         <option value="suggesting">Suggesting</option>
                         <option value="viewing">Viewing</option>

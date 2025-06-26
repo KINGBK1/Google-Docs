@@ -10,6 +10,7 @@ import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
 
+
 // Register Page Break blot
 const PageBreak = Quill.import("blots/block/embed");
 class CustomPageBreak extends PageBreak {
@@ -44,6 +45,33 @@ const TextEditor = () => {
   const hasLoaded = useRef(false);
   const socketRef = useRef(null);
   const navigate = useNavigate();
+  const [saveStatus, setSaveStatus] = useState("idle");
+  const saveTimeoutRef = useRef(null);
+  const [needsSaving, setNeedsSaving] = useState(false);
+  const [mode, setMode] = useState("editing"); // default mode is editing
+
+  const handleModeChange = async (newMode) => {
+  setMode(newMode);
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ mode: newMode }),
+    });
+
+    if (!res.ok) throw new Error("Failed to update mode");
+    const data = await res.json();
+    console.log("Mode updated:", data.document.mode);
+  } catch (err) {
+    console.error("Error updating mode:", err.message);
+  }
+};
+
+
 
   const fetchUserId = async () => {
     try {
@@ -179,9 +207,17 @@ const TextEditor = () => {
         navigate(`/restricted/${documentId}`);
         return;
       }
-
       quill.setContents(content);
-      quill.enable();
+      setMode(mode || "editing"); // default to editing mode if not set
+
+      if(mode === "viewing") {
+        quill.disable() ; 
+      }else{
+        quill.enable();
+      }
+
+      
+      
 
       if (!hasLoaded.current) {
         setDocName(name || "Untitled Document");
@@ -195,11 +231,19 @@ const TextEditor = () => {
       quill.updateContents(delta);
     });
 
+    // using debouncing to handle text changes
     const handleTextChange = (delta, _, source) => {
       if (source === "user") {
-        s.emit("send-changes", delta);
+        socketRef.current?.emit("send-changes", delta);
+        setNeedsSaving(true); // mark it dirty
+
+        if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = setTimeout(() => {
+          saveDocument();
+        }, 1000);
       }
     };
+
 
     quill.on("text-change", handleTextChange);
 
@@ -211,13 +255,27 @@ const TextEditor = () => {
   }, [quill, documentId, navigate]);
 
   const saveDocument = useCallback(() => {
-    if (!isReady || !quill) return;
+    if (!isReady || !quill || !needsSaving) return;
+
+    setSaveStatus("saving");
+
     socketRef.current?.emit("save-document", {
       documentId,
       name: docName,
       content: quill.getContents(),
     });
-  }, [quill, docName, documentId, isReady]);
+
+    setNeedsSaving(false); // reset after save
+
+    // Simulate saving done
+    setTimeout(() => {
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    }, 500);
+  }, [quill, docName, documentId, isReady, needsSaving]);
+
+
+
 
   useEffect(() => {
     if (!isReady) return;
@@ -225,7 +283,9 @@ const TextEditor = () => {
     return () => clearInterval(interval);
   }, [saveDocument, isReady]);
 
-  const handleManualSave = () => saveDocument();
+  const handleManualSave = () => {
+    saveDocument(); // manually call save
+  };
   const handleDocNameChange = (newName) => setDocName(newName);
 
   useEffect(() => {
@@ -255,8 +315,11 @@ const TextEditor = () => {
         docName={docName}
         onDocNameChange={handleDocNameChange}
         onSaveDocument={handleManualSave}
+        saveStatus={saveStatus}
         setisOpen={setisOpen}
         setIsGeminiOpen={setisGeminiOpen}
+        onModeChange={handleModeChange}
+        mode={mode}
       />
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
       {isOpen && (

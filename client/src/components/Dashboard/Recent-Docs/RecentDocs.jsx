@@ -83,7 +83,12 @@ const RecentDocs = ({ isLoading, isMobile, searchTerm }) => {
               id={doc._id}
               title={doc.name}
               subtitle={formatSubtitle(doc.updatedAt)}
-              onDelete={() => {}}
+              onDelete={(id) => {fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+              }).then(alert(`do you want to delete ${doc.name}`))
+              .then(() => setRecentDocs(recentDocs.filter(d => d._id !== id)));}}
+              
             />
           ))
         ) : (

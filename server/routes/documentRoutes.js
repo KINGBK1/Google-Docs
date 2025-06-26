@@ -9,7 +9,8 @@ import {
   requestAccess,
   grantAccessViaLink,
   revokeAccess,
-  addUserToDocument
+  addUserToDocument,
+  updateDocument
 } from "../controllers/documentController.js";
 
 const router = express.Router();
@@ -23,5 +24,6 @@ router.post("/:id/request-access", authMiddleware, requestAccess);
 router.get("/:id/grant-access", grantAccessViaLink);
 router.patch("/:id/revoke", authMiddleware, revokeAccess);
 router.post("/:id/share", authMiddleware, addUserToDocument);
+router.patch("/:id", authMiddleware, updateDocument);
 
 export default router;
