@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './DriveUploadDialogBox.css';
+import axios from 'axios';
 
 const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Document" }) => {
     const [activeTab, setActiveTab] = useState('Suggested');

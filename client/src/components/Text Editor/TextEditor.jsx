@@ -9,7 +9,7 @@ import Delta from "quill-delta";
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
-import DriveMoveDialog from "./driveUploadDialogbox/DriveUploadDialogbox";
+import DriveUploadDialogBox from "./driveUploadDialogbox/DriveUploadDialogbox";
 
 
 // Register Page Break blot
@@ -357,7 +357,7 @@ const TextEditor = () => {
       )}
       {isDialogOpen && (
         <div className="drive-upload-dialog-container">
-          <DriveMoveDialog
+          <DriveUploadDialogBox
             isOpen={isDialogOpen}
             onClose={() => setDialogOpen(false)}
             documentName={docName}
