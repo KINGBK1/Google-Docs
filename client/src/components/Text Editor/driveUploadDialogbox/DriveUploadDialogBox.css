@@ -1,0 +1,108 @@
+.drive-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(60, 60, 60, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.drive-modal {
+  width: 600px;
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.drive-modal-title {
+  margin-bottom: 16px;
+}
+
+.drive-current-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.drive-location-btn {
+  background: #f1f3f4;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: default;
+}
+
+.drive-open-drive {
+  font-size: 1.2rem;
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.drive-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.drive-tab {
+  padding: 6px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+}
+
+.drive-tab.active {
+  border-bottom: 2px solid #1a73e8;
+  font-weight: bold;
+}
+
+.drive-folder-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.drive-folder-item {
+  padding: 6px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.drive-warning {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.drive-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.drive-cancel-btn {
+  background: none;
+  border: none;
+  color: #1a73e8;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.drive-move-btn {
+  background: #e0e0e0;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 20px;
+  font-size: 14px;
+  cursor: not-allowed;
+}

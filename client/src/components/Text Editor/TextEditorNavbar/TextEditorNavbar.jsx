@@ -11,9 +11,11 @@ import { RiGeminiFill } from "react-icons/ri";
 import { PiLockKeyLight } from "react-icons/pi";
 // import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 import SaveStatusButton from '../loading-button/loading-button';
+import axios from 'axios';
+
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange }) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , }) => {
     const [isFilled, setIsFilled] = useState(false);
     const [user, setUser] = useState(null);
 
@@ -25,7 +27,16 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
         onDocNameChange(e.target.value);
     };
 
-
+    const handleDriveClick = async ()=> {
+        await axios.post(
+  `${import.meta.env.VITE_API_BASE_URL}/api/drive/upload`,
+  {
+    documentName: docName,
+    content: quillRef.current.root.innerText,
+  },
+  { withCredentials: true }
+);
+    }
 
     const handleBlur = () => { };
 

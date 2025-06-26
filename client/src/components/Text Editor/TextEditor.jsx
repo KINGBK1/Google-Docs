@@ -9,6 +9,7 @@ import Delta from "quill-delta";
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
+import DriveMoveDialog from "./driveUploadDialogbox/DriveUploadDialogbox";
 
 
 // Register Page Break blot
@@ -49,27 +50,28 @@ const TextEditor = () => {
   const saveTimeoutRef = useRef(null);
   const [needsSaving, setNeedsSaving] = useState(false);
   const [mode, setMode] = useState("editing"); // default mode is editing
+  const [isDialogOpen, setDialogOpen] = useState(false);
 
   const handleModeChange = async (newMode) => {
-  setMode(newMode);
+    setMode(newMode);
 
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ mode: newMode }),
-    });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ mode: newMode }),
+      });
 
-    if (!res.ok) throw new Error("Failed to update mode");
-    const data = await res.json();
-    console.log("Mode updated:", data.document.mode);
-  } catch (err) {
-    console.error("Error updating mode:", err.message);
-  }
-};
+      if (!res.ok) throw new Error("Failed to update mode");
+      const data = await res.json();
+      console.log("Mode updated:", data.document.mode);
+    } catch (err) {
+      console.error("Error updating mode:", err.message);
+    }
+  };
 
 
 
@@ -210,14 +212,14 @@ const TextEditor = () => {
       quill.setContents(content);
       setMode(mode || "editing"); // default to editing mode if not set
 
-      if(mode === "viewing") {
-        quill.disable() ; 
-      }else{
+      if (mode === "viewing") {
+        quill.disable();
+      } else {
         quill.enable();
       }
 
-      
-      
+
+
 
       if (!hasLoaded.current) {
         setDocName(name || "Untitled Document");
@@ -236,6 +238,10 @@ const TextEditor = () => {
       if (source === "user") {
         socketRef.current?.emit("send-changes", delta);
         setNeedsSaving(true); // mark it dirty
+        if (quill) {
+          window.editorTextForDrive = quill.getText();
+        }
+
 
         if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
         saveTimeoutRef.current = setTimeout(() => {
@@ -312,16 +318,22 @@ const TextEditor = () => {
   return (
     <div className="container">
       <div className="navbar-wrapper">
-      <TextEditorNavbar
-        docName={docName}
-        onDocNameChange={handleDocNameChange}
-        onSaveDocument={handleManualSave}
-        saveStatus={saveStatus}
-        setisOpen={setisOpen}
-        setIsGeminiOpen={setisGeminiOpen}
-        onModeChange={handleModeChange}
-        mode={mode}
-      />
+        <TextEditorNavbar
+          docName={docName}
+          onDocNameChange={handleDocNameChange}
+          onSaveDocument={handleManualSave}
+          saveStatus={saveStatus}
+          setisOpen={setisOpen}
+          setIsGeminiOpen={setisGeminiOpen}
+          onModeChange={handleModeChange}
+          mode={mode}
+          isOpen={isDialogOpen}
+          onClose={() => setDialogOpen(false)}
+          documentName={docName}
+          editorText={quill?.getText() || ""}
+          onDriveClick={() => setDialogOpen(true)}
+
+        />
       </div>
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
       {isOpen && (
@@ -340,6 +352,15 @@ const TextEditor = () => {
           <ChatBotSidebar
             onClose={() => setisGeminiOpen(false)}
             onInsertText={insertText}
+          />
+        </div>
+      )}
+      {isDialogOpen && (
+        <div className="drive-upload-dialog-container">
+          <DriveMoveDialog
+            isOpen={isDialogOpen}
+            onClose={() => setDialogOpen(false)}
+            documentName={docName}
           />
         </div>
       )}

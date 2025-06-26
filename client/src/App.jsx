@@ -48,7 +48,7 @@ const App = () => {
   }, []);
 
   return (
-    <GoogleOAuthProvider clientId={client_id}>
+    <GoogleOAuthProvider clientId={client_id} scope="https://www.googleapis.com/auth/drive.file">
       <Router>
         <Routes>
           <Route

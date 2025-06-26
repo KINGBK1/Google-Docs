@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "./Auth.css";
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SkeletonDashboard from './skeletal-loader/skeletal-loader';
@@ -9,33 +9,41 @@ function LoginPage({ setAuth }) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  
   useEffect(() => {
     if (isLoading) {
-      const timeout = setTimeout(() => setIsLoading(false), 20000); // 
+      const timeout = setTimeout(() => setIsLoading(false), 20000); // fallback in case of failure
       return () => clearTimeout(timeout);
     }
   }, [isLoading]);
 
-  const handleSuccess = async (credentialResponse) => {
-    try {
-      setIsLoading(true);
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-login`,
-        { token: credentialResponse.credential },
-        { withCredentials: true }
-      );
+  const login = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        setIsLoading(true);
+        const { access_token, id_token } = tokenResponse;
 
-      if (res.status === 200) {
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-login`,
+          { token: id_token, access_token },
+          { withCredentials: true }
+        );
+
+        if (res.status === 200) {
+          setIsLoading(false);
+          setAuth(true);
+          navigate("/dashboard");
+        }
+      } catch (err) {
+        console.error("Google Login Failed:", err.response?.data || err.message);
         setIsLoading(false);
-        setAuth(true);
-        navigate("/dashboard");
       }
-    } catch (err) {
-      console.error("Google Login Failed:", err.response?.data || err.message);
+    },
+    onError: () => {
+      console.error("Google Login Failed");
       setIsLoading(false);
-    }
-  };
+    },
+    flow: 'implicit', // ensures both tokens are received
+  });
 
   return (
     <div className={`fade-wrapper ${isLoading ? 'loading' : ''}`}>
@@ -49,14 +57,13 @@ function LoginPage({ setAuth }) {
               <h1>Welcome to BK-GDocs</h1>
               <p>Sign in with Google to start collaborating</p>
               <div className="google-login-container">
-                <GoogleLogin
-                  onSuccess={handleSuccess}
-                  onError={() => console.log("Google Login Failed")}
-                  text="continue_with"
-                  theme="filled_black"
-                  shape="pill"
-                  size="large"
-                />
+                <button
+                  onClick={() => login()}
+                  className="custom-google-btn"
+                  title="Continue with Google"
+                >
+                  Continue with Google
+                </button>
               </div>
             </div>
           </div>
