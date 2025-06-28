@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 import LoginPage from "./components/Auth/Auth";
 import Dashboard from "./components/Dashboard/Dashboard";
@@ -14,37 +14,31 @@ const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
-  return null;
-};
-
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
-    const checkCookieToken = () => {
-      const token = getCookie("token");
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          const isExpired = decoded.exp * 1000 < Date.now();
-          setIsAuthenticated(!isExpired);
-        } catch (err) {
-          console.error("Invalid token", err);
+    const checkAuthStatus = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/auth/status`,
+          { withCredentials: true }
+        );
+        if (res.status === 200 && res.data.user) {
+          setIsAuthenticated(true);
+        } else {
           setIsAuthenticated(false);
         }
-      } else {
+      } catch (err) {
         setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
-    checkCookieToken();
+    checkAuthStatus();
   }, []);
 
   return (
@@ -71,7 +65,7 @@ const App = () => {
             }
           />
 
-          {/* Anyone can access document routes, TextEditor handles restrictions internally */}
+          {/* TextEditor handles restrictions itself */}
           <Route path="/documents/:documentId" element={<TextEditor />} />
           <Route path="/restricted/:documentId" element={<RestrictedUserPage />} />
           <Route path="*" element={<Error />} />

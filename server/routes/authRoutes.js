@@ -3,7 +3,6 @@ import { googleLogin } from "../controllers/authController.js";
 import authMiddleware from "../middlewares/AuthMiddleware.js";
 import jwt from 'jsonwebtoken'
 const router = express.Router();
-import { uploadToDrive } from '../controllers/authController.js'
 
 router.post("/google-login", googleLogin);
 router.get("/status",authMiddleware ,(req, res) => {
@@ -19,6 +18,5 @@ router.post("/logout", (req, res) => {
   }).status(200).json({ message: "Logged out successfully" });
 });
 
-router.post("/drive-upload", authMiddleware, uploadToDrive);
 
 export default router;

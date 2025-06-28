@@ -1,42 +1,36 @@
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import User from "../models/UserSchema.js";
-import { google } from "googleapis";
 
 export const googleLogin = async (req, res) => {
-  const { code } = req.body;
+  const { token } = req.body;
 
-  if (!code) {
-    return res.status(400).json({ message: "Missing authorization code" });
+  if (!token) {
+    return res.status(400).json({ message: "Missing access token" });
   }
 
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.REDIRECT_URI
-  );
-
   try {
-    const { tokens } = await oauth2Client.getToken(code);
-    oauth2Client.setCredentials(tokens);
+    const client = new OAuth2Client();
+    const ticket = await client.getTokenInfo(token); // token verification
 
-    // Optionally fetch user info
-    const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
-    const { data } = await oauth2.userinfo.get();
+    const { sub: googleId, email } = ticket;
 
-    const { id: googleId, email, name, picture } = data;
+    // Optional: Fetch user info via Google People API (if needed)
+    const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
 
-    // Upsert user in DB
+    const { name, picture } = data;
+
     let user = await User.findOne({ googleId });
     if (!user) {
       user = new User({ googleId, email, name, picture });
       await user.save();
-    } else if (!user.picture) {
-      user.picture = picture;
-      await user.save();
     }
 
-    // Issue custom JWT
     const jwtToken = jwt.sign(
       {
         id: user._id,
@@ -48,15 +42,7 @@ export const googleLogin = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Set cookies
     res.cookie("token", jwtToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 60 * 60 * 1000,
-    });
-
-    res.cookie("g_access_token", tokens.access_token, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
@@ -72,9 +58,7 @@ export const googleLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Google Auth Code Exchange Failed:", error);
+    console.error("Token verification failed:", error);
     res.status(401).json({ message: "Failed to authenticate with Google" });
   }
 };
-
-

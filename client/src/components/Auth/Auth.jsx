@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import "./Auth.css";
+import './Auth.css';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,25 +11,25 @@ function LoginPage({ setAuth }) {
 
   useEffect(() => {
     if (isLoading) {
-      const timeout = setTimeout(() => setIsLoading(false), 20000); // fallback in case of failure
+      const timeout = setTimeout(() => setIsLoading(false), 20000);
       return () => clearTimeout(timeout);
     }
   }, [isLoading]);
 
   const login = useGoogleLogin({
-    onSuccess: async (codeResponse) => {
+    onSuccess: async (tokenResponse) => {
       try {
         setIsLoading(true);
         const res = await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-login`,
-          { code: codeResponse.code },
+          { token: tokenResponse.access_token },
           { withCredentials: true }
         );
 
         if (res.status === 200) {
           setIsLoading(false);
           setAuth(true);
-          navigate("/dashboard");
+          navigate('/dashboard');
         }
       } catch (err) {
         console.error("Google Login Failed:", err.response?.data || err.message);
@@ -40,7 +40,7 @@ function LoginPage({ setAuth }) {
       console.error("Google Login Failed");
       setIsLoading(false);
     },
-    flow: "auth-code",
+    scope: 'openid email profile',
   });
 
   return (
@@ -72,4 +72,3 @@ function LoginPage({ setAuth }) {
 }
 
 export default LoginPage;
-
