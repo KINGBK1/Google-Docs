@@ -52,26 +52,31 @@ const TextEditor = () => {
   const [mode, setMode] = useState("editing"); // default mode is editing
   const [isDialogOpen, setDialogOpen] = useState(false);
 
-  const handleModeChange = async (newMode) => {
-    setMode(newMode);
-
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`, {
+const handleModeChange = async (newMode) => {
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`,
+      {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ mode: newMode }),
-      });
+      }
+    );
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    console.log("Mode updated:", data.document.mode);
 
-      if (!res.ok) throw new Error("Failed to update mode");
-      const data = await res.json();
-      console.log("Mode updated:", data.document.mode);
-    } catch (err) {
-      console.error("Error updating mode:", err.message);
-    }
-  };
+    setMode(data.document.mode);
+
+    // toggle editor
+    if (data.document.mode === "viewing") quill.disable();
+    else quill.enable();
+  } catch (err) {
+    console.error("Error updating mode:", err);
+  }
+};
+
 
 
 
@@ -94,6 +99,8 @@ const TextEditor = () => {
     }
   };
 
+  // … in TextEditor.jsx …
+
   const WrapperRef = useCallback((wrapper) => {
     if (!wrapper) return;
     wrapper.innerHTML = "";
@@ -107,19 +114,25 @@ const TextEditor = () => {
       },
     });
 
-    // Filter pasted base64/Blob images
-    q.clipboard.addMatcher("IMG", (node, delta) => {
-      const src = node.getAttribute("src") || "";
-      if (src.startsWith("data:") || src.startsWith("blob:")) return new Delta();
+    // === 1) Remove any pasted base64/blob images ===
+    q.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+      delta.ops = delta.ops.filter((op) => {
+        if (op.insert && op.insert.image) {
+          const src = op.insert.image;
+          // drop if it's data: or blob:
+          return !(src.startsWith("data:") || src.startsWith("blob:"));
+        }
+        return true;
+      });
       return delta;
     });
 
-    // Handle custom image uploads
+    // === 2) Handle our own image uploads only ===
     const toolbar = q.getModule("toolbar");
     toolbar.addHandler("image", () => {
       const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
+      input.setAttribute("type", "file");
+      input.setAttribute("accept", "image/*");
       input.click();
 
       input.onchange = async () => {
@@ -128,40 +141,41 @@ const TextEditor = () => {
         const formData = new FormData();
         formData.append("image", file);
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image`, {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-          });
-          if (!res.ok) {
-            throw new Error(`Image upload failed: ${res.status}`);
-          }
-          const data = await res.json();
-          const range = q.getSelection();
-          if (range) {
-            q.insertEmbed(range.index, "image", data.url);
-          }
+          const res = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/api/upload-image`,
+            {
+              method: "POST",
+              body: formData,
+              credentials: "include",
+            }
+          );
+          if (!res.ok) throw new Error(res.statusText);
+          const { url } = await res.json();
+
+          // insert Cloudinary URL into editor
+          const range = q.getSelection(true);
+          q.insertEmbed(range.index, "image", url, Quill.sources.USER);
+          q.setSelection(range.index + 1, Quill.sources.SILENT);
         } catch (err) {
-          console.error("Image upload failed:", err.message);
+          console.error("Image upload failed:", err);
         }
       };
     });
 
-    // Add Page Break button
+    // === 3) (Optional) Add page-break button ===
     const pageBreakBtn = document.createElement("button");
     pageBreakBtn.innerText = "PB";
     pageBreakBtn.onclick = () => {
-      const range = q.getSelection();
-      if (range) {
-        q.insertEmbed(range.index, "pageBreak", true);
-        q.setSelection(range.index + 1, Quill.sources.SILENT);
-      }
+      const range = q.getSelection(true);
+      q.insertEmbed(range.index, "pageBreak", true, Quill.sources.USER);
+      q.setSelection(range.index + 1, Quill.sources.SILENT);
     };
     toolbar.container.appendChild(pageBreakBtn);
 
     q.disable();
     setQuill(q);
   }, []);
+
 
   useEffect(() => {
     if (!quill || !documentId) return;
@@ -203,7 +217,7 @@ const TextEditor = () => {
       }
     });
 
-    s.on("load-document", ({ content, name, isRestricted, isAllowed }) => {
+    s.on("load-document", ({ content, name, isRestricted, isAllowed , mode: serverMode}) => {
       setIsRestricted(isRestricted);
       if (isRestricted && !isAllowed) {
         navigate(`/restricted/${documentId}`);

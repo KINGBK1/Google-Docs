@@ -119,6 +119,7 @@ io.on('connection', (socket) => {
           owner: userId,
           isRestricted: false,
           allowedUsers: [userId],
+          mode: document.mode,
         });
       }
 
