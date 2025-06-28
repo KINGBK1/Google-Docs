@@ -45,16 +45,18 @@ const App = () => {
     <GoogleOAuthProvider clientId={client_id} scope="https://www.googleapis.com/auth/drive.file">
       <Router>
         <Routes>
-          <Route
-            path="/"
-            element={
-              isLoading ? null : isAuthenticated ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
-                <LoginPage setAuth={setIsAuthenticated} />
-              )
-            }
-          />
+<Route
+  path="/"
+  element={
+    isLoading ? (
+      <div style={{ textAlign: "center", marginTop: "20vh" }}>Loading...</div>
+    ) : isAuthenticated ? (
+      <Navigate to="/dashboard" replace />
+    ) : (
+      <LoginPage setAuth={setIsAuthenticated} />
+    )
+  }
+/>
 
           <Route
             path="/dashboard/*"
