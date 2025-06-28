@@ -19,6 +19,6 @@ router.post("/logout", (req, res) => {
   }).status(200).json({ message: "Logged out successfully" });
 });
 
-router.post("/upload", authMiddleware, uploadToDrive);
+router.post("/drive-upload", authMiddleware, uploadToDrive);
 
 export default router;

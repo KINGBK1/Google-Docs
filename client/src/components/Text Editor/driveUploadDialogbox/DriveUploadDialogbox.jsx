@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Document" }) => {
     const [activeTab, setActiveTab] = useState('Suggested');
-    const folders = ['Farewelllll', 'Photos', 'JT'];
+    const folders = ['Farewelllll', 'Photos', 'JT']; // You can replace this with actual folder names if dynamic
     const [uploading, setUploading] = useState(false);
 
     if (!isOpen) return null;
@@ -12,7 +12,7 @@ const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Docume
     return (
         <div className="drive-modal-overlay">
             <div className="drive-modal">
-                <h2 className="drive-modal-title">Move {documentName}</h2>
+                <h2 className="drive-modal-title">Move "{documentName}"</h2>
 
                 <div className="drive-current-location">
                     <span>Current location:</span>
@@ -41,7 +41,7 @@ const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Docume
                 </div>
 
                 <div className="drive-warning">
-                    ⚠️ Select a location to show the folder path
+                    ⚠️ Select a location to show the folder path (feature coming soon)
                 </div>
 
                 <div className="drive-footer">
@@ -56,10 +56,11 @@ const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Docume
                                     {
                                         documentName,
                                         content: window.editorTextForDrive || "Empty document",
+                                        // Add selectedFolderId if needed later
                                     },
                                     { withCredentials: true }
                                 );
-                                alert("✅ Document uploaded to Google Drive!");
+                                alert("✅ Uploaded to Google Drive!");
                                 onClose();
                             } catch (err) {
                                 console.error("Upload failed:", err);
@@ -69,6 +70,15 @@ const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Docume
                             }
                         }}
                         disabled={uploading}
+                        style={{
+                            backgroundColor: uploading ? "#ccc" : "#1a73e8",
+                            color: "#fff",
+                            cursor: uploading ? "not-allowed" : "pointer",
+                            borderRadius: "20px",
+                            padding: "8px 24px",
+                            border: "none",
+                            fontWeight: "500"
+                        }}
                     >
                         {uploading ? "Uploading..." : "Move"}
                     </button>

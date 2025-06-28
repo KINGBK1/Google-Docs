@@ -10,10 +10,12 @@ import jwt from 'jsonwebtoken';
 
 import DocumentModel from './models/DocumentSchema.js';
 import User from './models/UserSchema.js';
+
 import authRoutes from './routes/authRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import geminiRoute from './routes/geminiRoute.js';
+import driveRoute from './routes/driveRoutes.js';
 
 dotenv.config();
 
@@ -37,14 +39,12 @@ app.use((req, res, next) => {
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://google-docs-7mav.vercel.app',     // your Vercel client
-  'https://google-docs-99d3.onrender.com',  // your Render backend domain
-  // add any other exact URLs here (e.g. preview URLs)
+  'https://google-docs-7mav.vercel.app',    
+  'https://google-docs-99d3.onrender.com', 
 ];
 app.use(cors({
   origin: (origin, callback) => {
     console.log("CORS request origin:", origin);
-    // allow server-side tools (no origin) and exact matches
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -73,6 +73,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/gemini", geminiRoute);
+app.use("/api/drive", driveRoute);
 
 // HTTP & Socket.IO setup
 const server = http.createServer(app);
