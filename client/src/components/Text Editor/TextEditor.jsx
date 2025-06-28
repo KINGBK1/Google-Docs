@@ -52,30 +52,30 @@ const TextEditor = () => {
   const [mode, setMode] = useState("editing"); // default mode is editing
   const [isDialogOpen, setDialogOpen] = useState(false);
 
-const handleModeChange = async (newMode) => {
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ mode: newMode }),
-      }
-    );
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    console.log("Mode updated:", data.document.mode);
+  const handleModeChange = async (newMode) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ mode: newMode }),
+        }
+      );
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      console.log("Mode updated:", data.document.mode);
 
-    setMode(data.document.mode);
+      setMode(data.document.mode);
 
-    // toggle editor
-    if (data.document.mode === "viewing") quill.disable();
-    else quill.enable();
-  } catch (err) {
-    console.error("Error updating mode:", err);
-  }
-};
+      // toggle editor
+      if (data.document.mode === "viewing") quill.disable();
+      else quill.enable();
+    } catch (err) {
+      console.error("Error updating mode:", err);
+    }
+  };
 
 
 
@@ -217,32 +217,37 @@ const handleModeChange = async (newMode) => {
       }
     });
 
-    s.on("load-document", ({ content, name, isRestricted, isAllowed , mode: serverMode}) => {
-      setIsRestricted(isRestricted);
-      if (isRestricted && !isAllowed) {
-        navigate(`/restricted/${documentId}`);
-        return;
+    s.on(
+      'load-document',
+      ({ content, name, isRestricted, isAllowed, mode: serverMode }) => {
+        setIsRestricted(isRestricted);
+        if (isRestricted && !isAllowed) {
+          navigate(`/restricted/${documentId}`);
+          return;
+        }
+
+        // load the document into Quill
+        quill.setContents(content);
+
+        // 1) update React state
+        setMode(serverMode || 'editing');
+
+        // 2) immediately enable/disable the editor
+        if (serverMode === 'viewing') {
+          quill.disable();
+        } else {
+          quill.enable();
+        }
+
+        // set the title once
+        if (!hasLoaded.current) {
+          setDocName(name || 'Untitled Document');
+          hasLoaded.current = true;
+        }
+
+        setIsReady(true);
       }
-      quill.setContents(content);
-      setMode(mode || "editing"); // default to editing mode if not set
-
-      if (mode === "viewing") {
-        quill.disable();
-      } else {
-        quill.enable();
-      }
-
-
-
-
-      if (!hasLoaded.current) {
-        setDocName(name || "Untitled Document");
-        hasLoaded.current = true;
-      }
-
-      setIsReady(true);
-    });
-
+    );
     s.on("receive-changes", (delta) => {
       quill.updateContents(delta);
     });
