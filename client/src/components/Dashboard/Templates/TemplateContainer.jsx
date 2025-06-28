@@ -14,7 +14,7 @@ const TemplateContainer = () => {
             </div>
 
             <div className="template-list">
-                <TemplateCard title="Blank document" />
+                <TemplateCard title="Blank Document" />
                 <TemplateCard title="Resume" subtitle="Serif" />
                 <TemplateCard title="Resume" subtitle="Coral" />
                 <TemplateCard title="Letter" subtitle="Spearmint" />

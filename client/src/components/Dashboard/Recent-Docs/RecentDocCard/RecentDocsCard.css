@@ -52,4 +52,10 @@
   box-shadow: 0px 0px 5px rgb(48, 46, 46) ;
   width: 5vw ; 
 }
-  
+
+.recent-doc-thumbnail{
+ background: url("assets/sheet.png") no-repeat center center;
+ background-size: contain;
+ height: 120px;
+ border-radius: 4px;
+}

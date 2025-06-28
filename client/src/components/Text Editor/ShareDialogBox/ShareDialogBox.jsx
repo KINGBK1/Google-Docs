@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ShareDialogBox.css';
 import { MdOutlineContactSupport } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
+import {OrbitProgress} from 'react-loading-indicators'
 
 const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
   const [email, setEmail] = useState('');
@@ -10,10 +11,13 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
   const [isOwner, setIsOwner] = useState(false);
   const [documentOwnerId, setDocumentOwnerId] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
+
 
   // Fetching current user & return ID
   const fetchCurrentUser = async () => {
     try {
+      setLoading(true);
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/status`, {
         credentials: "include",
       });
@@ -25,6 +29,8 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
       console.error("Error fetching current user:", err);
       alert("Session expired. Please log in again.");
       return null;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,7 +149,7 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
       </div>
       <div className="people-access-container">
         <h3>People With Access</h3>
-        {accessList.map((user, i) => {
+        {!loading && accessList.map((user, i) => {
           const isSelf = user._id === currentUserId;
           const isUserOwner = user._id === documentOwnerId;
           return (
@@ -167,9 +173,11 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
                   Remove
                 </button>
               )}
+              
             </div>
           );
         })}
+        {loading && <OrbitProgress color="#31aecc" size="medium" text="" textColor="" />}
       </div>
 
       <div className="general-access-conatiner">

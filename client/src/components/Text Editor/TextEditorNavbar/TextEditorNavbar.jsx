@@ -12,15 +12,17 @@ import { PiLockKeyLight } from "react-icons/pi";
 // import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 import SaveStatusButton from '../loading-button/loading-button';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick}) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick, setIsAuthenticated}) => {
     const [isFilled, setIsFilled] = useState(false);
     const [user, setUser] = useState(null);
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    const navigate = useNavigate();
 
 
     const handleNameInputChange = (e) => {
@@ -69,13 +71,19 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-        const handleLogout = async () => {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    setUser(null);
-    navigate("/");
+      const handleLogout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      setUser(null);
+      setIsAuthenticated(false); 
+      navigate("/");             
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
 
@@ -148,8 +156,8 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                                     <p className="dropdown-email">{user.email}</p>
                                 </div>
                                 <div className="dropdown-actions">
-                                    <button onClick={{handleLogout }}>Switch Account</button>
-                                    <button onClick={{handleLogout}}>Log Out</button>
+                                    <button onClick={handleLogout }>Switch Account</button>
+                                    <button onClick={handleLogout}>Log Out</button>
                                 </div>
                             </div>
                         )}
@@ -193,7 +201,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                         onChange={(e) => onModeChange(e.target.value)}
                     >
                         <option value="editing">Editing</option>
-                        <option value="suggesting">Suggesting</option>
+                        <option value="suggesting">Suggesting(N/A)</option>
                         <option value="viewing">Viewing</option>
                     </select>
                 </div>

@@ -134,12 +134,15 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding-top: 4px;
+  padding-top: 6px;
+  /* border: 2px solid black; */
+  margin-left: -20px;
 }
 
 .left-buttons-container{
   display: flex;
   align-items: center;
+  /* border: 2px solid black; */
 }
 
 /* .left-buttons-container button{
@@ -157,6 +160,8 @@
   display:flex;
   justify-content: center;
   align-items: center;
+  /* border: 2px solid black; */
+  flex-wrap: wrap;
 }
 
 .right-mode-container select{
@@ -307,10 +312,14 @@
     gap: 4px;
   }
 
+
   .right-mode-container select {
     padding: 6px 8px;
     font-size: 13px;
   }
+
+
+
 }
 
 @media (max-width: 400px) {
@@ -347,6 +356,7 @@
     padding: 6px 8px;
     font-size: 13px;
   }
+
 }
 
 .auto-save-button{
@@ -440,6 +450,7 @@
   transition: background 0.2s;
   color: var(--text-primary, #202124);
 }
+
 
 .dropdown-actions button:hover {
   background: var(--input-bg, #f1f3f4);

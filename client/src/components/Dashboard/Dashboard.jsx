@@ -6,8 +6,9 @@ import TemplateContainer from "./Templates/TemplateContainer";
 import RecentDocs from "./Recent-Docs/RecentDocs";
 import TextEditor from "../Text Editor/TextEditor";
 import "./Dashboard.css";
+import { v4 as uuidv4 } from "uuid"; 
 
-const Dashboard = ({ isLoading }) => {
+const Dashboard = ({ isLoading , setIsAuthenticated}) => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 690);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,32 +21,40 @@ const Dashboard = ({ isLoading }) => {
 
   return (
     <div className="dashboard">
-      <Navbar
-        isMobile={isMobile}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+
 
       <Routes>
         <Route
           path="/"
           element={
             <>
+                  <Navbar
+        isMobile={isMobile}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        setIsAuthenticated={setIsAuthenticated}
+      />
               {!isMobile && <TemplateContainer />}
+              
               <RecentDocs
                 isLoading={isLoading}
                 isMobile={isMobile}
-                searchTerm={searchTerm}   
+                searchTerm={searchTerm}
               />
+              
               {isMobile && (
                 <button
                   className="fab"
-                  onClick={() => navigate("/documents/new")}
+                  onClick={() => {
+                    const newId = uuidv4();
+                    navigate(`/documents/${newId}`);
+                  }}
                   aria-label="New document"
                 >
                   +
                 </button>
               )}
+
             </>
           }
         />

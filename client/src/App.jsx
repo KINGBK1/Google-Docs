@@ -45,30 +45,33 @@ const App = () => {
     <GoogleOAuthProvider clientId={client_id} scope="https://www.googleapis.com/auth/drive.file">
       <Router>
         <Routes>
-<Route
-  path="/"
-  element={
-    isLoading ? (
-      <div style={{ textAlign: "center", marginTop: "20vh" }}>Loading...</div>
-    ) : isAuthenticated ? (
-      <Navigate to="/dashboard" replace />
-    ) : (
-      <LoginPage setAuth={setIsAuthenticated} />
-    )
-  }
-/>
+          <Route
+            path="/"
+            element={
+              isLoading ? (
+                <div style={{ textAlign: "center", marginTop: "20vh" }}>Loading...</div>
+              ) : isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <LoginPage setAuth={setIsAuthenticated} />
+              )
+            }
+          />
 
           <Route
             path="/dashboard/*"
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-                <Dashboard />
+                <Dashboard setIsAuthenticated={setIsAuthenticated} />
               </ProtectedRoute>
             }
           />
 
-          {/* TextEditor handles restrictions itself */}
-          <Route path="/documents/:documentId" element={<TextEditor />} />
+          <Route
+            path="/documents/:documentId"
+            element={<TextEditor setIsAuthenticated={setIsAuthenticated} />}
+          />
+
           <Route path="/restricted/:documentId" element={<RestrictedUserPage />} />
           <Route path="*" element={<Error />} />
         </Routes>

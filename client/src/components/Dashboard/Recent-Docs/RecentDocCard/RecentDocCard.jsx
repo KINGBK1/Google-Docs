@@ -24,7 +24,7 @@ const RecentDocCard = ({ id, title, subtitle, onDelete }) => {
       onKeyPress={openDocument}
     >
       <div className="recent-doc-thumbnail">
-        {/* Placeholder thumbnail */}
+        {/* <img  src="assets/sheet.png" alt="" /> */}
       </div>
       <div className="recent-doc-caption">
         <div className="recent-doc-title">{title}</div>

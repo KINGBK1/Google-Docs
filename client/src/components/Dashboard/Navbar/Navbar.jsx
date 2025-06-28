@@ -4,13 +4,13 @@ import { FaBars, FaSearch, FaTh, FaMoon, FaSun } from "react-icons/fa";
 import { FcDocument } from "react-icons/fc";
 import "./Navbar.css";
 
-const Navbar = ({ isMobile, searchTerm, setSearchTerm }) => {
+const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  
+
   const dropdownRef = useRef();
   const sidebarRef = useRef();
   const inputRef = useRef();
@@ -61,13 +61,20 @@ const Navbar = ({ isMobile, searchTerm, setSearchTerm }) => {
 
   // Logout handler
   const handleLogout = async () => {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    setUser(null);
-    navigate("/");
+    try {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      setUser(null);
+      setIsAuthenticated(false); 
+      navigate("/");             
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
+
 
   // Switch-account just logs out and sends back to login
   const handleSwitchAccount = () => {

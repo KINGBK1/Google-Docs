@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Document" }) => {
     const [activeTab, setActiveTab] = useState('Suggested');
-    const folders = ['Farewelllll', 'Photos', 'JT']; // You can replace this with actual folder names if dynamic
+    const folders = ['Folder1', 'Folder2', 'Folder3'];
     const [uploading, setUploading] = useState(false);
 
     if (!isOpen) return null;
@@ -40,9 +40,9 @@ const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Docume
                     ))}
                 </div>
 
-                <div className="drive-warning">
-                    ⚠️ Select a location to show the folder path (feature coming soon)
-                </div>
+                <h3 className="drive-warning">
+                    ⚠️THIS FEATURE IS YET UNDER DEVELOPMENT/VERIFICATIN DUE TO GOOGLE DRIVE API LIMITATIONS.
+                </h3>
 
                 <div className="drive-footer">
                     <button className="drive-cancel-btn" onClick={onClose}>Cancel</button>
@@ -60,11 +60,11 @@ const DriveUploadDialogBox = ({ isOpen, onClose, documentName = "Untitled Docume
                                     },
                                     { withCredentials: true }
                                 );
-                                alert("✅ Uploaded to Google Drive!");
+                                alert("Uploaded to Google Drive!");
                                 onClose();
                             } catch (err) {
                                 console.error("Upload failed:", err);
-                                alert("❌ Failed to upload to Drive");
+                                alert("Failed to upload to Drive");
                             } finally {
                                 setUploading(false);
                             }

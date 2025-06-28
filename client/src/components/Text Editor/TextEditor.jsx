@@ -35,7 +35,7 @@ const TOOLBAR_OPTIONS = [
 
 const SAVE_INTERVAL_MS = 2000;
 
-const TextEditor = () => {
+const TextEditor = ({setIsAuthenticated}) => {
   const { documentId } = useParams();
   const [quill, setQuill] = useState(null);
   const [docName, setDocName] = useState("Untitled Document");
@@ -99,7 +99,6 @@ const TextEditor = () => {
     }
   };
 
-  // … in TextEditor.jsx …
 
   const WrapperRef = useCallback((wrapper) => {
     if (!wrapper) return;
@@ -114,7 +113,7 @@ const TextEditor = () => {
       },
     });
 
-    // === 1) Remove any pasted base64/blob images ===
+  
     q.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
       delta.ops = delta.ops.filter((op) => {
         if (op.insert && op.insert.image) {
@@ -127,7 +126,6 @@ const TextEditor = () => {
       return delta;
     });
 
-    // === 2) Handle our own image uploads only ===
     const toolbar = q.getModule("toolbar");
     toolbar.addHandler("image", () => {
       const input = document.createElement("input");
@@ -351,7 +349,7 @@ const TextEditor = () => {
           documentName={docName}
           editorText={quill?.getText() || ""}
           onDriveClick={() => setDialogOpen(true)}
-
+          setIsAuthenticated={setIsAuthenticated}
         />
       </div>
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
