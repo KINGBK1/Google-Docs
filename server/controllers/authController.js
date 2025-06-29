@@ -15,7 +15,6 @@ export const googleLogin = async (req, res) => {
 
     const { sub: googleId, email } = ticket;
 
-    // Optional: Fetch user info via Google People API (if needed)
     const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
       headers: {
         Authorization: `Bearer ${token}`,
