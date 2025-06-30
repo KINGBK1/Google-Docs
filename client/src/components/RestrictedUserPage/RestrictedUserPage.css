@@ -191,3 +191,66 @@ body {
         max-width: 28rem; /* 448px */
     }
 }
+
+
+@media (max-width: 400px) {
+  .restricted-page-card {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .card-content-section {
+    padding: 1rem;
+  }
+
+  .google-docs-title {
+    font-size: 1.25rem;
+  }
+
+  .access-message-title {
+    font-size: 1.5rem;
+  }
+
+  .illustration-image {
+    max-width: 14rem;
+    margin-top: 1rem;
+  }
+
+  .request-access-button {
+    width: 100%;
+  }
+
+  .user-email-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* 🧁 Modern UI enhancements */
+.restricted-page-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.restricted-page-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -10px rgba(0, 0, 0, 0.15);
+}
+
+.message-textarea {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.message-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.request-access-button {
+  transition: all 0.3s ease;
+}
+
+.request-access-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}

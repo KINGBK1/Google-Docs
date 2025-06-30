@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -12,6 +12,41 @@ import RestrictedUserPage from "./components/RestrictedUserPage/RestrictedUserPa
 const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
   if (isLoading) return <div>Loading...</div>;
   return isAuthenticated ? children : <Navigate to="/" replace />;
+};
+
+const DocumentAccessGuard = ({ children }) => {
+  const { documentId } = useParams();
+  const [accessState, setAccessState] = useState("loading"); // "loading", "allowed", "denied", "notfound"
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/restricted-status`,
+          { withCredentials: true }
+        );
+
+        if (res.status === 200 && res.data.isEligible === false) {
+          setAccessState("allowed");
+        } else {
+          setAccessState("denied");
+        }
+      } catch (err) {
+        if (err.response?.status === 404) {
+          setAccessState("notfound");
+        } else {
+          setAccessState("denied");
+        }
+      }
+    };
+
+    checkAccess();
+  }, [documentId]);
+
+  if (accessState === "loading") return <div>Checking document access...</div>;
+  if (accessState === "denied") return <Navigate to={`/restricted/${documentId}`} replace />;
+  if (accessState === "notfound") return <Navigate to="/404" replace />;
+  return children;
 };
 
 const App = () => {
@@ -69,10 +104,24 @@ const App = () => {
 
           <Route
             path="/documents/:documentId"
-            element={<TextEditor setIsAuthenticated={setIsAuthenticated} />}
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
+                <DocumentAccessGuard>
+                  <TextEditor setIsAuthenticated={setIsAuthenticated} />
+                </DocumentAccessGuard>
+              </ProtectedRoute>
+            }
           />
 
-          <Route path="/restricted/:documentId" element={<RestrictedUserPage />} />
+          <Route
+            path="/restricted/:documentId"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
+                <RestrictedUserPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="*" element={<Error />} />
         </Routes>
       </Router>
