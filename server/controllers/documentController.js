@@ -85,7 +85,7 @@ export const getDocumentById = async (req, res) => {
 
     const doc = await DocumentModel.findById(id).populate({
       path: "allowedUsers",
-      select: "name email"
+      select: "name email picture"
     });
 
     if (!doc) {
@@ -214,7 +214,7 @@ export const requestAccess = async (req, res) => {
     await rateLimiter.consume(req.ip);
 
     const { id: documentId } = req.params;
-    if (!validateObjectId(documentId)) {
+    if (!documentId || typeof documentId !== "string") {
       return res.status(400).json({ message: "Invalid document ID" });
     }
 
@@ -402,7 +402,7 @@ export const addUserToDocument = async (req, res) => {
     const { id: documentId } = req.params;
     const { email } = req.body;
 
-    if (!validateObjectId(documentId)) {
+    if (!documentId || typeof documentId !== "string") {
       return res.status(400).json({ message: "Invalid document ID" });
     }
 
