@@ -75,8 +75,8 @@ export const getDocumentById = async (req, res) => {
     await rateLimiter.consume(req.ip);
 
     const { id } = req.params;
-    if (!validateObjectId(id)) {
-      return res.status(400).json({ message: "Invalid document ID" });
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
     }
 
     if (!req.user?.id || !validateObjectId(req.user.id)) {
@@ -141,10 +141,9 @@ export const deleteMyDoc = async (req, res) => {
     await rateLimiter.consume(req.ip);
 
     const { id } = req.params;
-    if (!validateObjectId(id)) {
-      return res.status(400).json({ message: "Invalid document ID" });
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
     }
-
     if (!req.user?.id || !validateObjectId(req.user.id)) {
       return res.status(401).json({ message: "Invalid user authentication" });
     }
@@ -178,8 +177,8 @@ export const toggleAccess = async (req, res) => {
     const { id } = req.params;
     const { isRestricted } = req.body;
 
-    if (!validateObjectId(id)) {
-      return res.status(400).json({ message: "Invalid document ID" });
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
     }
 
     if (!req.user?.id || !validateObjectId(req.user.id)) {
@@ -358,9 +357,14 @@ export const revokeAccess = async (req, res) => {
     const { id: docId } = req.params;
     const { userId } = req.body;
 
-    if (!validateObjectId(docId) || !validateObjectId(userId)) {
-      return res.status(400).json({ message: "Invalid document or user ID" });
+    if (!validateObjectId(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
     }
+
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
+    }
+
 
     if (!req.user?.id || !validateObjectId(req.user.id)) {
       return res.status(401).json({ message: "Invalid user authentication" });
@@ -474,8 +478,8 @@ export const updateDocument = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    if (!validateObjectId(id)) {
-      return res.status(400).json({ message: "Invalid document ID" });
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
     }
 
     if (!req.user?.id || !validateObjectId(req.user.id)) {
@@ -518,7 +522,7 @@ export const getRestrictedStatus = async (req, res) => {
     await rateLimiter.consume(req.ip);
 
     const { id } = req.params;
-    if (!validateObjectId(id)) {
+    if (!id || typeof id !== "string") {
       return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
     }
 
