@@ -8,7 +8,7 @@ import Delta from "quill-delta";
 
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
-import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
+import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar"; // Ensure this path is correct
 import DriveUploadDialogBox from "./driveUploadDialogbox/DriveUploadDialogbox";
 
 
@@ -254,7 +254,7 @@ const TextEditor = ({setIsAuthenticated}) => {
     const handleTextChange = (delta, _, source) => {
       if (source === "user") {
         socketRef.current?.emit("send-changes", delta);
-        setNeedsSaving(true); // mark it dirty
+        setNeedsSaving(true); 
         if (quill) {
           window.editorTextForDrive = quill.getText();
         }
@@ -321,14 +321,17 @@ const TextEditor = ({setIsAuthenticated}) => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
-  const insertText = (text) => {
+  // THIS IS THE UPDATED FUNCTION FOR INSERTING HTML CONTENT
+  const insertText = (htmlContent) => { // Changed 'text' to 'htmlContent' for clarity
     if (!quill) return;
-    const range = quill.getSelection();
+    const range = quill.getSelection(true); // Get current selection. 'true' ensures a valid range.
     if (range) {
-      quill.insertText(range.index, text);
-      quill.setSelection(range.index + text.length);
+      quill.clipboard.dangerouslyPasteHTML(range.index, htmlContent);
+      quill.setSelection(range.index + htmlContent.length, 0); // Move cursor after inserted content
     } else {
-      quill.insertText(0, text);
+      // If no selection, insert at the end of the document
+      quill.clipboard.dangerouslyPasteHTML(quill.getLength(), htmlContent);
+      quill.setSelection(quill.getLength(), 0);
     }
   };
 
@@ -368,7 +371,7 @@ const TextEditor = ({setIsAuthenticated}) => {
         <div className="gemini-sidebar-container">
           <ChatBotSidebar
             onClose={() => setisGeminiOpen(false)}
-            onInsertText={insertText}
+            onInsertText={insertText} // This prop now expects HTML content
           />
         </div>
       )}

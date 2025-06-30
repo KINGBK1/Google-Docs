@@ -1,33 +1,38 @@
-import React from 'react'
+import React from 'react';
 import { RiGeminiFill } from "react-icons/ri";
 import { FiEdit3 } from "react-icons/fi";
 import { RxCross1 } from "react-icons/rx";
-import axios from "axios"
+import axios from "axios";
 import { useState } from 'react';
-import "./GeminiChatBotSidebar.css"
-import {Atom} from 'react-loading-indicators'
+import "./GeminiChatBotSidebar.css";
+import { Atom } from 'react-loading-indicators';
+
+// Import react-markdown and rehype-raw
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 
 const ChatBotSidebar = ({ onClose, onInsertText }) => {
-
     const [prompt, setPrompt] = useState("");
     const [reply, setReply] = useState("");
     const [loading, setLoading] = useState(false);
 
-
     const handleGenerate = async () => {
-        if (!prompt) return;
+        if (!prompt) {
+            setReply("Please enter a prompt.");
+            return;
+        }
         setLoading(true);
+        setReply(""); // Clear previous reply
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/gemini/generate`, { prompt, });
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/gemini/generate`, { prompt });
             setReply(res.data.reply);
-
         } catch (err) {
             console.error("Gemini Error:", err);
-            setReply("Failed to generate response.");
+            setReply("Failed to generate response. Please try again.");
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     return (
         <div className="gemini-wrapper">
@@ -61,18 +66,24 @@ const ChatBotSidebar = ({ onClose, onInsertText }) => {
                         {loading ? (
                             <Atom color="#3163cc" size="medium" text="" textColor="" />
                         ) : (
-                            reply
+                            <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                                {reply}
+                            </ReactMarkdown>
                         )}
                     </div>
                 </div>
                 <div className="buttons">
                     <button className="generate" onClick={handleGenerate}>Generate</button>
                     <button className="use-it"
-                        onClick={() => onInsertText(reply)}>Use it</button>
+                        onClick={() => onInsertText(reply)}
+                        disabled={!reply || loading}
+                    >
+                        Use it
+                    </button>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default ChatBotSidebar
+export default ChatBotSidebar;
