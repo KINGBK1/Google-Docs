@@ -25,7 +25,7 @@ const validateObjectId = (id) => {
 export const createDocument = async (req, res) => {
   try {
     await rateLimiter.consume(req.ip);
-    
+
     const { documentId, name, isRestricted = false, allowedUsers = [] } = req.body;
 
     if (!req.user?.id || !validateObjectId(req.user.id)) {
@@ -34,10 +34,6 @@ export const createDocument = async (req, res) => {
 
     if (!documentId || !name || name.length > 100) {
       return res.status(400).json({ message: "Invalid document ID or name" });
-    }
-
-    if (!validateObjectId(documentId)) {
-      return res.status(400).json({ message: "Invalid document ID format" });
     }
 
     if (allowedUsers.length > 100) {
@@ -128,9 +124,10 @@ export const getMyDocuments = async (req, res) => {
       return res.status(400).json({ message: "Invalid document list" });
     }
 
-    const docs = await DocumentModel.find({ 
-      _id: { $in: documentIds.filter(id => validateObjectId(id)) }
+    const docs = await DocumentModel.find({
+      _id: { $in: documentIds }
     }).sort({ updatedAt: -1 });
+
 
     res.status(200).json(docs);
   } catch (err) {

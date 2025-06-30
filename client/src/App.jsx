@@ -8,6 +8,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import TextEditor from "./components/Text Editor/TextEditor";
 import Error from "./components/ErrorPage/Error";
 import RestrictedUserPage from "./components/RestrictedUserPage/RestrictedUserPage";
+import {Riple} from 'react-loading-indicators'
 
 const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
   if (isLoading) return <div>Loading...</div>;
@@ -16,7 +17,7 @@ const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
 
 const DocumentAccessGuard = ({ children }) => {
   const { documentId } = useParams();
-  const [accessState, setAccessState] = useState("loading"); // "loading", "allowed", "denied", "notfound"
+  const [accessState, setAccessState] = useState("loading"); 
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -84,7 +85,7 @@ const App = () => {
             path="/"
             element={
               isLoading ? (
-                <div style={{ textAlign: "center", marginTop: "20vh" }}>Loading...</div>
+                <div className="auth-page-loader"><Riple color="#3168cc" size="medium" text="" textColor="" /></div>
               ) : isAuthenticated ? (
                 <Navigate to="/dashboard" replace />
               ) : (
