@@ -23,7 +23,7 @@ router.get("/:id", authMiddleware, getDocumentById);
 router.delete("/:id", authMiddleware, deleteMyDoc);
 router.patch("/:id/access", authMiddleware, toggleAccess);
 router.post("/:id/request-access", authMiddleware, requestAccess);
-router.get("/:id/grant-access",authMiddleware, grantAccessViaLink);
+router.get("/:id/grant-access", grantAccessViaLink);
 router.patch("/:id/revoke", authMiddleware, revokeAccess);
 router.post("/:id/share", authMiddleware, addUserToDocument);
 router.patch("/:id", authMiddleware, updateDocument);

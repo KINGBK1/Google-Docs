@@ -85,7 +85,7 @@ const App = () => {
             path="/"
             element={
               isLoading ? (
-                <div className="auth-page-loader"><Riple color="#3168cc" size="medium" text="" textColor="" /></div>
+                <div className="auth-page-loader" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><Riple color="#3168cc" size="medium" text="" textColor="" /></div>
               ) : isAuthenticated ? (
                 <Navigate to="/dashboard" replace />
               ) : (

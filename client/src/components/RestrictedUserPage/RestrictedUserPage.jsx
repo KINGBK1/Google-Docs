@@ -70,7 +70,7 @@ const RestrictedUserPage = () => {
 
           <h2 className="access-message-title">You need access</h2>
           <p className="access-message-text">
-            Request access or switch to an account with access.{" "}
+            Request access to this doc or switch to an account with access.{" "}
             <a href="#" className="learn-more-link">
               Learn more
             </a>

@@ -83,7 +83,7 @@ export const getDocumentById = async (req, res) => {
       return res.status(401).json({ message: "Invalid user authentication" });
     }
 
-    const doc = await DocumentModel.findById({_id: id}).populate({
+    const doc = await DocumentModel.findById({ _id: id }).populate({
       path: "allowedUsers",
       select: "name email picture"
     });
@@ -294,23 +294,27 @@ export const grantAccessViaLink = async (req, res) => {
     const { id: docId } = req.params;
     const { email } = req.query;
 
-if (!docId || typeof docId !== "string") {
-  return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
-}
+    if (!docId || typeof docId !== "string") {
+      return res.status(400).json({ message: "Invalid document ID" });
+    }
 
     if (!email || !validator.isEmail(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
     const document = await DocumentModel.findById(docId).populate("owner");
-    const userToGrant = await User.findOne({ email: sanitizeInput(email) });
-
-    if (!document || !userToGrant) {
-      return res.status(404).send("Document or user not found");
+    if (!document) {
+      return res.status(404).json({ message: "Document not found" });
     }
 
-    if (!document.owner.equals(req.user.id)) {
-      return res.status(403).json({ message: "Only owner can grant access" });
+    const userToGrant = await User.findOne({ email: sanitizeInput(email) });
+    if (!userToGrant) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // ✅ Verify that the email belongs to the document owner
+    if (document.owner?.email !== email) {
+      return res.status(403).json({ message: "Only the owner can grant access via this link" });
     }
 
     if (!document.allowedUsers.includes(userToGrant._id)) {
@@ -323,6 +327,7 @@ if (!docId || typeof docId !== "string") {
       await userToGrant.save();
     }
 
+    // Optional: Send confirmation email (if you still want it)
     const mailOptions = {
       from: `"BK-Google-Docs" <${process.env.EMAIL_USER}>`,
       to: userToGrant.email,
@@ -331,24 +336,25 @@ if (!docId || typeof docId !== "string") {
         <div style="font-family: Arial; padding: 20px;">
           <h2 style="color: #1a73e8;">Access Granted</h2>
           <p>Hello ${sanitizeInput(userToGrant.name || userToGrant.email)},</p>
-          <p>You have been granted access to the document: <strong>${sanitizeInput(document.name)}</strong></p>
+          <p>You now have access to the document: <strong>${sanitizeInput(document.name)}</strong>.</p>
           <a href="${sanitizeInput(process.env.FRONTEND_URL)}/documents/${docId}" 
              style="background: #1a73e8; color: white; padding: 10px 16px; 
              text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
              Open Document
           </a>
-          <p style="margin-top: 30px; font-size: 12px; color: #888;">If this wasn’t you, ignore this message.</p>
         </div>
       `,
     };
 
     await transporter.sendMail(mailOptions);
+
     return res.sendFile("access-granted.html", { root: "public" });
   } catch (err) {
     console.error("Grant access error:", err);
     res.status(500).send("Something went wrong.");
   }
 };
+
 
 export const revokeAccess = async (req, res) => {
   try {
@@ -361,7 +367,7 @@ export const revokeAccess = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    if (!docId || typeof docId !== "string"){
+    if (!docId || typeof docId !== "string") {
       return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
     }
 
