@@ -83,7 +83,7 @@ export const getDocumentById = async (req, res) => {
       return res.status(401).json({ message: "Invalid user authentication" });
     }
 
-    const doc = await DocumentModel.findById(id).populate({
+    const doc = await DocumentModel.findById({_id: id}).populate({
       path: "allowedUsers",
       select: "name email picture"
     });
@@ -294,9 +294,9 @@ export const grantAccessViaLink = async (req, res) => {
     const { id: docId } = req.params;
     const { email } = req.query;
 
-    if (!validateObjectId(docId)) {
-      return res.status(400).json({ message: "Invalid document ID" });
-    }
+if (!id || typeof id !== "string") {
+  return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
+}
 
     if (!email || !validator.isEmail(email)) {
       return res.status(400).json({ message: "Invalid email format" });
