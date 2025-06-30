@@ -1,6 +1,3 @@
-Got it\! Here is the complete content for your `README.md` file.
-
-**Just copy the entire block of text below and paste it into a file named `README.md` in the root of your GitHub repository.**
 
 ````markdown
 # BK-Google-Docs-Clone
@@ -311,20 +308,16 @@ Contributions are what make the open-source community such an amazing place to l
 There are a few known bugs yet to be addressed, particularly within the project's error handling sections. If you discover a remedy or have suggestions for improvements, please feel free to:
 
 1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+2.  Create your Feature Branch
+3.  Commit your Changes
+4.  Push to the Branch 
 5.  Open a Pull Request
 
 Please ensure your code adheres to the project's existing style and include clear commit messages.
 
-## License
-
-Distributed under the MIT License. See `LICENSE` in the root of the repository for more information.
-
 ## Contact
 
-Bishal Kanti Bhowmik - [Your LinkedIn Profile](https://www.google.com/search?q=https://www.linkedin.com/in/bishal-kanti-bhowmik/) (Replace with your actual LinkedIn or GitHub profile link)
+Bishal Kunwar - [www.linkedin.com/in/bishal-kunwar-914ab5220]
 Project Link: [https://github.com/KINGBK1/Google-Docs.git](https://github.com/KINGBK1/Google-Docs.git)
 
 ## Acknowledgments
