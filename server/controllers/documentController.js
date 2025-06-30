@@ -294,7 +294,7 @@ export const grantAccessViaLink = async (req, res) => {
     const { id: docId } = req.params;
     const { email } = req.query;
 
-if (!id || typeof id !== "string") {
+if (!docId || typeof docId !== "string") {
   return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
 }
 
@@ -361,7 +361,7 @@ export const revokeAccess = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    if (!id || typeof id !== "string") {
+    if (!docId || typeof docId !== "string"){
       return res.status(400).json({ isEligible: false, message: "Invalid document ID" });
     }
 
