@@ -312,11 +312,6 @@ export const grantAccessViaLink = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Verify that the email belongs to the document owner
-    if (document.owner?.email !== email) {
-      return res.status(403).json({ message: "Only the owner can grant access via this link" });
-    }
-
     if (!document.allowedUsers.includes(userToGrant._id)) {
       document.allowedUsers.push(userToGrant._id);
       await document.save();
