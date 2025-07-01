@@ -14,8 +14,9 @@ import SaveStatusButton from '../loading-button/loading-button';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick, setIsAuthenticated}) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick, setIsAuthenticated , underConstructionOpen , setUnderConstructionOpen }) => {
     const [isFilled, setIsFilled] = useState(false);
     const [user, setUser] = useState(null);
 
@@ -80,7 +81,8 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
 
       setUser(null);
       setIsAuthenticated(false); 
-      navigate("/");             
+    //   navigate("/"); 
+    window.location.href = "/";            
     } catch (err) {
       console.error("Logout failed:", err);
     }
@@ -92,6 +94,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
             {/* <div className="logo-conatainer">
                 <img src="assets/Google_Docs_Logo.svg" alt="logo" className="g-docs-logo" />
             </div> */}
+            
             <div className="nav-first-row">
                 <div className="left-items">
                     <input
@@ -112,9 +115,9 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                 </div>
 
                 <div className="right-items">
-                    <button title="Version history"><MdOutlineTimer /></button>
-                    <button title="Comments"><LiaCommentSolid /></button>
-                    <button title="Video call (Placeholder)"><BsCameraVideo /></button>
+                    <button title="Version history"  onClick={() => setUnderConstructionOpen(prev => !prev)}><MdOutlineTimer /></button>
+                    <button title="Comments"  onClick={() => setUnderConstructionOpen(prev => !prev)}><LiaCommentSolid /></button>
+                    <button title="Video call (Placeholder)" onClick={() => setUnderConstructionOpen(prev => !prev)}><BsCameraVideo /></button>
 
                     <button className="share-button" onClick={() => setisOpen(true)}>
                         <PiLockKeyLight className="w-4 h-4 mr-2" />
@@ -201,7 +204,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                         onChange={(e) => onModeChange(e.target.value)}
                     >
                         <option value="editing">Editing</option>
-                        <option value="suggesting">Suggesting(N/A)</option>
+                        <option value="suggesting">Suggesting(beta)</option>
                         <option value="viewing">Viewing</option>
                     </select>
                 </div>

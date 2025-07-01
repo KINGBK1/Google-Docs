@@ -8,13 +8,12 @@ import Delta from "quill-delta";
 
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
-import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar"; // Ensure this path is correct
+import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
 import DriveUploadDialogBox from "./driveUploadDialogbox/DriveUploadDialogbox";
 import SuggestionBox from "./TextEditorNavbar/suggestionBox/suggestionBox";
+import UnderConstruction from "./underConstructionModal/underConstruction";
 
 
-
-// Register Page Break blot
 const PageBreak = Quill.import("blots/block/embed");
 class CustomPageBreak extends PageBreak {
   static blotName = "pageBreak";
@@ -51,10 +50,23 @@ const TextEditor = ({ setIsAuthenticated }) => {
   const [saveStatus, setSaveStatus] = useState("idle");
   const saveTimeoutRef = useRef(null);
   const [needsSaving, setNeedsSaving] = useState(false);
-  const [mode, setMode] = useState("editing"); // default mode is editing
+  const [mode, setMode] = useState("editing");
+  const modeRef = useRef("editing");
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [isSuggestionBoxVisible, setIsSuggestionBoxVisible] = useState(false);
+  const [underConstructionOpen, setUnderConstructionOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+
+  let suggestionBuffer = useRef({
+    id: null,
+    index: null,
+    text: "",
+    length: 0,
+    timer: null,
+  });
+
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   const showSuggestionBox = (suggestionData) => {
     setSuggestions((prev) => [...prev, suggestionData]);
@@ -269,28 +281,58 @@ const TextEditor = ({ setIsAuthenticated }) => {
       const range = quill.getSelection();
       const inserted = delta.ops?.find(op => typeof op.insert === 'string');
 
-      if (mode === "suggesting" && inserted && range) {
-        const suggestionId = Date.now();
-        const suggestionText = inserted.insert;
 
-        // Highlight the suggestion in green
-        quill.formatText(range.index, suggestionText.length, {
-          background: "#e6ffed", // light green background
-          color: "#008000", // green text
-          suggestion: true,
-        });
+      if (modeRef.current === "suggesting" && inserted && range) {
+        const insertedText = inserted.insert;
 
-        showSuggestionBox({
-          id: suggestionId,
-          index: range.index,
-          length: suggestionText.length,
-          text: suggestionText,
-          user: "Bishal Kunwar", // replace with real user
-          date: new Date().toLocaleString(),
-        });
+        if (suggestionBuffer.current.timer) {
+          clearTimeout(suggestionBuffer.current.timer);
+        }
 
-        return;
+        // If it's the start of a new suggestion
+        if (suggestionBuffer.current.id === null) {
+          suggestionBuffer.current.id = Date.now();
+          suggestionBuffer.current.index = range.index;
+          suggestionBuffer.current.text = insertedText;
+          suggestionBuffer.current.length = insertedText.length;
+        } else {
+          suggestionBuffer.current.text += insertedText;
+          suggestionBuffer.current.length += insertedText.length;
+        }
+
+        // Highlight updated suggestion
+        quill.formatText(
+          suggestionBuffer.current.index,
+          suggestionBuffer.current.length,
+          {
+            background: "#e6ffed",
+            color: "#008000",
+            suggestion: true,
+          }
+        );
+
+        // Debounce timer: wait for user to pause typing
+        suggestionBuffer.current.timer = setTimeout(() => {
+          showSuggestionBox({
+            id: suggestionBuffer.current.id,
+            index: suggestionBuffer.current.index,
+            length: suggestionBuffer.current.length,
+            text: suggestionBuffer.current.text,
+            user: "Bishal Kunwar",
+            date: new Date().toLocaleString(),
+          });
+
+          // Reset buffer
+          suggestionBuffer.current = {
+            id: null,
+            index: null,
+            text: "",
+            length: 0,
+            timer: null,
+          };
+        }, 1000); // 1s pause = new suggestion
       }
+
 
 
       if (source === "user") {
@@ -362,15 +404,13 @@ const TextEditor = ({ setIsAuthenticated }) => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
-  // THIS IS THE UPDATED FUNCTION FOR INSERTING HTML CONTENT
-  const insertText = (htmlContent) => { // Changed 'text' to 'htmlContent' for clarity
+  const insertText = (htmlContent) => {
     if (!quill) return;
-    const range = quill.getSelection(true); // Get current selection. 'true' ensures a valid range.
+    const range = quill.getSelection(true);
     if (range) {
       quill.clipboard.dangerouslyPasteHTML(range.index, htmlContent);
-      quill.setSelection(range.index + htmlContent.length, 0); // Move cursor after inserted content
+      quill.setSelection(range.index + htmlContent.length, 0);
     } else {
-      // If no selection, insert at the end of the document
       quill.clipboard.dangerouslyPasteHTML(quill.getLength(), htmlContent);
       quill.setSelection(quill.getLength(), 0);
     }
@@ -414,6 +454,8 @@ const TextEditor = ({ setIsAuthenticated }) => {
           editorText={quill?.getText() || ""}
           onDriveClick={() => setDialogOpen(true)}
           setIsAuthenticated={setIsAuthenticated}
+          underConstructionOpen={underConstructionOpen} 
+          setUnderConstructionOpen={setUnderConstructionOpen}
         />
       </div>
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
@@ -432,7 +474,7 @@ const TextEditor = ({ setIsAuthenticated }) => {
         <div className="gemini-sidebar-container">
           <ChatBotSidebar
             onClose={() => setisGeminiOpen(false)}
-            onInsertText={insertText} // This prop now expects HTML content
+            onInsertText={insertText}
           />
         </div>
       )}
@@ -444,6 +486,10 @@ const TextEditor = ({ setIsAuthenticated }) => {
             documentName={docName}
           />
         </div>
+      )}
+
+      {underConstructionOpen && (
+        <div className="under-construction-modals"> <UnderConstruction onClose={() => setUnderConstructionOpen(false)} underConstructionOpen={underConstructionOpen} setUnderConstructionOpen={setUnderConstructionOpen} /></div>
       )}
     </div>
   );
