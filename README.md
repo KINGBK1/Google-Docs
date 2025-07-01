@@ -1,8 +1,7 @@
 
-````markdown
+
 # BK-Google-Docs-Clone
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18.x-blue?logo=react&logoColor=white)](https://react.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-4.x-green?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
@@ -68,11 +67,11 @@ This project leverages a modern MERN (MongoDB, Express.js, React, Node.js) stack
 * `multer`: Middleware for handling `multipart/form-data`.
 * `multer-storage-cloudinary`: Cloudinary storage engine for Multer.
 * `nodemailer`: Send emails from Node.js applications.
-* `rate-limiter-flexible`: For implementing rate limiting.
 * `sanitize-html`: Sanitize untrusted HTML (to prevent XSS attacks).
 * `socket.io`: Real-time bidirectional event-based communication.
 * `streamifier`: Converts a string or buffer into a readable stream.
 * `validator`: A library of string validators and sanitizers.
+* `rate-limiter-flexible`:Limits requests per IP/time to prevent abuse and ensure fairness.
 
 ### Frontend Dependencies
 
@@ -304,8 +303,13 @@ REDIRECT_URI = "YOUR_GOOGLE_OAUTH_REDIRECT_URI"
 ## Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+### 🚀 Contribute to the `dev` Branch!
 
-There are a few known bugs yet to be addressed, particularly within the project's error handling sections. If you discover a remedy or have suggestions for improvements, please feel free to:
+If you’d like to add features, fix bugs, or enhance performance, please fork the repo and work off the [`dev` branch](https://github.com/KINGBK1/Google-Docs/tree/dev). This helps us keep the main branch stable while enabling rapid development. Let’s build something amazing together—your pull requests are always welcome!
+💡 Found a bug or want to suggest a feature? Please open an [issue](https://github.com/KINGBK1/Google-Docs/issues).
+
+
+There are a few known bugs yet to be addressed, particularly within the project's error handling sections and the texteditor suggestion mode. If you discover a remedy or have suggestions for improvements, please feel free to:
 
 1.  Fork the Project
 2.  Create your Feature Branch
