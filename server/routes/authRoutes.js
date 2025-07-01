@@ -18,7 +18,7 @@ router.post("/logout", (req, res) => {
   }).status(200).json({ message: "Logged out successfully" });
 });
 
-app.get("/ping", (req, res) => {
+router.get("/ping", (req, res) => {
   res.send("pong");
 });
 
