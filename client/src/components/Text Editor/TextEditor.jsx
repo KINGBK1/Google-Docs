@@ -10,6 +10,8 @@ import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
 import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar"; // Ensure this path is correct
 import DriveUploadDialogBox from "./driveUploadDialogbox/DriveUploadDialogbox";
+import SuggestionBox from "./TextEditorNavbar/suggestionBox/suggestionBox";
+
 
 
 // Register Page Break blot
@@ -35,7 +37,7 @@ const TOOLBAR_OPTIONS = [
 
 const SAVE_INTERVAL_MS = 2000;
 
-const TextEditor = ({setIsAuthenticated}) => {
+const TextEditor = ({ setIsAuthenticated }) => {
   const { documentId } = useParams();
   const [quill, setQuill] = useState(null);
   const [docName, setDocName] = useState("Untitled Document");
@@ -51,6 +53,16 @@ const TextEditor = ({setIsAuthenticated}) => {
   const [needsSaving, setNeedsSaving] = useState(false);
   const [mode, setMode] = useState("editing"); // default mode is editing
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isSuggestionBoxVisible, setIsSuggestionBoxVisible] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+
+  const showSuggestionBox = (suggestionData) => {
+    setSuggestions((prev) => [...prev, suggestionData]);
+  };
+
+  const removeSuggestion = (id) => {
+    setSuggestions((prev) => prev.filter((s) => s.id !== id));
+  };
 
   const handleModeChange = async (newMode) => {
     try {
@@ -113,7 +125,7 @@ const TextEditor = ({setIsAuthenticated}) => {
       },
     });
 
-  
+
     q.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
       delta.ops = delta.ops.filter((op) => {
         if (op.insert && op.insert.image) {
@@ -252,9 +264,38 @@ const TextEditor = ({setIsAuthenticated}) => {
 
     // using debouncing to handle text changes
     const handleTextChange = (delta, _, source) => {
+      if (source !== "user") return;
+
+      const range = quill.getSelection();
+      const inserted = delta.ops?.find(op => typeof op.insert === 'string');
+
+      if (mode === "suggesting" && inserted && range) {
+        const suggestionId = Date.now();
+        const suggestionText = inserted.insert;
+
+        // Highlight the suggestion in green
+        quill.formatText(range.index, suggestionText.length, {
+          background: "#e6ffed", // light green background
+          color: "#008000", // green text
+          suggestion: true,
+        });
+
+        showSuggestionBox({
+          id: suggestionId,
+          index: range.index,
+          length: suggestionText.length,
+          text: suggestionText,
+          user: "Bishal Kunwar", // replace with real user
+          date: new Date().toLocaleString(),
+        });
+
+        return;
+      }
+
+
       if (source === "user") {
         socketRef.current?.emit("send-changes", delta);
-        setNeedsSaving(true); 
+        setNeedsSaving(true);
         if (quill) {
           window.editorTextForDrive = quill.getText();
         }
@@ -337,6 +378,26 @@ const TextEditor = ({setIsAuthenticated}) => {
 
   return (
     <div className="container">
+      {suggestions.length > 0 && (
+        <div className="suggestion-sidebar">
+          {suggestions.map((s) => (
+            <SuggestionBox
+              key={s.id}
+              suggestion={s.text}
+              name={s.user}
+              date={s.date}
+              onAccept={() => {
+                // Keep the suggestion (already added visually)
+                removeSuggestion(s.id);
+              }}
+              onReject={() => {
+                quill.deleteText(s.index, s.length); // remove suggested text
+                removeSuggestion(s.id);
+              }}
+            />
+          ))}
+        </div>
+      )}
       <div className="navbar-wrapper">
         <TextEditorNavbar
           docName={docName}

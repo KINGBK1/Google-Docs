@@ -80,3 +80,17 @@ body {
   }
 }
 
+.suggestion-sidebar {
+  position: fixed;
+  top: 80px;
+  right: 0;
+  width: 350px;
+  background: #fff;
+  border-left: 1px solid #ccc;
+  height: calc(100% - 80px);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 10px;
+}
+
+

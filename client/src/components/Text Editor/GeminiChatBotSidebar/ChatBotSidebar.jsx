@@ -7,9 +7,11 @@ import { useState } from 'react';
 import "./GeminiChatBotSidebar.css";
 import { Atom } from 'react-loading-indicators';
 
-// Import react-markdown and rehype-raw
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+
+import MarkdownIt from 'markdown-it';
+const md = new MarkdownIt();
 
 const ChatBotSidebar = ({ onClose, onInsertText }) => {
     const [prompt, setPrompt] = useState("");
@@ -22,7 +24,7 @@ const ChatBotSidebar = ({ onClose, onInsertText }) => {
             return;
         }
         setLoading(true);
-        setReply(""); // Clear previous reply
+        setReply("");
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/gemini/generate`, { prompt });
             setReply(res.data.reply);
@@ -31,6 +33,13 @@ const ChatBotSidebar = ({ onClose, onInsertText }) => {
             setReply("Failed to generate response. Please try again.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleUseIt = () => {
+        if (reply && !loading) {
+            const htmlContent = md.render(reply);
+            onInsertText(htmlContent);
         }
     };
 
@@ -61,6 +70,7 @@ const ChatBotSidebar = ({ onClose, onInsertText }) => {
                         value={prompt}
                         placeholder="Type your writing request here..."
                         onChange={e => setPrompt(e.target.value)}
+                        disabled={loading}
                     />
                     <div className="gemini-reply">
                         {loading ? (
@@ -73,9 +83,12 @@ const ChatBotSidebar = ({ onClose, onInsertText }) => {
                     </div>
                 </div>
                 <div className="buttons">
-                    <button className="generate" onClick={handleGenerate}>Generate</button>
-                    <button className="use-it"
-                        onClick={() => onInsertText(reply)}
+                    <button className="generate" onClick={handleGenerate} disabled={loading || !prompt}>
+                        Generate
+                    </button>
+                    <button
+                        className="use-it"
+                        onClick={handleUseIt}
                         disabled={!reply || loading}
                     >
                         Use it

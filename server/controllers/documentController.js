@@ -496,7 +496,7 @@ export const updateDocument = async (req, res) => {
       return res.status(403).json({ message: "Only owner can update the document" });
     }
 
-    const allowedFields = ['name', 'content', 'isRestricted'];
+    const allowedFields = ['name', 'content', 'isRestricted' , 'mode'];
     const sanitizedUpdates = {};
     Object.entries(updates).forEach(([key, value]) => {
       if (allowedFields.includes(key)) {
