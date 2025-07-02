@@ -2,7 +2,7 @@ import React, { useState, useRef , useEffect } from 'react';
 import './TextEditorNavbar.css';
 
 import { MdDriveFileMoveOutline } from "react-icons/md";
-import { IoCloudDoneOutline } from "react-icons/io5";
+// import { IoCloudDoneOutline } from "react-icons/io5";
 import { MdOutlineTimer } from "react-icons/md";
 import { LiaCommentSolid } from "react-icons/lia";
 import { BsCameraVideo } from "react-icons/bs";
@@ -110,8 +110,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                     </button>
                     <button title="Move document" onClick={onDriveClick}><MdDriveFileMoveOutline /></button>
                     {/* Save Button */}
-                    <SaveStatusButton status={saveStatus} onClick={onSaveDocument} />
-
+                    <SaveStatusButton status={saveStatus} onClick={onSaveDocument}/>
                 </div>
 
                 <div className="right-items">

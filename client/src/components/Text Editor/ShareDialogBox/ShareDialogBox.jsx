@@ -144,7 +144,6 @@ const ShareDialogBox = ({ isOpen, setisOpen, documentId }) => {
           onKeyDown={(e) => e.key === "Enter" && handleAddUser()}
         />
 
-
         <button className="add-access" onClick={handleAddUser}>Give Access</button>
       </div>
       <div className="people-access-container">

@@ -231,6 +231,8 @@
     padding: 16px 20px;
   }
 
+  
+
   .head-container {
     flex-direction: column;
     align-items: flex-start;
@@ -302,11 +304,12 @@
     padding: 8px 0;
     font-size: 14px;
   }
+
+  .add-access{
+    font-size: 12px !important;
+  }
 }
 
-/* ─────────────────────────────────────
-   ULTRA COMPACT: ShareDialogBox ≤ 400px
-───────────────────────────────────── */
 @media (max-width: 400px) {
   .dialog-container {
     width: 95%;
