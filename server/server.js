@@ -9,7 +9,6 @@ import jwt from 'jsonwebtoken';
 
 import DocumentModel from './models/DocumentSchema.js';
 import User from './models/UserSchema.js';
-import ChatModel from './models/chatSchema.js';
 
 import authRoutes from './routes/authRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
