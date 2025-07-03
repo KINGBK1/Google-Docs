@@ -6,8 +6,8 @@ import { useParams } from 'react-router-dom';
 import { io } from "socket.io-client";
 import './chat.css';
 
-const ChatSidebar = ({ onClose }) => {
-  const { id: documentId } = useParams();
+const ChatSidebar = ({ onClose ,documentId}) => {
+  // const { id: documentId } = useParams();
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
   const [user, setUser] = useState(null);
@@ -17,7 +17,7 @@ const ChatSidebar = ({ onClose }) => {
 
   // Initialize socket connection
   useEffect(() => {
-    const newSocket = io(import.meta.env.VITE_SERVER_URL, {
+    const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
       withCredentials: true,
       transports: ['websocket', 'polling'],
     });
@@ -101,7 +101,6 @@ const ChatSidebar = ({ onClose }) => {
     };
   }, [socket, documentId, user]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
