@@ -12,6 +12,7 @@ import ChatBotSidebar from "./GeminiChatBotSidebar/ChatBotSidebar";
 import DriveUploadDialogBox from "./driveUploadDialogbox/DriveUploadDialogbox";
 import SuggestionBox from "./TextEditorNavbar/suggestionBox/suggestionBox";
 import UnderConstruction from "./underConstructionModal/underConstruction";
+import ChatSidebar from "./TextEditorNavbar/chat/chat";
 
 
 const PageBreak = Quill.import("blots/block/embed");
@@ -55,6 +56,7 @@ const TextEditor = ({ setIsAuthenticated }) => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [underConstructionOpen, setUnderConstructionOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [chatMessages, setChatMessages] = useState(false);
 
   let suggestionBuffer = useRef({
     id: null,
@@ -454,8 +456,9 @@ const TextEditor = ({ setIsAuthenticated }) => {
           editorText={quill?.getText() || ""}
           onDriveClick={() => setDialogOpen(true)}
           setIsAuthenticated={setIsAuthenticated}
-          underConstructionOpen={underConstructionOpen} 
+          underConstructionOpen={underConstructionOpen}
           setUnderConstructionOpen={setUnderConstructionOpen}
+          setChatMessages={setChatMessages}
         />
       </div>
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
@@ -490,6 +493,16 @@ const TextEditor = ({ setIsAuthenticated }) => {
 
       {underConstructionOpen && (
         <div className="under-construction-modals"> <UnderConstruction onClose={() => setUnderConstructionOpen(false)} underConstructionOpen={underConstructionOpen} setUnderConstructionOpen={setUnderConstructionOpen} /></div>
+      )}
+
+      {chatMessages && (
+        <div className="chat-sidebar-container">
+          <ChatSidebar
+            documentId={documentId}
+            onClose={() => setChatMessages(false)}
+            setChatMessages={setChatMessages}
+          />
+        </div>
       )}
     </div>
   );

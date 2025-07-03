@@ -13,10 +13,11 @@ import { PiLockKeyLight } from "react-icons/pi";
 import SaveStatusButton from '../loading-button/loading-button';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+// import { set } from 'mongoose';
 
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick, setIsAuthenticated , underConstructionOpen , setUnderConstructionOpen }) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick, setIsAuthenticated , setUnderConstructionOpen ,setChatMessages,documentId }) => {
     const [isFilled, setIsFilled] = useState(false);
     const [user, setUser] = useState(null);
 
@@ -115,7 +116,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
 
                 <div className="right-items">
                     <button title="Version history"  onClick={() => setUnderConstructionOpen(prev => !prev)}><MdOutlineTimer /></button>
-                    <button title="Comments"  onClick={() => setUnderConstructionOpen(prev => !prev)}><LiaCommentSolid /></button>
+                    <button title="Comments" onClick={()=> setChatMessages(prev => !prev)}><LiaCommentSolid /></button>
                     <button title="Video call (Placeholder)" onClick={() => setUnderConstructionOpen(prev => !prev)}><BsCameraVideo /></button>
 
                     <button className="share-button" onClick={() => setisOpen(true)}>

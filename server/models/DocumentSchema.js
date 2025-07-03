@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 
+const chatMessageSchema = new mongoose.Schema({
+  sender: {
+    type: String, 
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now,
+  }
+});
+
 const documentSchema = new mongoose.Schema({
   _id: String,
   name: { type: String, required: true, default: 'Untitled Document' }, 
@@ -13,7 +28,7 @@ const documentSchema = new mongoose.Schema({
   enum: ["editing", "viewing", "suggesting"],
   default: "editing",
 },
-
+  chatMessages: [chatMessageSchema],
 });
 
 const DocumentModel = mongoose.model("Document", documentSchema);
