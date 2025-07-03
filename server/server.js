@@ -86,34 +86,54 @@ const io = new Server(server, {
 
 // Socket.IO Auth Middleware
 io.use(async (socket, next) => {
-  const token = socket.handshake.headers.cookie
-    ?.split('; ')
-    .find(row => row.startsWith('token='))
-    ?.split('=')[1];
-
-  if (!token) return next(new Error('Authentication error'));
-
   try {
+    const token = socket.handshake.headers.cookie
+      ?.split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
+
+    if (!token) {
+      console.log('No token provided');
+      return next(new Error('Authentication error'));
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    socket.user = decoded;
+    
+    // Fetch user details from database
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return next(new Error('User not found'));
+    }
+
+    socket.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      picture: user.picture
+    };
+    
+    console.log('User authenticated:', socket.user.name);
     next();
   } catch (err) {
-    console.error("Invalid token:", err);
+    console.error("Authentication error:", err);
     next(new Error('Invalid token'));
   }
 });
 
 // Main Socket.IO Events
 io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
+  console.log('Socket connected:', socket.id, 'User:', socket.user?.name);
   let currentDocumentId = null;
 
   // Document Join Handler
   socket.on('get-document', async ({ documentId, userId }) => {
     try {
+      console.log('get-document request:', { documentId, userId, socketUser: socket.user?.id });
+      
       let document = await DocumentModel.findById(documentId).populate('allowedUsers');
 
       if (!document) {
+        console.log('Creating new document:', documentId);
         document = await DocumentModel.create({
           _id: documentId,
           name: 'Untitled Document',
@@ -130,6 +150,7 @@ io.on('connection', (socket) => {
       const isAllowed = document.allowedUsers.some(user => user._id.equals(userId));
 
       if (document.isRestricted && !isOwner && !isAllowed) {
+        console.log('User not allowed to access document');
         return socket.emit('load-document', {
           isRestricted: true,
           isAllowed: false,
@@ -138,8 +159,9 @@ io.on('connection', (socket) => {
 
       currentDocumentId = documentId;
       socket.join(documentId);
+      console.log('User joined document room:', documentId);
 
-      // Sending entire document + chat messages
+      // Send document data including chat messages
       socket.emit('load-document', {
         content: document.content,
         name: document.name,
@@ -166,25 +188,45 @@ io.on('connection', (socket) => {
 
   // Save Chat Message
   socket.on('send-chat-message', async ({ documentId, message }) => {
-    if (!documentId || !message.trim()) return;
-
-    const chatMessage = {
-      sender: socket.user?.name || socket.id,
-      text: message,
-      timestamp: new Date(),
-    };
-
     try {
-      await DocumentModel.findByIdAndUpdate(documentId, {
-        $push: { chatMessages: chatMessage },
-      });
+      console.log('Received chat message:', { documentId, message, user: socket.user?.name });
+      
+      if (!documentId || !message.trim()) {
+        console.log('Invalid message data');
+        return;
+      }
 
-      console.log(`[Chat] ${chatMessage.sender}:`, chatMessage.text);
+      if (!socket.user) {
+        console.log('User not authenticated');
+        return socket.emit('error', { message: 'User not authenticated' });
+      }
 
-      // Broadcast to others
+      const chatMessage = {
+        sender: socket.user.name,
+        text: message.trim(),
+        timestamp: new Date(),
+      };
+
+      // Save to database
+      const updatedDocument = await DocumentModel.findByIdAndUpdate(
+        documentId,
+        { $push: { chatMessages: chatMessage } },
+        { new: true }
+      );
+
+      if (!updatedDocument) {
+        console.log('Document not found');
+        return socket.emit('error', { message: 'Document not found' });
+      }
+
+      console.log(`[Chat] ${chatMessage.sender}: ${chatMessage.text}`);
+
+      // Broadcast to all users in the document room (including sender)
       io.to(documentId).emit('receive-chat-message', chatMessage);
+
     } catch (err) {
       console.error('Error saving chat message:', err);
+      socket.emit('error', { message: 'Error saving message' });
     }
   });
 
@@ -214,7 +256,10 @@ io.on('connection', (socket) => {
 
   // Disconnect Cleanup
   socket.on('disconnect', () => {
-    console.log('Socket disconnected:', socket.id);
+    console.log('Socket disconnected:', socket.id, 'User:', socket.user?.name);
+    if (currentDocumentId) {
+      socket.leave(currentDocumentId);
+    }
   });
 });
 
