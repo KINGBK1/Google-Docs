@@ -32,7 +32,7 @@ export const googleLogin = async (req, res) => {
 
     const jwtToken = jwt.sign(
       {
-        _id: user._id,
+        id: user._id,
         email: user.email,
         name: user.name,
         picture: user.picture,
