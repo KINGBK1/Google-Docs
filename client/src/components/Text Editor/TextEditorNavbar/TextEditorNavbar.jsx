@@ -10,6 +10,7 @@ import { BsCameraVideo } from "react-icons/bs";
 import { RiGeminiFill } from "react-icons/ri";
 import { PiLockKeyLight } from "react-icons/pi";
 // import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
+import { LuPrinter } from "react-icons/lu";
 import SaveStatusButton from '../loading-button/loading-button';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 // Receive docName, onDocNameChange, and onSaveDocument as props
-const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick, setIsAuthenticated , setUnderConstructionOpen ,setChatMessages,documentId }) => {
+const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange , onDriveClick, setIsAuthenticated , setUnderConstructionOpen ,setChatMessages,onPrintClick }) => {
     const [isFilled, setIsFilled] = useState(false);
     const [user, setUser] = useState(null);
 
@@ -207,6 +208,9 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
                         <option value="suggesting">Suggesting(beta)</option>
                         <option value="viewing">Viewing</option>
                     </select>
+                    <button onClick={onPrintClick} className="print-btn" title='print'>
+                         <LuPrinter className="w-4 h-4 mr-2"/>
+                    </button>
                 </div>
             </div>
         </div>

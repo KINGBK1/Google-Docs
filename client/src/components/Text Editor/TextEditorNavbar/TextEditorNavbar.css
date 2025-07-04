@@ -324,6 +324,27 @@
   }
 }
 
+.print-btn{
+  margin-left:15px ;
+  border:none; 
+  background-color: skyblue;
+  padding: 7px 12px;
+  border-radius:10px;
+  font-weight:bolder;
+  transition: background-color 0.25s ease-in-out;
+  transition: text-decoration 0.25s ease-in-out;
+}
+
+.print-btn:hover{
+  background-color: #74a5e4;
+  text-decoration:underline ;
+}
+
+@media(max-width:725px){
+  .right-mode-container select{
+    width:90px;
+  }
+}
 
 @media (max-width: 600px) {
   .navbar-wrapper {
@@ -413,6 +434,10 @@
 }
 .right-mode-container select{
   width: 300px ;
+  margin-top: 5px;
+}
+.print-btn{
+  margin-left:10px ;
 }
 
 }

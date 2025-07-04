@@ -5,7 +5,7 @@ import { TbDotsVertical } from "react-icons/tb";
 import { useParams } from 'react-router-dom';
 import { io } from "socket.io-client";
 import './chat.css';
-
+import {ThreeDot } from 'react-loading-indicators';
 const ChatSidebar = ({ onClose ,documentId}) => {
   // const { id: documentId } = useParams();
   const [messages, setMessages] = useState([]);
@@ -23,12 +23,12 @@ const ChatSidebar = ({ onClose ,documentId}) => {
     });
 
     newSocket.on('connect', () => {
-      console.log('Socket connected:', newSocket.id);
+      // console.log('Socket connected:', newSocket.id);
       setIsConnected(true);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('Socket disconnected');
+      // console.log('Socket disconnected');
       setIsConnected(false);
     });
 
@@ -54,7 +54,7 @@ const ChatSidebar = ({ onClose ,documentId}) => {
         if (!res.ok) throw new Error("Not authenticated");
         const { user } = await res.json();
         setUser(user);
-        console.log('User fetched:', user);
+        // console.log('User fetched:', user);
       } catch (err) {
         console.error('Error fetching user:', err);
       }
@@ -66,7 +66,7 @@ const ChatSidebar = ({ onClose ,documentId}) => {
   useEffect(() => {
     if (!socket || !documentId || !user) return;
 
-    console.log('Joining document:', documentId, 'with user:', user._id);
+    // console.log('Joining document:', documentId, 'with user:', user._id);
 
     // Join the document
     socket.emit('get-document', { 
@@ -75,12 +75,12 @@ const ChatSidebar = ({ onClose ,documentId}) => {
     });
 
     const handleNewMessage = (msg) => {
-      console.log('Received new message:', msg);
+      // console.log('Received new message:', msg);
       setMessages((prev) => [...prev, msg]);
     };
 
     const handleDocumentLoad = (data) => {
-      console.log('Document loaded:', data);
+      // console.log('Document loaded:', data);
       if (data.chatMessages) {
         setMessages(data.chatMessages);
       }
@@ -116,7 +116,7 @@ const ChatSidebar = ({ onClose ,documentId}) => {
       return;
     }
 
-    console.log('Sending message:', messageInput, 'to document:', documentId);
+    // console.log('Sending message:', messageInput, 'to document:', documentId);
 
     socket.emit('send-chat-message', {
       documentId,
@@ -167,7 +167,7 @@ const ChatSidebar = ({ onClose ,documentId}) => {
         <div className="messages">
           {messages.length === 0 ? (
             <div className="no-messages">
-              <p>No comments yet. Start the conversation!</p>
+              <p><ThreeDot color="#31aecc" size="medium" text="" textColor="" /></p>
             </div>
           ) : (
             messages.map((msg, index) => (

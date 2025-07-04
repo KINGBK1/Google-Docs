@@ -218,7 +218,7 @@ const TextEditor = ({ setIsAuthenticated }) => {
     localStorage.debug = 'socket.io-client:socket';
 
     s.on('connect', () => {
-      console.log('Socket.IO connected:', s.id);
+      // console.log('Socket.IO connected:', s.id);
     });
 
     s.on('connect_error', (err) => {
@@ -459,6 +459,7 @@ const TextEditor = ({ setIsAuthenticated }) => {
           underConstructionOpen={underConstructionOpen}
           setUnderConstructionOpen={setUnderConstructionOpen}
           setChatMessages={setChatMessages}
+          onPrintClick={() =>  window.print()}
         />
       </div>
       <div className="text-editor-wrapper" ref={WrapperRef}></div>
