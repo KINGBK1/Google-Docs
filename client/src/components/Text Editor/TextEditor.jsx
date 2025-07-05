@@ -59,25 +59,32 @@ const TextEditor = ({ setIsAuthenticated }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [chatMessages, setChatMessages] = useState(false);
 
-  const captureThumbnail = async () => {
-  const editorEl = document.querySelector(".ql-editor"); // or ref to the editor
-  if (!editorEl) return;
+const captureThumbnail = async () => {
+  try {
+    const editorElement = document.querySelector(".ql-editor");
+    if (!editorElement) return;
 
-  const canvas = await html2canvas(editorEl, {
-    backgroundColor: "#fff",
-    scale: 0.3, // lower scale = smaller image
-    useCORS: true,
-  });
-    // Send this to backend
-  await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/thumbnail`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ image: dataUrl }),
-  });
+    const canvas = await html2canvas(editorElement, {
+      backgroundColor: "#fff",
+      scale: 0.3, // scale down for thumbnail
+      useCORS: true,
+    });
+
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // smaller and lighter than PNG
+
+    // Send it to backend
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/thumbnail`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ image: dataUrl }),
+    });
+  } catch (err) {
+    console.error("Thumbnail capture failed:", err);
+  }
 };
-
-  const dataUrl = canvas.toDataURL("image/png");
 
   let suggestionBuffer = useRef({
     id: null,

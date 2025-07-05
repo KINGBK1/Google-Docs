@@ -4,12 +4,16 @@ import { FaBars, FaSearch, FaTh, FaMoon, FaSun } from "react-icons/fa";
 import { FcDocument } from "react-icons/fc";
 import "./Navbar.css";
 
-const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
+const Navbar = ({ setIsAuthenticated, searchTerm, setSearchTerm }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+
+  // Initialize darkMode state from localStorage
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
 
   const dropdownRef = useRef();
   const sidebarRef = useRef();
@@ -51,12 +55,11 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Apply theme
+  // Apply theme and save to localStorage
   useEffect(() => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      darkMode ? "dark" : "light"
-    );
+    const theme = darkMode ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   }, [darkMode]);
 
   // Logout handler
@@ -68,17 +71,15 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
       });
 
       setUser(null);
-      setIsAuthenticated(false); 
-      navigate("/");             
+      setIsAuthenticated(false);
+      navigate("/");
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
-
   // Switch-account just logs out and sends back to login
   const handleSwitchAccount = () => {
-    // you could clear tokens here if needed
     handleLogout();
   };
 
@@ -104,10 +105,7 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
         </div>
 
         <div className="navbar-search">
-          <FaSearch
-            className="search-icon"
-            onClick={handleSearchSubmit}
-          />
+          <FaSearch className="search-icon" onClick={handleSearchSubmit} />
           <input
             ref={inputRef}
             type="text"
@@ -171,19 +169,25 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
       </div>
 
       {/* Sliding Sidebar */}
-      <div
-        ref={sidebarRef}
-        className={`sidebar ${sidebarOpen ? "open" : ""}`}
-      >
+      <div ref={sidebarRef} className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <FcDocument size={28} />
           <span className="sidebar-title">Google Docs</span>
         </div>
         <nav className="sidebar-nav">
-          <a href="https://google-docs-7mav.vercel.app/"><img src="assets/Google_Docs_Logo.svg" alt="" />Docs</a>
-          <a href="https://docs.google.com/spreadsheets"><img src="assets/Google_Slides_Logo.svg" alt="" /> Sheets</a>
-          <a href="https://docs.google.com/presentation"><img src="assets/Google_Slides_Logo.svg" alt="S" /> Slides</a>
-          <a href="https://docs.google.com/forms"><img src="assets/Google_Forms_Logo.svg" alt="" /> Forms</a>
+          <a href="https://google-docs-7mav.vercel.app/">
+            <img src="assets/Google_Docs_Logo.svg" alt="" />
+            Docs
+          </a>
+          <a href="https://docs.google.com/spreadsheets">
+            <img src="assets/Google_Slides_Logo.svg" alt="" /> Sheets
+          </a>
+          <a href="https://docs.google.com/presentation">
+            <img src="assets/Google_Slides_Logo.svg" alt="S" /> Slides
+          </a>
+          <a href="https://docs.google.com/forms">
+            <img src="assets/Google_Forms_Logo.svg" alt="" /> Forms
+          </a>
           <hr />
           <button
             className="theme-toggle"

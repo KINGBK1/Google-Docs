@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./RecentDocsCard.css";
 
-const RecentDocCard = ({ id, title, subtitle, onDelete }) => {
+const RecentDocCard = ({ id, title, subtitle, onDelete, thumbnail }) => {
   const navigate = useNavigate();
 
   const openDocument = () => {
@@ -24,7 +24,9 @@ const RecentDocCard = ({ id, title, subtitle, onDelete }) => {
       onKeyPress={openDocument}
     >
       <div className="recent-doc-thumbnail">
-        {/* <img  src="assets/sheet.png" alt="" /> */}
+        {thumbnail && (
+          <img src={thumbnail} alt="Document preview" />
+        )}
       </div>
       <div className="recent-doc-caption">
         <div className="recent-doc-title">{title}</div>

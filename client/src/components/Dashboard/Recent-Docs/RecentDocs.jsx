@@ -88,7 +88,7 @@ const RecentDocs = ({ isLoading, isMobile, searchTerm }) => {
                 credentials: "include"
               }).then(alert(`do you want to delete ${doc.name}`))
               .then(() => setRecentDocs(recentDocs.filter(d => d._id !== id)));}}
-              
+              thumbnail={doc.thumbnail}
             />
           ))
         ) : (

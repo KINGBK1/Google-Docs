@@ -54,15 +54,38 @@
 }
 
 .recent-doc-list {
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 12px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   margin-top: 20px;
   max-height: 600px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #dadce0 transparent;
   min-height: 200px;
+  transition: all 0.3s ease;
+}
+
+.recent-doc-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.recent-doc-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.recent-doc-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #dadce0, #c4c7ca);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.recent-doc-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #c4c7ca, #b0b3b8);
 }
 
 /* when loading */
@@ -70,129 +93,439 @@
   display: flex !important;
   justify-content: center;
   align-items: center;
-  height:50vh;
+  height: 50vh;
 }
 
-/* when not loading */
+/* Desktop grid layout */
 .recent-doc-list.grid-layout {
   display: grid;
+  justify-items: center;
   grid-template-rows: repeat(4, 1fr);
   grid-template-columns: repeat(4, 1fr);
+  justify-content: center;
+  align-items: center;
+  align-self: center;
   gap: 20px;
   padding: 20px;
 }
 
-/* at the bottom of src/components/Recent-Docs/RecentDocs.css */
+.recent-doc-card{
+  transition: border 0.25s ease-in-out;
+}
 
-/* mobile: remove grid, use flat list */
-@media (max-width: 689px) {
+.recent-doc-card:hover{
+   border: 1px solid blue;
+}
+
+/* 3 columns for medium screens (1380px to 995px) */
+@media (max-width: 1380px) and (min-width: 996px) {
   .recent-doc-list.grid-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-  }
-  .recent-doc-card {
-    flex-direction: row !important;
-    align-items: center;
-    padding: 0.75rem !important;
-    gap: 1rem !important;
-  }
-  .recent-doc-thumbnail {
-    flex: 0 0 48px;
-    height: 48px;
-    border-radius: 4px;
-  }
-  .recent-doc-caption {
-    flex: 1;
-    gap: 4px !important;
-  }
-  .delete-btn {
-    width: auto !important;
-    padding: 4px 8px;
-    font-size: 0.75rem;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Tight mobile layout down to 400px */
-@media (max-width: 550px) {
-  .recent-doc-wrapper {
-    padding: 12px 16px;
-  }
-
-  .recent-doc-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .option-btns {
-    width: 100%;
-    justify-content: space-between;
-    gap: 8px;
+@media (max-width: 995px) and (min-width: 769px) {
+  .recent-doc-list.grid-layout {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Ultra-compact under 400px */
-@media (max-width: 400px) {
+/* Default card styles for desktop with 3D effects */
+.recent-doc-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(0);
+  position: relative;
+  overflow: hidden;
+  transition: border 0.25s ease-in-out;
+}
+
+ .recent-doc-card:hover{
+      border: 1px solid blue;
+  }
+
+.recent-doc-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.recent-doc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: linear-gradient(145deg, #ffffff, #fcfcfc);
+}
+
+.recent-doc-card:active {
+  transform: translateY(-2px);
+  transition: all 0.1s ease;
+}
+
+.recent-doc-thumbnail {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.recent-doc-card:hover .recent-doc-thumbnail {
+  background: linear-gradient(135deg, #fafafa, #eeeeee);
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.recent-doc-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent-doc-caption {
+  flex: 1;
+}
+
+.recent-doc-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #202124;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.recent-doc-subtitle {
+  font-size: 12px;
+  color: #5f6368;
+  line-height: 1.2;
+}
+
+.btn-cont {
+  margin-top: 12px;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 1px solid #dadce0;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  color: #5f6368;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(0);
+  position: relative;
+  overflow: hidden;
+}
+
+.delete-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transition: left 0.5s ease;
+}
+
+.delete-btn:hover {
+  background: linear-gradient(145deg, #f8f9fa, #e8eaed);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: #3c4043;
+}
+
+.delete-btn:hover::before {
+  left: 100%;
+}
+
+.delete-btn:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #e8eaed, #f0f0f0);
+  transition: all 0.1s ease;
+}
+
+/* Mobile styles - matches your design exactly */
+@media (max-width: 768px) {
   .recent-doc-wrapper {
-    padding: 8px 12px;
+    padding: 16px;
   }
 
   .recent-doc-header {
-    gap: 4px;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
+  }
+
+  .heading {
+    font-size: 20px;
+    font-weight: 400;
   }
 
   .heading label {
-    font-size: 16px;
     margin-left: 0;
   }
 
-  .option-btns {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    width: 100%;
-  }
-
-  .option-btns .list select {
-    padding: 6px 8px;
-    font-size: 14px;
-  }
-
-  .btns button {
-    font-size: 18px;
-    margin-top: 4px;
+  .recent-doc-list {
+    box-shadow: none;
+    border-radius: 0;
+    margin-top: 0;
+    max-height: none;
+    background: #f8f9fa;
   }
 
   .recent-doc-list.grid-layout {
-    padding: 8px;
-    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
   }
 
   .recent-doc-card {
-    padding: 8px;
-    gap: 6px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    padding: 16px;
+    background: linear-gradient(145deg, #ffffff, #fcfcfc);
+    border-bottom: 1px solid #e8eaed;
+    border-radius: 0;
+    box-shadow: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    margin-bottom:8px ; 
+    transition: border 0.25s ease-in-out;
+  }
+
+  .recent-doc-card:hover{
+      border: 1px solid blue;
+  }
+
+  .recent-doc-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(66, 133, 244, 0.08), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .recent-doc-card:hover {
+    background: linear-gradient(145deg, #f8f9fa, #f0f2f5);
+    transform: translateX(4px);
+    box-shadow: 
+      -4px 0 12px rgba(66, 133, 244, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .recent-doc-card:hover::before {
+    left: 100%;
+  }
+
+  .recent-doc-card:active {
+    transform: translateX(2px);
+    transition: all 0.1s ease;
+  }
+
+  .recent-doc-card:last-child {
+    border-bottom: none;
   }
 
   .recent-doc-thumbnail {
-    height: 60px !important;
-    flex: 0 0 60px !important;
+    width: 40px;
+    height: 30px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #4285f4, #1e88e5);
+    border-radius: 6px;
+    margin-bottom: 0;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+      0 2px 8px rgba(66, 133, 244, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .recent-doc-card:hover .recent-doc-thumbnail {
+    background: linear-gradient(135deg, #1e88e5, #1976d2);
+    transform: scale(1.05);
+    box-shadow: 
+      0 4px 12px rgba(66, 133, 244, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .recent-doc-thumbnail::before {
+    content: '📄';
+    font-size: 16px;
+    color: white;
+  }
+
+  .recent-doc-caption {
+    flex: 1;
+    margin-left: 0;
   }
 
   .recent-doc-title {
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #202124;
+    margin-bottom: 2px;
+    line-height: 1.3;
   }
 
   .recent-doc-subtitle {
-    font-size: 12px;
+    font-size: 14px;
+    color: #5f6368;
+    line-height: 1.3;
+  }
+
+  .btn-cont {
+    margin-top: 0;
+    margin-left: 16px;
   }
 
   .delete-btn {
-    padding: 2px 6px;
-    font-size: 0.7rem;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    color: #5f6368;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.06),
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .delete-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(234, 67, 53, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .delete-btn:hover {
+    background: linear-gradient(145deg, #fef7f7, #fce8e6);
+    transform: translateY(-1px);
+    box-shadow: 
+      0 4px 8px rgba(234, 67, 53, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    color: #d33b2c;
+    border-color: #f28b82;
+  }
+
+  .delete-btn:hover::before {
+    left: 100%;
+  }
+
+  .delete-btn:active {
+    transform: translateY(0);
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.08),
+      inset 0 1px 3px rgba(234, 67, 53, 0.1);
+    background: linear-gradient(145deg, #fce8e6, #f8d7da);
+    transition: all 0.1s ease;
+  }
+}
+
+/* Smaller mobile devices */
+@media (max-width: 480px) {
+  .recent-doc-wrapper {
+    padding: 12px;
+  }
+
+  .recent-doc-card {
+    padding: 12px;
+  }
+
+  .recent-doc-thumbnail {
+    margin-right: 12px;
+  }
+
+  .btn-cont {
+    margin-left: 12px;
+  }
+
+  .delete-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #dadce0;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    color: #5f6368;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transform: translateY(0);
+  }
+
+  .delete-btn:hover {
+    background: linear-gradient(145deg, #fef7f7, #fce8e6);
+    transform: translateY(-1px);
+    box-shadow: 
+      0 2px 6px rgba(234, 67, 53, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    color: #d33b2c;
+    border-color: #f28b82;
+  }
+
+  .delete-btn:active {
+    transform: translateY(0);
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.08),
+      inset 0 1px 2px rgba(234, 67, 53, 0.1);
+    background: linear-gradient(145deg, #fce8e6, #f8d7da);
+    transition: all 0.1s ease;
   }
 }
 
