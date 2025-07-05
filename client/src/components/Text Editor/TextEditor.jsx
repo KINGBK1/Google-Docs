@@ -13,6 +13,7 @@ import DriveUploadDialogBox from "./driveUploadDialogbox/DriveUploadDialogbox";
 import SuggestionBox from "./TextEditorNavbar/suggestionBox/suggestionBox";
 import UnderConstruction from "./underConstructionModal/underConstruction";
 import ChatSidebar from "./TextEditorNavbar/chat/chat";
+import html2canvas from "html2canvas";
 
 
 const PageBreak = Quill.import("blots/block/embed");
@@ -57,6 +58,26 @@ const TextEditor = ({ setIsAuthenticated }) => {
   const [underConstructionOpen, setUnderConstructionOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [chatMessages, setChatMessages] = useState(false);
+
+  const captureThumbnail = async () => {
+  const editorEl = document.querySelector(".ql-editor"); // or ref to the editor
+  if (!editorEl) return;
+
+  const canvas = await html2canvas(editorEl, {
+    backgroundColor: "#fff",
+    scale: 0.3, // lower scale = smaller image
+    useCORS: true,
+  });
+    // Send this to backend
+  await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/thumbnail`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ image: dataUrl }),
+  });
+};
+
+  const dataUrl = canvas.toDataURL("image/png");
 
   let suggestionBuffer = useRef({
     id: null,
@@ -374,6 +395,7 @@ const TextEditor = ({ setIsAuthenticated }) => {
     });
 
     setNeedsSaving(false); // reset after save
+    captureThumbnail(); 
 
     // Simulate saving done
     setTimeout(() => {

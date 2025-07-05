@@ -17,6 +17,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "google-auth-library": "^9.15.1",
+    "html2canvas": "^1.4.1",
     "jwt-decode": "^4.0.0",
     "markdown-it": "^14.1.0",
     "quill": "^2.0.3",

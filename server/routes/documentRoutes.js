@@ -13,6 +13,7 @@ import {
   addUserToDocument,
   updateDocument,
   getRestrictedStatus,
+  handleThumbnails,
 } from "../controllers/documentController.js";
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.get("/:id/grant-access", grantAccessViaLink);
 router.patch("/:id/revoke", authMiddleware, revokeAccess);
 router.post("/:id/share", authMiddleware, addUserToDocument);
 router.patch("/:id", authMiddleware, updateDocument);
-router.get("/:id/restricted-status", authMiddleware,getRestrictedStatus)
+router.get("/:id/restricted-status", authMiddleware,getRestrictedStatus);
+router.post("/:id/thumbnail", handleThumbnails );
 
 export default router;

@@ -547,3 +547,17 @@ export const getRestrictedStatus = async (req, res) => {
     return res.status(500).json({ isEligible: false, message: "Server error" });
   }
 };
+
+export const handleThumbnails = async (req, res) => {
+  const { id } = req.params;
+  const { image } = req.body;
+
+  try {
+    await DocumentModel.findByIdAndUpdate(id, {
+      thumbnail: image,
+    });
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save thumbnail" });
+  }
+}

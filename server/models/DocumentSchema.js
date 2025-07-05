@@ -29,6 +29,7 @@ const documentSchema = new mongoose.Schema({
   default: "editing",
 },
   chatMessages: [chatMessageSchema],
+  thumbnail: { type: String, default: "" },
 });
 
 const DocumentModel = mongoose.model("Document", documentSchema);
