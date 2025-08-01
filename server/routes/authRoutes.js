@@ -1,12 +1,12 @@
 import express from "express";
 import { googleLogin } from "../controllers/authController.js";
 import authMiddleware from "../middlewares/AuthMiddleware.js";
-import jwt from 'jsonwebtoken'
+// import jwt from 'jsonwebtoken'
 const router = express.Router();
 
 router.post("/google-login", googleLogin);
-router.get("/status",authMiddleware ,(req, res) => {
-  res.json({ user: req.user });
+router.get("/status",authMiddleware ,(req, res) => { // the real status check happens in the auth middleware 
+  res.json({ user: req.user }); // sending the user data from the middleware not from the controller 
 });
 
 

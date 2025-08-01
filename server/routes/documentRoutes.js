@@ -1,6 +1,6 @@
 import express from "express";
 import authMiddleware from "../middlewares/AuthMiddleware.js";
-import {checkDocumentAccess}  from "../middlewares/checkDocumentAccess.js";
+// import {checkDocumentAccess}  from "../middlewares/checkDocumentAccess.js";
 import {
   createDocument,
   getDocumentById,
@@ -14,6 +14,7 @@ import {
   updateDocument,
   getRestrictedStatus,
   handleThumbnails,
+  getMyTemplates,
 } from "../controllers/documentController.js";
 
 const router = express.Router();
@@ -30,5 +31,5 @@ router.post("/:id/share", authMiddleware, addUserToDocument);
 router.patch("/:id", authMiddleware, updateDocument);
 router.get("/:id/restricted-status", authMiddleware,getRestrictedStatus);
 router.post("/:id/thumbnail", handleThumbnails );
-
+router.get("/templates", getMyTemplates) ; 
 export default router;

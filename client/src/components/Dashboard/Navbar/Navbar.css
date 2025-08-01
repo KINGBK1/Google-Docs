@@ -6,7 +6,7 @@
   height: 56px;
   background-color: var(--nav-bg, #fff);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  position: -webkit-sticky;
+  position: relative;
   z-index: 100;
 }
 
@@ -24,10 +24,13 @@
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #5f6368);
 }
 
 .icon-button:hover {
-  background-color: #f1f3f4;
+  background-color: var(--icon-hover-bg, #f1f3f4);
 }
 
 .docs-title {
@@ -39,16 +42,15 @@
 .navbar-search {
   display: flex;
   align-items: center;
-  background-color: #f1f3f4;
+  background-color: var(--search-bg, #f1f3f4);
   padding: 6px 12px;
   border-radius: 24px;
   width: 50%;
   max-width: 600px;
-  color: black;
 }
 
 .search-icon {
-  color: #5f6368;
+  color: var(--text-secondary, #5f6368);
   margin-right: 8px;
 }
 
@@ -59,13 +61,16 @@
   width: 100%;
   font-size: 14px;
   color: var(--text-primary, #202124);
-  color: black;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.profile-wrapper {
+  position: relative;
 }
 
 .profile-circle {
@@ -188,7 +193,7 @@
   }
 }
 
-
+/* Sidebar Styles */
 .sidebar {
   position: fixed;
   top: 0;
@@ -239,6 +244,7 @@
   border: none;
   background: none;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .sidebar-nav a img {
@@ -258,28 +264,64 @@
   justify-content: flex-start;
   gap: 8px;
   font-weight: 500;
+  
 }
 
+.theme-toggle svg {
+    font-size: 20px;
+}
+
+
+/* CSS Variables for theming */
 :root {
   --nav-bg: #fff;
+  --search-bg: #f1f3f4;
+  --icon-hover-bg: #f1f3f4;
   --sidebar-bg: #fff;
   --dropdown-bg: #fff;
-  --input-bg: #fafafa;
+  --input-bg: #f1f3f4;
   --border: #e0e0e0;
   --text-primary: #202124;
   --text-secondary: #5f6368;
 }
 
+/* Dark Mode Styles */
 [data-theme="dark"] {
   --nav-bg: #202124;
+  --search-bg: #3c3d3f;
+  --icon-hover-bg: #3c3d3f;
   --sidebar-bg: #303134;
   --dropdown-bg: #3c3d3f;
-  --input-bg: #202124;
+  --input-bg: #3c3d3f;
   --border: #5f6368;
   --text-primary: #e8eaed;
   --text-secondary: #9aa0a6;
-}
 
+  .icon-button {
+    color: var(--text-secondary);
+  }
+
+  .navbar-search {
+    background-color: var(--search-bg);
+  }
+
+  .search-input {
+    color: var(--text-primary);
+  }
+
+  .search-icon {
+    color: var(--text-secondary);
+  }
+
+  .profile-circle {
+    background-color: var(--text-secondary);
+    color: #202124;
+  }
+
+  .dropdown-avatar-fallback {
+    background: var(--text-secondary);
+  }
+}
 
 /* Mobile portrait: compact everything further */
 @media (max-width: 689px) {

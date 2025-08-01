@@ -12,8 +12,6 @@ const RecentDocs = ({ isLoading, isMobile, searchTerm }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // fetchRecentDocs unchanged…
-
   useEffect(() => {
     async function fetchRecentDocs() {
       try {

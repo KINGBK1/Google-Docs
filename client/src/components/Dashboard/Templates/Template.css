@@ -35,4 +35,17 @@
     flex-wrap: nowrap;
     overflow-x: auto;
   }
-  
+
+[data-theme="dark"] {
+    .template-wrapper {
+        background: #202124;
+    }
+
+    .template-title {
+        color: #e8eaed;
+    }
+
+    .template-gallery-btn {
+        color: #9aa0a6;
+    }
+}

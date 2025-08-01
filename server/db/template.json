@@ -1,0 +1,304 @@
+[
+  {
+    "_id": "doc_001_resume_serif",
+    "name": "Resume Serif",
+    "content": {
+      "title": "John Doe Resume",
+      "sections": [
+        {
+          "type": "header",
+          "data": {
+            "name": "John Doe",
+            "title": "Software Engineer",
+            "contact": "john.doe@email.com | (555) 123-4567"
+          }
+        },
+        {
+          "type": "experience",
+          "data": {
+            "title": "Work Experience",
+            "jobs": [
+              {
+                "company": "Tech Corp",
+                "position": "Senior Developer",
+                "duration": "2020-2024",
+                "description": "Led development of web applications using React and Node.js"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "updatedAt": "2024-07-28T10:30:00.000Z",
+    "owner": "66a1b2c3d4e5f6789abcdef0",
+    "isRestricted": false,
+    "allowedUsers": [],
+    "mode": "editing",
+    "chatMessages": [
+      {
+        "sender": "John Doe",
+        "text": "Working on updating my experience section",
+        "timestamp": "2024-07-28T10:25:00.000Z"
+      }
+    ],
+    "thumbnail": "https://example.com/thumbnails/resume_serif.png"
+  },
+  {
+    "_id": "doc_002_resume_coral",
+    "name": "Resume Coral",
+    "content": {
+      "title": "Sarah Smith Resume",
+      "sections": [
+        {
+          "type": "header",
+          "data": {
+            "name": "Sarah Smith",
+            "title": "Marketing Manager",
+            "contact": "sarah.smith@email.com | (555) 987-6543"
+          }
+        },
+        {
+          "type": "skills",
+          "data": {
+            "title": "Skills",
+            "skillList": ["Digital Marketing", "SEO", "Content Strategy", "Analytics"]
+          }
+        }
+      ]
+    },
+    "updatedAt": "2024-07-29T14:15:00.000Z",
+    "owner": "66a1b2c3d4e5f6789abcdef1",
+    "isRestricted": true,
+    "allowedUsers": ["66a1b2c3d4e5f6789abcdef2"],
+    "mode": "viewing",
+    "chatMessages": [
+      {
+        "sender": "Sarah Smith",
+        "text": "Added new marketing skills to highlight recent training",
+        "timestamp": "2024-07-29T14:10:00.000Z"
+      },
+      {
+        "sender": "HR Manager",
+        "text": "Looks great! The coral theme really stands out",
+        "timestamp": "2024-07-29T14:12:00.000Z"
+      }
+    ],
+    "thumbnail": "https://example.com/thumbnails/resume_coral.png"
+  },
+  {
+    "_id": "doc_003_letter_spearmint",
+    "name": "Letter Spearmint",
+    "content": {
+      "title": "Business Proposal Letter",
+      "sections": [
+        {
+          "type": "header",
+          "data": {
+            "date": "July 30, 2024",
+            "recipient": "ABC Corporation",
+            "subject": "Partnership Proposal"
+          }
+        },
+        {
+          "type": "body",
+          "data": {
+            "greeting": "Dear Mr. Johnson,",
+            "paragraphs": [
+              "I am writing to propose a strategic partnership between our companies.",
+              "Our research indicates significant synergies in our market approaches.",
+              "I would welcome the opportunity to discuss this proposal in detail."
+            ],
+            "closing": "Sincerely, Alex Thompson"
+          }
+        }
+      ]
+    },
+    "updatedAt": "2024-07-30T09:45:00.000Z",
+    "owner": "66a1b2c3d4e5f6789abcdef3",
+    "isRestricted": false,
+    "allowedUsers": ["66a1b2c3d4e5f6789abcdef4", "66a1b2c3d4e5f6789abcdef5"],
+    "mode": "suggesting",
+    "chatMessages": [
+      {
+        "sender": "Alex Thompson",
+        "text": "Need to refine the partnership terms section",
+        "timestamp": "2024-07-30T09:40:00.000Z"
+      }
+    ],
+    "thumbnail": "https://example.com/thumbnails/letter_spearmint.png"
+  },
+  {
+    "_id": "doc_004_project_tropic",
+    "name": "Project Tropic",
+    "content": {
+      "title": "Mobile App Development Project",
+      "sections": [
+        {
+          "type": "overview",
+          "data": {
+            "projectName": "TropicTracker",
+            "description": "A mobile application for tracking tropical weather patterns",
+            "timeline": "Q3-Q4 2024",
+            "budget": "$150,000"
+          }
+        },
+        {
+          "type": "milestones",
+          "data": {
+            "title": "Key Milestones",
+            "items": [
+              {
+                "phase": "Design Phase",
+                "deadline": "August 15, 2024",
+                "status": "In Progress"
+              },
+              {
+                "phase": "Development Phase",
+                "deadline": "October 30, 2024",
+                "status": "Pending"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "updatedAt": "2024-07-31T16:20:00.000Z",
+    "owner": "66a1b2c3d4e5f6789abcdef6",
+    "isRestricted": true,
+    "allowedUsers": ["66a1b2c3d4e5f6789abcdef7", "66a1b2c3d4e5f6789abcdef8"],
+    "mode": "editing",
+    "chatMessages": [
+      {
+        "sender": "Project Manager",
+        "text": "Updated milestone deadlines based on client feedback",
+        "timestamp": "2024-07-31T16:15:00.000Z"
+      },
+      {
+        "sender": "Developer",
+        "text": "The tropical theme works perfectly for this project",
+        "timestamp": "2024-07-31T16:18:00.000Z"
+      }
+    ],
+    "thumbnail": "https://example.com/thumbnails/project_tropic.png"
+  },
+  {
+    "_id": "doc_005_brochure_geometric",
+    "name": "Brochure Geometric",
+    "content": {
+      "title": "Company Services Brochure",
+      "sections": [
+        {
+          "type": "cover",
+          "data": {
+            "title": "Innovative Solutions Ltd.",
+            "subtitle": "Transforming Ideas into Reality",
+            "logoUrl": "https://example.com/logo.png"
+          }
+        },
+        {
+          "type": "services",
+          "data": {
+            "title": "Our Services",
+            "serviceList": [
+              {
+                "name": "Web Development",
+                "description": "Custom web applications and websites",
+                "icon": "web"
+              },
+              {
+                "name": "Mobile Apps",
+                "description": "iOS and Android application development",
+                "icon": "mobile"
+              },
+              {
+                "name": "Consulting",
+                "description": "Technology strategy and implementation",
+                "icon": "consulting"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "updatedAt": "2024-08-01T11:30:00.000Z",
+    "owner": "66a1b2c3d4e5f6789abcdef9",
+    "isRestricted": false,
+    "allowedUsers": [],
+    "mode": "viewing",
+    "chatMessages": [
+      {
+        "sender": "Marketing Team",
+        "text": "The geometric design elements really make our services pop!",
+        "timestamp": "2024-08-01T11:25:00.000Z"
+      },
+      {
+        "sender": "Designer",
+        "text": "Glad you like it! The clean lines work well with our brand",
+        "timestamp": "2024-08-01T11:28:00.000Z"
+      }
+    ],
+    "thumbnail": "https://example.com/thumbnails/brochure_geometric.png"
+  },
+  {
+    "_id": "doc_006_report_luxe",
+    "name": "Report Luxe",
+    "content": {
+      "title": "Q2 2024 Financial Report",
+      "sections": [
+        {
+          "type": "executive_summary",
+          "data": {
+            "title": "Executive Summary",
+            "summary": "Q2 2024 showed strong growth across all business segments with revenue increasing by 23% year-over-year."
+          }
+        },
+        {
+          "type": "financial_data",
+          "data": {
+            "title": "Key Financial Metrics",
+            "metrics": [
+              {
+                "label": "Total Revenue",
+                "value": "$2.4M",
+                "change": "+23%"
+              },
+              {
+                "label": "Net Profit",
+                "value": "$485K",
+                "change": "+18%"
+              },
+              {
+                "label": "Operating Expenses",
+                "value": "$1.2M",
+                "change": "+5%"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "updatedAt": "2024-07-31T17:45:00.000Z",
+    "owner": "66a1b2c3d4e5f6789abcdef10",
+    "isRestricted": true,
+    "allowedUsers": ["66a1b2c3d4e5f6789abcdef11", "66a1b2c3d4e5f6789abcdef12"],
+    "mode": "editing",
+    "chatMessages": [
+      {
+        "sender": "CFO",
+        "text": "Please review the profit margins section before finalizing",
+        "timestamp": "2024-07-31T17:40:00.000Z"
+      },
+      {
+        "sender": "Analyst",
+        "text": "The luxe styling makes this report look very professional",
+        "timestamp": "2024-07-31T17:42:00.000Z"
+      },
+      {
+        "sender": "CFO",
+        "text": "Agreed, perfect for our board presentation",
+        "timestamp": "2024-07-31T17:44:00.000Z"
+      }
+    ],
+    "thumbnail": "https://example.com/thumbnails/report_luxe.png"
+  }
+]

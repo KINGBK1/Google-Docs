@@ -328,12 +328,12 @@
     position: relative;
     overflow: hidden;
     margin-bottom:8px ; 
-    transition: border 0.25s ease-in-out;
+    /* transition: border 0.25s ease-in-out; */
   }
 
-  .recent-doc-card:hover{
+  /* .recent-doc-card:hover{
       border: 1px solid blue;
-  }
+  } */
 
   .recent-doc-card::before {
     content: '';
@@ -535,4 +535,179 @@
   color: #5f6368;
   padding: 2rem;
   font-style: italic;
+}
+
+[data-theme="dark"] {
+    .recent-doc-wrapper {
+        background: #202124;
+    }
+
+
+    .option-btns,
+    .btns,
+    .recent-doc-title,
+    .recent-doc-subtitle,
+    .delete-btn {
+        color: #e8eaed;
+    }
+
+    .list select{
+        background: #303134;
+        color: #e8eaed;
+        border: 1px solid #5f6368;
+    }
+    .heading{
+      background-color: #202124 ;
+      color:white ; 
+    }
+    .recent-doc-list {
+        background: linear-gradient(145deg, #303134, #2d2e31);
+        box-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.2),
+            0 2px 8px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(60, 64, 67, 0.8);
+        scrollbar-color: #5f6368 transparent;
+    }
+
+    .recent-doc-list::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .recent-doc-list::-webkit-scrollbar-thumb {
+        background: linear-gradient(145deg, #5f6368, #4a4d50);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .recent-doc-list::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(145deg, #4a4d50, #3c3e41);
+    }
+    
+    .recent-doc-card {
+        background: linear-gradient(145deg, #3c3d3f, #303134);
+        border: 1px solid #5f6368;
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.12),
+            0 1px 3px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .recent-doc-card:hover {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.25),
+            0 4px 10px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        background: linear-gradient(145deg, #3c3d3f, #323336);
+    }
+
+    .recent-doc-card::before {
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    }
+
+    .recent-doc-thumbnail {
+        background: linear-gradient(135deg, #424242, #383838);
+        box-shadow:
+            inset 0 1px 3px rgba(0, 0, 0, 0.3),
+            0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .recent-doc-card:hover .recent-doc-thumbnail {
+        background: linear-gradient(135deg, #4a4a4a, #424242);
+        box-shadow:
+            inset 0 1px 3px rgba(0, 0, 0, 0.2),
+            0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .delete-btn {
+        background: linear-gradient(145deg, #424242, #383838);
+        border: 1px solid #5f6368;
+        color: #e8eaed;
+        box-shadow:
+            0 2px 4px rgba(0, 0, 0, 0.12),
+            0 1px 2px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .delete-btn:hover {
+        background: linear-gradient(145deg, #383838, #303134);
+        box-shadow:
+            0 4px 8px rgba(0, 0, 0, 0.2),
+            0 2px 4px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        color: #e8eaed;
+    }
+
+    .delete-btn:active {
+        background: linear-gradient(145deg, #303134, #202124);
+        box-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.15),
+            inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .recent-doc-list {
+            background: #202124;
+        }
+
+        .recent-doc-card {
+            background: linear-gradient(145deg, #303134, #2d2e31);
+            border-bottom: 1px solid #5f6368;
+            box-shadow: none;
+        }
+
+        .recent-doc-card:hover {
+            background: linear-gradient(145deg, #2d2e31, #202124);
+            box-shadow:
+                -4px 0 12px rgba(255, 255, 255, 0.1),
+                0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .recent-doc-card:active {
+            transform: translateX(2px);
+            transition: all 0.1s ease;
+        }
+
+        .recent-doc-thumbnail {
+            background: linear-gradient(135deg, #5f6368, #4a4d50);
+            box-shadow:
+                0 2px 8px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .recent-doc-card:hover .recent-doc-thumbnail {
+            background: linear-gradient(135deg, #4a4d50, #3c3e41);
+            transform: scale(1.05);
+            box-shadow:
+                0 4px 12px rgba(255, 255, 255, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .delete-btn {
+            background: linear-gradient(145deg, #424242, #383838);
+            border: 1px solid #5f6368;
+            color: #e8eaed;
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(145deg, #383838, #303134);
+            transform: translateY(-1px);
+            box-shadow:
+                0 4px 8px rgba(255, 255, 255, 0.1),
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            color: #e8eaed;
+            border-color: #9aa0a6;
+        }
+
+        .delete-btn:active {
+            transform: translateY(0);
+            box-shadow:
+                0 1px 2px rgba(0, 0, 0, 0.15),
+                inset 0 1px 3px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(145deg, #303134, #202124);
+        }
+    }
 }

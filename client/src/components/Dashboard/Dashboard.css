@@ -36,3 +36,9 @@
     font-size: 28px;
   }
 }
+
+[data-theme="dark"] {
+    .dashboard {
+        background: #202124;
+    }
+}

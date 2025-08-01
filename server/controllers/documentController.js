@@ -561,3 +561,15 @@ export const handleThumbnails = async (req, res) => {
     res.status(500).json({ error: "Failed to save thumbnail" });
   }
 }
+
+export const getMyTemplates = async (req,res)=> {
+  const userId = req.user.id;
+
+  try {
+    const templates = await DocumentModel.find({ owner: userId, isTemplate: true });
+    res.status(200).json(templates);
+  } catch (err) {
+    console.error("Error fetching templates:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
