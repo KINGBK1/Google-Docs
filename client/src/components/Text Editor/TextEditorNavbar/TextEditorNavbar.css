@@ -1,11 +1,21 @@
 .navbar-wrapper {
   display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid #e0e0e0;
-  background-color: #f8f9fa;
-  padding: 6px 16px;
-  font-family: "Google Sans", "Roboto", sans-serif;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 4px 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 
 .nav-first-row {
   display: flex;
@@ -482,3 +492,88 @@
     width: calc(100% - 16px);
   }
 }
+
+.logo-conatainer {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.logo-conatainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.g-docs-logo {
+  height: 36px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 725px) {
+  .navbar-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 4px 12px;
+  }
+
+  .logo-conatainer {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .g-docs-logo {
+    display: none;
+  }
+
+  .rows {
+    width: 100%;
+  }
+
+  .nav-first-row, .nav-second-row {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .right-items, .left-items {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 500px) {
+  .g-docs-logo {
+    display: none;
+  }
+
+  .right-mode-container select {
+    width: 100%;
+  }
+
+  .print-btn {
+    margin: 0 auto;
+  }
+}
+
+
+.logo-conatainer button{
+  border:none ; 
+  background-color: white;
+  margin-left:-15px ;
+  margin-top: -20px; 
+}
+.logo-conatainer button img{
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 8px;
+  
+}
+
