@@ -146,7 +146,7 @@ const ChatSidebar = ({ onClose ,documentId}) => {
     <div className='chat-wrapper'>
       <div className="chat-header">
         <div className="chat-head">
-          <h3>Comments</h3>-dom';
+          <h3>Comments</h3>;
           <div className="connection-status">
             <span className={`status-indicator ${isConnected ? 'connected' : 'disconnected'}`}>
               {isConnected ? '●' : '○'}

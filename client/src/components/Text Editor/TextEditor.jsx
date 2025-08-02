@@ -4,7 +4,7 @@ import Quill from "quill";
 import { io } from "socket.io-client";
 import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
-import Delta from "quill-delta";
+// import Delta from "quill-delta";
 
 import TextEditorNavbar from "./TextEditorNavbar/TextEditorNavbar";
 import ShareDialogBox from "./ShareDialogBox/ShareDialogBox";
@@ -390,7 +390,7 @@ const captureThumbnail = async () => {
   }, [quill, documentId, navigate]);
 
   const saveDocument = useCallback(() => {
-    if (!isReady || !quill || !needsSaving) return;
+    if (!isReady || !quill || (!needsSaving && !force)) return;
 
     setSaveStatus("saving");
 
@@ -420,7 +420,7 @@ const captureThumbnail = async () => {
   }, [saveDocument, isReady]);
 
   const handleManualSave = () => {
-    saveDocument(); // manually call save
+    saveDocument(true); // manually call save
   };
   const handleDocNameChange = (newName) => setDocName(newName);
 

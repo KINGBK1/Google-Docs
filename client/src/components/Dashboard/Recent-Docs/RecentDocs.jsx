@@ -1,6 +1,7 @@
 // src/components/Recent-Docs/RecentDocs.jsx
 import React, { useState, useEffect } from "react";
 import RecentDocCard from "./RecentDocCard/RecentDocCard";
+import DeleteDialogBox from "./DeleteDialogBox/DeleteDialogBox";
 import "./RecentDocs.css";
 import { FaTableList } from "react-icons/fa6";
 import { TiSortAlphabetically } from "react-icons/ti";
@@ -11,6 +12,10 @@ const RecentDocs = ({ isLoading, isMobile, searchTerm }) => {
   const [recentDocs, setRecentDocs] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Dialog state
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [docToDelete, setDocToDelete] = useState(null);
 
   useEffect(() => {
     async function fetchRecentDocs() {
@@ -36,7 +41,46 @@ const RecentDocs = ({ isLoading, isMobile, searchTerm }) => {
     return `Last edited on ${new Date(dateString).toLocaleDateString(undefined, opts)}`;
   };
 
-  // <-- define filtered
+  // Handle delete initiation
+  const handleDeleteClick = (doc) => {
+    setDocToDelete(doc);
+    setShowDeleteDialog(true);
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    if (!docToDelete) return;
+    
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/documents/${docToDelete._id}`,
+        {
+          method: "DELETE",
+          credentials: "include"
+        }
+      );
+      
+      if (res.ok) {
+        // Remove the document from the state
+        setRecentDocs(recentDocs.filter(d => d._id !== docToDelete._id));
+      } else {
+        console.error("Failed to delete document");
+      }
+    } catch (error) {
+      console.error("Error deleting document:", error);
+    } finally {
+      // Close dialog and reset state
+      setShowDeleteDialog(false);
+      setDocToDelete(null);
+    }
+  };
+
+  // Handle delete cancellation
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    setDocToDelete(null);
+  };
+
   const filtered = recentDocs.filter((doc) =>
     doc.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
@@ -81,20 +125,24 @@ const RecentDocs = ({ isLoading, isMobile, searchTerm }) => {
               id={doc._id}
               title={doc.name}
               subtitle={formatSubtitle(doc.updatedAt)}
-              onDelete={(id) => {fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${id}`, {
-                method: "DELETE",
-                credentials: "include"
-              }).then(alert(`do you want to delete ${doc.name}`))
-              .then(() => setRecentDocs(recentDocs.filter(d => d._id !== id)));}}
+              onDelete={() => handleDeleteClick(doc)}
               thumbnail={doc.thumbnail}
             />
           ))
         ) : (
           <p className="no-results">
-            No documents match “{searchTerm}”
+            No documents match "{searchTerm}"
           </p>
         )}
       </div>
+
+      {/* Delete Dialog */}
+      <DeleteDialogBox
+        fileName={docToDelete?.name}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        isOpen={showDeleteDialog}
+      />
     </div>
   );
 };
