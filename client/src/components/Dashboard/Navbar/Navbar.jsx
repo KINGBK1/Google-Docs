@@ -1,21 +1,24 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBars, FaSearch, FaTh, FaMoon, FaSun } from "react-icons/fa";
 import { FcDocument } from "react-icons/fc";
+import { ThemeContext } from "../themes/ThemeContext" ; 
 import "./Navbar.css";
 
-const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
+const Navbar = ({ setIsAuthenticated, searchTerm, setSearchTerm }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+
+  // Consume the global theme from context
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const dropdownRef = useRef();
   const sidebarRef = useRef();
   const inputRef = useRef();
 
-  // Fetch user on mount
+  // Fetch user on mount (no changes needed here)
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -33,7 +36,7 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
     fetchUser();
   }, []);
 
-  // Close dropdown/sidebar on outside click
+  // Close dropdown/sidebar on outside click (no changes needed here)
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -51,34 +54,25 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Apply theme
-  useEffect(() => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      darkMode ? "dark" : "light"
-    );
-  }, [darkMode]);
+  // NOTE: The useEffect that sets the data-theme attribute is now handled by ThemeProvider.
+  // You can safely remove it from this component.
 
-  // Logout handler
+  // Logout handler (no changes needed here)
   const handleLogout = async () => {
     try {
       await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
-
       setUser(null);
-      setIsAuthenticated(false); 
-      navigate("/");             
+      setIsAuthenticated(false);
+      navigate("/");
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
-
-  // Switch-account just logs out and sends back to login
   const handleSwitchAccount = () => {
-    // you could clear tokens here if needed
     handleLogout();
   };
 
@@ -92,11 +86,9 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
   return (
     <>
       <div className="navbar-container">
+        {/* Navbar Left, Search, and Right sections remain the same */}
         <div className="navbar-left">
-          <div
-            className="icon-button"
-            onClick={() => setSidebarOpen((o) => !o)}
-          >
+          <div className="icon-button" onClick={() => setSidebarOpen((o) => !o)}>
             <FaBars />
           </div>
           <FcDocument size={32} />
@@ -104,10 +96,7 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
         </div>
 
         <div className="navbar-search">
-          <FaSearch
-            className="search-icon"
-            onClick={handleSearchSubmit}
-          />
+          <FaSearch className="search-icon" onClick={handleSearchSubmit} />
           <input
             ref={inputRef}
             type="text"
@@ -123,7 +112,6 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
           <div className="icon-button">
             <FaTh />
           </div>
-
           {user && (
             <div className="profile-wrapper" ref={dropdownRef}>
               {user.picture ? (
@@ -141,7 +129,6 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
                   {user.name?.[0] || "U"}
                 </div>
               )}
-
               {dropdownOpen && (
                 <div className="dropdown-menu">
                   <div className="dropdown-avatar">
@@ -158,9 +145,7 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
                     <p className="dropdown-email">{user.email}</p>
                   </div>
                   <div className="dropdown-actions">
-                    <button onClick={handleSwitchAccount}>
-                      Switch Account
-                    </button>
+                    <button onClick={handleSwitchAccount}>Switch Account</button>
                     <button onClick={handleLogout}>Log Out</button>
                   </div>
                 </div>
@@ -171,26 +156,30 @@ const Navbar = ({setIsAuthenticated, searchTerm, setSearchTerm }) => {
       </div>
 
       {/* Sliding Sidebar */}
-      <div
-        ref={sidebarRef}
-        className={`sidebar ${sidebarOpen ? "open" : ""}`}
-      >
+      <div ref={sidebarRef} className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <FcDocument size={28} />
           <span className="sidebar-title">Google Docs</span>
         </div>
         <nav className="sidebar-nav">
-          <a href="https://google-docs-7mav.vercel.app/"><img src="assets/Google_Docs_Logo.svg" alt="" />Docs</a>
-          <a href="https://docs.google.com/spreadsheets"><img src="assets/Google_Slides_Logo.svg" alt="" /> Sheets</a>
-          <a href="https://docs.google.com/presentation"><img src="assets/Google_Slides_Logo.svg" alt="S" /> Slides</a>
-          <a href="https://docs.google.com/forms"><img src="assets/Google_Forms_Logo.svg" alt="" /> Forms</a>
+          <a href="https://google-docs-7mav.vercel.app/">
+            <img src="assets/Google_Docs_Logo.svg" alt="" />
+            Docs
+          </a>
+          <a href="https://docs.google.com/spreadsheets">
+            <img src="assets/Google_Slides_Logo.svg" alt="" /> Sheets
+          </a>
+          <a href="https://docs.google.com/presentation">
+            <img src="assets/Google_Slides_Logo.svg" alt="S" /> Slides
+          </a>
+          <a href="https://docs.google.com/forms">
+            <img src="assets/Google_Forms_Logo.svg" alt="" /> Forms
+          </a>
           <hr />
-          <button
-            className="theme-toggle"
-            onClick={() => setDarkMode((d) => !d)}
-          >
-            {darkMode ? <FaSun /> : <FaMoon />}
-            {darkMode ? " Light mode" : " Dark mode"}
+          {/* UPDATED: Use toggleTheme from context and check theme value */}
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {theme === "dark" ? <FaSun /> : <FaMoon />}
+            {theme === "dark" ? " Light mode" : " Dark mode"}
           </button>
           <hr />
           <a href="/settings">⚙ Settings</a>

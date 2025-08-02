@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { RxCross1 } from "react-icons/rx";
 import { TbDotsVertical } from "react-icons/tb";
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import { io } from "socket.io-client";
 import './chat.css';
 import {ThreeDot } from 'react-loading-indicators';
@@ -146,7 +146,7 @@ const ChatSidebar = ({ onClose ,documentId}) => {
     <div className='chat-wrapper'>
       <div className="chat-header">
         <div className="chat-head">
-          <h3>Comments</h3>
+          <h3>Comments</h3>-dom';
           <div className="connection-status">
             <span className={`status-indicator ${isConnected ? 'connected' : 'disconnected'}`}>
               {isConnected ? '●' : '○'}

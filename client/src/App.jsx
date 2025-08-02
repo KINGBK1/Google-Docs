@@ -8,7 +8,8 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import TextEditor from "./components/Text Editor/TextEditor";
 import Error from "./components/ErrorPage/Error";
 import RestrictedUserPage from "./components/RestrictedUserPage/RestrictedUserPage";
-import {Riple} from 'react-loading-indicators'
+import { Riple } from 'react-loading-indicators'
+import { ThemeProvider } from "./components/Dashboard/themes/ThemeContext";
 
 const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
   if (isLoading) return <div>Loading...</div>;
@@ -17,7 +18,7 @@ const ProtectedRoute = ({ isAuthenticated, isLoading, children }) => {
 
 const DocumentAccessGuard = ({ children }) => {
   const { documentId } = useParams();
-  const [accessState, setAccessState] = useState("loading"); 
+  const [accessState, setAccessState] = useState("loading");
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -98,7 +99,9 @@ const App = () => {
             path="/dashboard/*"
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-                <Dashboard setIsAuthenticated={setIsAuthenticated} />
+                <ThemeProvider>
+                  <Dashboard setIsAuthenticated={setIsAuthenticated} />
+                </ThemeProvider>
               </ProtectedRoute>
             }
           />

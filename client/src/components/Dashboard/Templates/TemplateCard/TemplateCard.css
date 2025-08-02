@@ -4,15 +4,22 @@
   }
 
   
-  .template-thumbnail {
-    width: 100%;
-    height: 180px;
-    background: white;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    transition: border 0.3s ease-in-out;
-  }
+.template-thumbnail {
+  width: 100%;
+  height: 180px;
+  background: white;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  overflow: hidden; 
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border 0.3s ease-in-out;
+}
+
+.template-thumbnail-img {
+  object-fit: cover; 
+  width: 100%;
+  height: 100%;
+}
 
     .template-thumbnail:hover {
     border: 1px solid blue;
@@ -52,4 +59,12 @@
     .template-subtitle {
         color: #9aa0a6;
     }
+
+    /* .template-card{
+        transition: border 0.3s ease-in-out ; ;
+    }
+
+    .template-card:hover {
+        border: 1px solid blue;
+    } */
 }

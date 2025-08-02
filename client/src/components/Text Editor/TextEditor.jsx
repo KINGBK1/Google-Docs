@@ -66,12 +66,11 @@ const captureThumbnail = async () => {
 
     const canvas = await html2canvas(editorElement, {
       backgroundColor: "#fff",
-      scale: 0.3, // scale down for thumbnail
+      scale: 0.3, 
       useCORS: true,
     });
 
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // smaller and lighter than PNG
-
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.7); 
     // Send it to backend
     await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${documentId}/thumbnail`, {
       method: "POST",

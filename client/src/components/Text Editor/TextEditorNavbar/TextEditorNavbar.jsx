@@ -16,8 +16,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import { set } from 'mongoose';
 
-
-// Receive docName, onDocNameChange, and onSaveDocument as props
 const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen, setIsGeminiOpen, saveStatus, mode, onModeChange, onDriveClick, setIsAuthenticated, setUnderConstructionOpen, setChatMessages, onPrintClick }) => {
     const [isFilled, setIsFilled] = useState(false);
     const [user, setUser] = useState(null);
@@ -28,9 +26,7 @@ const TextEditorNavbar = ({ docName, onDocNameChange, onSaveDocument, setisOpen,
     const navigate = useNavigate();
 
     const handleHomeClick = () => {
-        // navigate to home page
         navigate("/");
-        // or you can use window.location.href = "/";
     };  
 
 
